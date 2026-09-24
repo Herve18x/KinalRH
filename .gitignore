@@ -1,0 +1,36 @@
+# Java
+*.class
+*.jar
+*.war
+
+# NetBeans
+/build/
+/dist/
+/nbproject/private/
+/nbproject/genfiles.properties
+
+# Maven
+/target/
+
+# Otros IDE
+.idea/
+*.iml
+.vscode/
+
+# Archivos temporales
+*.log
+*.tmp
+*.bak
+*~
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Mac
+.DS_Store
+
+# Variables privadas
+.env
+.env.*
+!.env.example
