@@ -33,3 +33,18 @@
 3. `vw_empleados_por_puesto`
 4. `vw_empleados_por_nivel_academico`
 5. `vw_logros_por_empleado`
+
+## Mapeo Cruzado SQL - Java (Tabla: usuario)
+
+| Columna SQL | Tipo SQL | Atributo Java | Tipo Java | Restricción / Relación |
+| :--- | :--- | :--- | :--- | :--- |
+| `id_usuario` | BIGINT UNSIGNED | `idUsuario` | `Long` | PRIMARY KEY |
+| `nombre_usuario` | VARCHAR(80) | `nombreUsuario` | `String` | UNIQUE (`uq_usuario_nombre`) |
+| `password_hash` | VARCHAR(255) | `passwordHash` | `String` | NOT NULL |
+| `nombre_completo` | VARCHAR(160) | `nombreCompleto` | `String` | NOT NULL |
+| `correo` | VARCHAR(150) | `correo` | `String` | UNIQUE (`uq_usuario_correo`) |
+| `activo` | BOOLEAN | `activo` | `boolean` | DEFAULT TRUE |
+| `id_empleado` | BIGINT UNSIGNED | `idEmpleado` | `Long` | FK (`empleado.id_empleado`) |
+| `ultimo_acceso_en` | DATETIME | `ultimoAccesoEn` | `Timestamp` | NULL |
+| `creado_en` | TIMESTAMP | `creadoEn` | `Timestamp` | DEFAULT CURRENT_TIMESTAMP |
+| `actualizado_en` | TIMESTAMP | `actualizadoEn` | `Timestamp` | ON UPDATE |
