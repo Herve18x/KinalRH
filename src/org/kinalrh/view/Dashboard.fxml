@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="620.0" prefWidth="1000.0"
+            stylesheets="@styles.css"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.kinalrh.controller.DashboardController">
+
+   <!-- ═══════════════ HEADER ════════════════════════════════════════ -->
+   <top>
+      <HBox styleClass="dashboard-header" alignment="CENTER_LEFT" spacing="20.0">
+         <children>
+            <Label text="Kinal RH" styleClass="header-logo" />
+            <VBox HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
+               <children>
+                  <Label fx:id="lblBienvenida" styleClass="header-welcome" text="Bienvenido" />
+                  <Label fx:id="lblRol"        styleClass="header-rol"     text="" />
+               </children>
+            </VBox>
+            <Button text="Cerrar Sesión"
+                    styleClass="btn-cerrar"
+                    onAction="#eventoCerrarSesion">
+               <HBox.margin><Insets right="10.0" /></HBox.margin>
+            </Button>
+         </children>
+         <padding><Insets topRightBottomLeft="15.0" /></padding>
+      </HBox>
+   </top>
+
+   <!-- ═══════════════ MENÚ LATERAL ═════════════════════════════════ -->
+   <left>
+      <VBox fx:id="panelNavegacion" styleClass="side-nav" prefWidth="200.0" spacing="8.0">
+         <children>
+            <Label text="MENÚ" styleClass="nav-section-title" />
+
+            <!-- Visible solo si tiene EMPLEADO_VER (T1.17) -->
+            <Button fx:id="btnEmpleados"
+                    text="👥  Empleados"
+                    styleClass="nav-button"
+                    maxWidth="Infinity"
+                    onAction="#eventoVerEmpleados" />
+
+            <Button fx:id="btnReportes"
+                    text="📊  Reportes"
+                    styleClass="nav-button"
+                    maxWidth="Infinity"
+                    onAction="#eventoReportes" />
+
+            <!-- Visible solo para Admin (T1.17) -->
+            <Button fx:id="btnAdmin"
+                    text="⚙️  Administración"
+                    styleClass="nav-button"
+                    maxWidth="Infinity"
+                    onAction="#eventoAdmin" />
+         </children>
+         <padding><Insets topRightBottomLeft="15.0" /></padding>
+      </VBox>
+   </left>
+
+   <!-- ═══════════════ ÁREA DE CONTENIDO ════════════════════════════ -->
+   <center>
+      <VBox fx:id="panelContenido" spacing="15.0">
+         <children>
+            <Label text="Lista de Colaboradores" styleClass="content-title" />
+
+            <!-- Mensaje de estado / acceso denegado -->
+            <Label fx:id="lblMensajePanel"
+                   styleClass="panel-message"
+                   text=""
+                   visible="false"
+                   wrapText="true" />
+
+            <!-- Tabla de Empleados (T1.20 – protegida por EmpleadoService) -->
+            <TableView fx:id="tablaEmpleados" VBox.vgrow="ALWAYS">
+               <columns>
+                  <TableColumn fx:id="colCodigo"       text="Código"       prefWidth="100" />
+                  <TableColumn fx:id="colNombre"       text="Nombre"       prefWidth="160" />
+                  <TableColumn fx:id="colApellido"     text="Apellido"     prefWidth="160" />
+                  <TableColumn fx:id="colPuesto"       text="Puesto"       prefWidth="170" />
+                  <TableColumn fx:id="colDepartamento" text="Departamento" prefWidth="160" />
+               </columns>
+            </TableView>
+         </children>
+         <padding><Insets topRightBottomLeft="20.0" /></padding>
+      </VBox>
+   </center>
+
+</BorderPane>
