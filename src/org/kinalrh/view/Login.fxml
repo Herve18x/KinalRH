@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+
+<HBox prefHeight="500.0" prefWidth="800.0"
+      stylesheets="@styles.css"
+      xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.kinalrh.controller.LoginController">
+
+   <children>
+      <!-- ═══════════════ PANEL IZQUIERDO: Branding ════════════════ -->
+      <VBox styleClass="left-pane" HBox.hgrow="ALWAYS" prefWidth="400.0">
+         <children>
+            <StackPane prefHeight="130.0" prefWidth="130.0">
+               <children>
+                  <Circle radius="60.0" styleClass="logo-circle" />
+                  <Label text="RH" styleClass="logo-text" />
+               </children>
+               <VBox.margin><Insets bottom="30.0" /></VBox.margin>
+            </StackPane>
+            <Label styleClass="title-light" text="fundación" />
+            <Label styleClass="title-bold"  text="Kinal RH" />
+         </children>
+      </VBox>
+
+      <!-- ═══════════════ PANEL DERECHO: Formulario ════════════════ -->
+      <VBox styleClass="right-pane" HBox.hgrow="ALWAYS" prefWidth="400.0">
+         <children>
+            <Label styleClass="form-title" text="Iniciar Sesión" />
+
+            <!-- Campo Usuario -->
+            <VBox spacing="5.0">
+               <children>
+                  <Label styleClass="input-label" text="Usuario" />
+                  <TextField fx:id="txtUsername"
+                             promptText="Ingrese su usuario"
+                             styleClass="custom-text-field" />
+               </children>
+               <VBox.margin><Insets bottom="20.0" /></VBox.margin>
+            </VBox>
+
+            <!-- Campo Contraseña (PasswordField oculta caracteres) -->
+            <VBox spacing="5.0">
+               <children>
+                  <Label styleClass="input-label" text="Contraseña" />
+                  <PasswordField fx:id="txtPassword"
+                                 promptText="Ingrese su contraseña"
+                                 styleClass="custom-text-field" />
+               </children>
+            </VBox>
+
+            <!-- Mensaje de error GENÉRICO — sin revelar detalles sensibles (T1.14) -->
+            <Label fx:id="lblError"
+                   styleClass="error-label"
+                   text=""
+                   visible="false"
+                   wrapText="true">
+               <VBox.margin><Insets top="12.0" /></VBox.margin>
+            </Label>
+
+            <!-- Botón -->
+            <Button fx:id="btnEntrar"
+                    mnemonicParsing="false"
+                    styleClass="login-button"
+                    text="ENTRAR"
+                    maxWidth="Infinity"
+                    onAction="#eventoInicioSesion">
+               <VBox.margin><Insets top="28.0" /></VBox.margin>
+            </Button>
+         </children>
+      </VBox>
+   </children>
+</HBox>
