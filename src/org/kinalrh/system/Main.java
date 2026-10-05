@@ -1,21 +1,33 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
- */
 package org.kinalrh.system;
 
-/**
- *
- * @author informatica
- */
-public class Main {
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        // TODO code application logic here
-        System.out.println("");
+public class Main extends Application {
+
+    private static Stage escenarioPrincipal;
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        escenarioPrincipal = stage;
+        cambiarVista("/org/kinalrh/view/Login.fxml");
+        stage.setTitle("Kinal RH - Iniciar Sesión");
+        stage.show();
     }
-    
+
+    public static void cambiarVista(String fxml) throws Exception {
+        Parent root = FXMLLoader.load(Main.class.getResource(fxml));
+        escenarioPrincipal.setScene(new Scene(root));
+    }
+
+    public static Stage getEscenarioPrincipal() {
+        return escenarioPrincipal;
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
 }
