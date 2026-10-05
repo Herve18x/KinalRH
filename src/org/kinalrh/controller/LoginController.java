@@ -14,7 +14,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.kinalrh.dao.UsuarioDAO;
-import org.kinalrh.dao.impl.UsuarioDAOImpl;
+import org.kinalrh.dao.Impl.UsuarioDAOImpl;
 import org.kinalrh.model.Usuario;
 import org.kinalrh.system.Main;
 import org.kinalrh.util.SecurityUtil;
