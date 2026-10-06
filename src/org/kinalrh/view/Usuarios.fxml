@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="15.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.kinalrh.controller.UsuarioController">
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+
+   <HBox alignment="CENTER_LEFT" spacing="20.0">
+      <Label styleClass="content-title" text="Gestión de Cuentas de Usuario" />
+      <HBox HBox.hgrow="ALWAYS" />
+      <Button fx:id="btnNuevo" onAction="#eventoNuevo" styleClass="btn-action" text="Nuevo Usuario" />
+   </HBox>
+
+   <Label fx:id="lblMensajePermiso" styleClass="panel-message" text="" textFill="RED" visible="false" />
+
+   <TableView fx:id="tablaUsuarios" VBox.vgrow="ALWAYS" onMouseClicked="#eventoSeleccionarFicha">
+     <columns>
+       <TableColumn fx:id="colId" prefWidth="50.0" text="ID" />
+       <TableColumn fx:id="colUsername" prefWidth="120.0" text="Usuario" />
+       <TableColumn fx:id="colNombreVisible" prefWidth="200.0" text="Nombre Visible" />
+       <TableColumn fx:id="colRol" prefWidth="120.0" text="Rol(es)" />
+       <TableColumn fx:id="colEstado" prefWidth="100.0" text="Estado" />
+     </columns>
+   </TableView>
+</VBox>
