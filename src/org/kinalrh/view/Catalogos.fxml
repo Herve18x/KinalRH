@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="15.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+
+   <Label styleClass="content-title" text="Mantenimiento de Catálogos" />
+
+   <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+     <tabs>
+       <Tab text="Áreas" />
+       <Tab text="Puestos" />
+       <Tab text="Estados Laborales" />
+       <Tab text="Niveles Académicos" />
+       <Tab text="Tipos de Logro" />
+     </tabs>
+   </TabPane>
+</VBox>
