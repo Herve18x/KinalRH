@@ -223,3 +223,36 @@
     -fx-background-color: #23376D;
     -fx-text-fill: white;
 }
+
+/* BOTONES DE ACCION */
+.btn-action {
+    -fx-background-color: #23376D;
+    -fx-text-fill: white;
+    -fx-padding: 8 15 8 15;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+.btn-action:hover {
+    -fx-background-color: #3b5a99;
+}
+.btn-save {
+    -fx-background-color: #2e7d32;
+    -fx-text-fill: white;
+    -fx-padding: 8 15 8 15;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+.btn-save:hover {
+    -fx-background-color: #388e3c;
+}
+.btn-cancel {
+    -fx-background-color: #c62828;
+    -fx-text-fill: white;
+    -fx-padding: 8 15 8 15;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+.btn-cancel:hover {
+    -fx-background-color: #d32f2f;
+}
+
