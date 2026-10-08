@@ -57,7 +57,7 @@ public class UsuarioController implements Initializable {
 
     private UsuarioService usuarioService;
     
-    // Usuario logueado en la aplicaciÃ³n (simulado o inyectado, para validar permisos)
+    // Usuario logueado en la aplicaciÃƒÂ³n (simulado o inyectado, para validar permisos)
     private String rolActual = "ADMIN"; // Asumiremos ADMIN para pruebas, en prod se inyecta
     
     // Usuario siendo editado en el formulario
@@ -85,7 +85,7 @@ public class UsuarioController implements Initializable {
     }
 
     // ==========================================================
-    // LÃ“GICA DE LA VISTA DE LISTA (Usuarios.fxml)
+    // LÃƒâ€œGICA DE LA VISTA DE LISTA (Usuarios.fxml)
     // ==========================================================
     private void configurarLista() {
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -154,7 +154,7 @@ public class UsuarioController implements Initializable {
     }
 
     // ==========================================================
-    // LÃ“GICA DEL FORMULARIO (FormularioUsuario.fxml)
+    // LÃƒâ€œGICA DEL FORMULARIO (FormularioUsuario.fxml)
     // ==========================================================
     private void configurarFormulario() {
         if (txtPassword != null && txtPasswordVisible != null) {
@@ -173,16 +173,16 @@ public class UsuarioController implements Initializable {
         lblError.setVisible(false);
         
         if (usuario != null) {
-            lblTituloFormulario.setText("EdiciÃ³n de Usuario (ID: " + usuario.getId() + ")");
+            lblTituloFormulario.setText("EdiciÃƒÂ³n de Usuario (ID: " + usuario.getId() + ")");
             txtUsername.setText(usuario.getUsername());
             txtNombre.setText(usuario.getNombre());
             txtApellido.setText(usuario.getApellido());
             cmbRol.setValue(usuario.getRol());
             chkActivo.setSelected(usuario.isActivo());
             
-            // CRÃTICO T2.02: Nunca rellenar un campo de contraseÃ±a con el hash
+            // CRÃƒÂTICO T2.02: Nunca rellenar un campo de contraseÃƒÂ±a con el hash
             txtPassword.setText(""); 
-            txtPassword.setPromptText("Dejar vacÃ­o para no cambiar");
+            txtPassword.setPromptText("Dejar vacÃƒÂ­o para no cambiar");
         } else {
             lblTituloFormulario.setText("Nuevo Usuario");
             chkActivo.setSelected(true); // Activo por defecto
@@ -190,7 +190,6 @@ public class UsuarioController implements Initializable {
     }
 
     @FXML
-        @FXML
     public void eventoDesbloquearPass(ActionEvent event) {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Seguridad");
@@ -227,7 +226,7 @@ public class UsuarioController implements Initializable {
 
     @FXML
     public void eventoGuardar(ActionEvent event) {
-        // ValidaciÃ³n visual clara (T2.13)
+        // ValidaciÃƒÂ³n visual clara (T2.13)
         if (txtUsername.getText() == null || txtUsername.getText().trim().isEmpty() ||
             txtNombre.getText() == null || txtNombre.getText().trim().isEmpty() ||
             cmbRol.getValue() == null) {
@@ -237,9 +236,9 @@ public class UsuarioController implements Initializable {
             return;
         }
 
-        // Si es nuevo, la contraseÃ±a es obligatoria
+        // Si es nuevo, la contraseÃƒÂ±a es obligatoria
         if (usuarioEdicion == null && (txtPassword.getText() == null || txtPassword.getText().trim().isEmpty())) {
-            lblError.setText("Error: La contraseÃ±a es obligatoria para usuarios nuevos.");
+            lblError.setText("Error: La contraseÃƒÂ±a es obligatoria para usuarios nuevos.");
             lblError.setVisible(true);
             return;
         }
@@ -254,7 +253,7 @@ public class UsuarioController implements Initializable {
                     txtUsername.getText().trim(),
                     txtNombre.getText().trim(),
                     txtApellido.getText() == null ? "" : txtApellido.getText().trim(),
-                    txtPassword.getText().trim(), // El Service lo hasearÃ¡
+                    txtPassword.getText().trim(), // El Service lo hasearÃƒÂ¡
                     cmbRol.getValue(),
                     chkActivo.isSelected()
                 );
@@ -267,11 +266,11 @@ public class UsuarioController implements Initializable {
                 usuarioEdicion.setRol(cmbRol.getValue());
                 usuarioEdicion.setActivo(chkActivo.isSelected());
                 
-                // Si escribiÃ³ algo en contraseÃ±a, actualizarla. Si no, dejarla como estÃ¡.
+                // Si escribiÃƒÂ³ algo en contraseÃƒÂ±a, actualizarla. Si no, dejarla como estÃƒÂ¡.
                 if (txtPassword.getText() != null && !txtPassword.getText().trim().isEmpty()) {
                     usuarioEdicion.setPasswordHash(txtPassword.getText().trim());
                 } else {
-                    usuarioEdicion.setPasswordHash(null); // SeÃ±al para el service de no actualizar
+                    usuarioEdicion.setPasswordHash(null); // SeÃƒÂ±al para el service de no actualizar
                 }
                 
                 usuarioService.actualizarUsuario(usuarioEdicion, rolActual);
