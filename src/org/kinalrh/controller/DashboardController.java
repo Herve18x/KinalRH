@@ -48,9 +48,12 @@ public class DashboardController implements Initializable, BaseDashboardControll
         String r = rol.toUpperCase();
         
         boolean esAdmin = r.equals("ADMIN");
-        boolean esRh = r.equals("RRHH") || esAdmin;
-        boolean esGerente = r.equals("GERENTE") || r.equals("SUPERVISOR") || esAdmin;
-        boolean esVisor = r.equals("VISOR") || esAdmin || esRh;
+        // Encargado es el rol de RRHH según la BD
+        boolean esRh = r.equals("ENCARGADO") || esAdmin;
+        // Jefatura / Gerencia
+        boolean esGerente = r.equals("GERENTEAREA") || r.equals("GERENTEGENERAL") || r.equals("JEFE") || esAdmin;
+        // Todos pueden ver el directorio
+        boolean esVisor = r.equals("VISOR") || esAdmin || esRh || esGerente;
 
         seccionAdmin.setVisible(esAdmin);
         seccionAdmin.setManaged(esAdmin);
