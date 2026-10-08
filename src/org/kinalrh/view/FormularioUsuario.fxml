@@ -16,10 +16,10 @@
       <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
    </padding>
 
-   <Label fx:id="lblTituloFormulario" styleClass="content-title" text="Alta / Edición de Usuario" />
+   <Label fx:id="lblTituloFormulario" styleClass="content-title" text="Alta / EdiciÃ³n de Usuario" />
    
    <!-- Area de errores visuales (T2.13) -->
-   <Label fx:id="lblError" styleClass="form-error-label" text="Errores aquí" textFill="RED" visible="false" />
+   <Label fx:id="lblError" styleClass="form-error-label" text="Errores aquÃ­" textFill="RED" visible="false" />
 
    <GridPane hgap="15.0" vgap="15.0">
       <Label text="Nombre de Usuario:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
@@ -31,9 +31,9 @@
       <Label text="Apellido:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
       <TextField fx:id="txtApellido" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
-      <Label text="Contraseña:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-      <!-- El controlador asegurará que nunca reciba el hash (T2.02) -->
-      <HBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="3"><PasswordField fx:id="txtPassword" promptText="Dejar vacio para no cambiar" disable="true"/><TextField fx:id="txtPasswordVisible" promptText="Dejar vacio para no cambiar" disable="true" visible="false" managed="false"/><Button fx:id="btnDesbloquearPass" text="Desbloquear" onAction="#eventoDesbloquearPass"/></HBox>
+      <Label text="ContraseÃ±a:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+      <!-- El controlador asegurarÃ¡ que nunca reciba el hash (T2.02) -->
+      <HBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="3"><PasswordField fx:id="txtPassword" promptText="Dejar vacio para no cambiar"/><TextField fx:id="txtPasswordVisible" promptText="Dejar vacio para no cambiar" visible="false" managed="false"/><Button fx:id="btnDesbloquearPass" text="Desbloquear" onAction="#eventoDesbloquearPass"/></HBox>
 
       <Label text="Rol:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
       <!-- El selector reutilizable de T2.07 -->

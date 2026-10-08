@@ -58,7 +58,7 @@ public class UsuarioController implements Initializable {
 
     private UsuarioService usuarioService;
     
-    // Usuario logueado en la aplicaciÃƒÆ’Ã‚Â³n (simulado o inyectado, para validar permisos)
+    // Usuario logueado en la aplicaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n (simulado o inyectado, para validar permisos)
     private String rolActual = "ADMIN"; // Asumiremos ADMIN para pruebas, en prod se inyecta
     
     // Usuario siendo editado en el formulario
@@ -86,7 +86,7 @@ public class UsuarioController implements Initializable {
     }
 
     // ==========================================================
-    // LÃƒÆ’Ã¢â‚¬Å“GICA DE LA VISTA DE LISTA (Usuarios.fxml)
+    // LÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œGICA DE LA VISTA DE LISTA (Usuarios.fxml)
     // ==========================================================
     private void configurarLista() {
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -156,7 +156,7 @@ public class UsuarioController implements Initializable {
     }
 
     // ==========================================================
-    // LÃƒÆ’Ã¢â‚¬Å“GICA DEL FORMULARIO (FormularioUsuario.fxml)
+    // LÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œGICA DEL FORMULARIO (FormularioUsuario.fxml)
     // ==========================================================
     private void configurarFormulario() {
         if (txtPassword != null && txtPasswordVisible != null) {
@@ -175,16 +175,16 @@ public class UsuarioController implements Initializable {
         lblError.setVisible(false);
         
         if (usuario != null) {
-            lblTituloFormulario.setText("EdiciÃƒÆ’Ã‚Â³n de Usuario (ID: " + usuario.getId() + ")");
+            lblTituloFormulario.setText("EdiciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de Usuario (ID: " + usuario.getId() + ")");
             txtUsername.setText(usuario.getUsername());
             txtNombre.setText(usuario.getNombre());
             txtApellido.setText(usuario.getApellido());
             cmbRol.setValue(usuario.getRol());
             chkActivo.setSelected(usuario.isActivo());
             
-            // CRÃƒÆ’Ã‚ÂTICO T2.02: Nunca rellenar un campo de contraseÃƒÆ’Ã‚Â±a con el hash
+            // CRÃƒÆ’Ã†â€™Ãƒâ€šÃ‚ÂTICO T2.02: Nunca rellenar un campo de contraseÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a con el hash
             txtPassword.setText(""); 
-            txtPassword.setPromptText("Dejar vacÃƒÆ’Ã‚Â­o para no cambiar");
+            txtPassword.setPromptText("Dejar vacÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­o para no cambiar");
         } else {
             lblTituloFormulario.setText("Nuevo Usuario");
             chkActivo.setSelected(true); // Activo por defecto
@@ -202,8 +202,8 @@ public class UsuarioController implements Initializable {
             String passAdmin = result.get();
             // Verifica contra la clave del admin (mock seguro por ahora)
             if (SecurityUtil.hashSHA256(passAdmin).equals("8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918")) {
-                txtPassword.setDisable(false);
-                txtPasswordVisible.setDisable(false);
+                
+                
                 // Alternar vista de contrasena
                 if (txtPassword.isVisible()) {
                     txtPassword.setVisible(false);
@@ -228,7 +228,7 @@ public class UsuarioController implements Initializable {
 
     @FXML
     public void eventoGuardar(ActionEvent event) {
-        // ValidaciÃƒÆ’Ã‚Â³n visual clara (T2.13)
+        // ValidaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n visual clara (T2.13)
         if (txtUsername.getText() == null || txtUsername.getText().trim().isEmpty() ||
             txtNombre.getText() == null || txtNombre.getText().trim().isEmpty() ||
             cmbRol.getValue() == null) {
@@ -238,9 +238,9 @@ public class UsuarioController implements Initializable {
             return;
         }
 
-        // Si es nuevo, la contraseÃƒÆ’Ã‚Â±a es obligatoria
+        // Si es nuevo, la contraseÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a es obligatoria
         if (usuarioEdicion == null && (txtPassword.getText() == null || txtPassword.getText().trim().isEmpty())) {
-            lblError.setText("Error: La contraseÃƒÆ’Ã‚Â±a es obligatoria para usuarios nuevos.");
+            lblError.setText("Error: La contraseÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a es obligatoria para usuarios nuevos.");
             lblError.setVisible(true);
             return;
         }
@@ -255,7 +255,7 @@ public class UsuarioController implements Initializable {
                     txtUsername.getText().trim(),
                     txtNombre.getText().trim(),
                     txtApellido.getText() == null ? "" : txtApellido.getText().trim(),
-                    txtPassword.getText().trim(), // El Service lo hasearÃƒÆ’Ã‚Â¡
+                    txtPassword.getText().trim(), // El Service lo hasearÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡
                     cmbRol.getValue(),
                     chkActivo.isSelected()
                 );
@@ -268,11 +268,11 @@ public class UsuarioController implements Initializable {
                 usuarioEdicion.setRol(cmbRol.getValue());
                 usuarioEdicion.setActivo(chkActivo.isSelected());
                 
-                // Si escribiÃƒÆ’Ã‚Â³ algo en contraseÃƒÆ’Ã‚Â±a, actualizarla. Si no, dejarla como estÃƒÆ’Ã‚Â¡.
+                // Si escribiÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³ algo en contraseÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±a, actualizarla. Si no, dejarla como estÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡.
                 if (txtPassword.getText() != null && !txtPassword.getText().trim().isEmpty()) {
                     usuarioEdicion.setPasswordHash(txtPassword.getText().trim());
                 } else {
-                    usuarioEdicion.setPasswordHash(null); // SeÃƒÆ’Ã‚Â±al para el service de no actualizar
+                    usuarioEdicion.setPasswordHash(null); // SeÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±al para el service de no actualizar
                 }
                 
                 usuarioService.actualizarUsuario(usuarioEdicion, rolActual);
