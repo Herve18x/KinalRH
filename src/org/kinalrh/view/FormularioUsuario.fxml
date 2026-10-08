@@ -19,7 +19,7 @@
    <Label fx:id="lblTituloFormulario" styleClass="content-title" text="Alta / Edicion de Usuario" />
    
    <!-- Area de errores visuales (T2.13) -->
-   <Label fx:id="lblError" styleClass="form-error-label" text="Errores aquÃƒÂ­" textFill="RED" visible="false" />
+   <Label fx:id="lblError" styleClass="form-error-label" text="Errores aquÃƒÆ’Ã‚Â­" textFill="RED" visible="false" />
 
    <GridPane hgap="15.0" vgap="15.0">
       <Label text="Nombre de Usuario:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
@@ -32,8 +32,8 @@
       <TextField fx:id="txtApellido" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
       <Label text="Contrasena:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-      <!-- El controlador asegurarÃƒÂ¡ que nunca reciba el hash (T2.02) -->
-      <HBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="3"><PasswordField fx:id="txtPassword" promptText="Dejar vacio para no cambiar"/><TextField fx:id="txtPasswordVisible" promptText="Dejar vacio para no cambiar" visible="false" managed="false"/><Button fx:id="btnDesbloquearPass" text="Desbloquear" onAction="#eventoDesbloquearPass"/></HBox>
+      <!-- El controlador asegurarÃƒÆ’Ã‚Â¡ que nunca reciba el hash (T2.02) -->
+      <TextField fx:id="txtPassword" promptText="Dejar vacio para no cambiar" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
       <Label text="Rol:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
       <!-- El selector reutilizable de T2.07 -->
