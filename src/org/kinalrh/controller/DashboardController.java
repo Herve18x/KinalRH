@@ -73,6 +73,10 @@ public class DashboardController implements Initializable, BaseDashboardControll
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/kinalrh/view/" + fxml));
             Node vista = loader.load();
+            Object ctrl = loader.getController();
+            if (ctrl instanceof UsuarioController && usuarioActual != null) {
+                ((UsuarioController) ctrl).setRolActual(usuarioActual.getRol());
+            }
             panelPrincipal.setCenter(vista);
         } catch (Exception e) {
             e.printStackTrace();

@@ -14,7 +14,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.kinalrh.dao.UsuarioDAO;
-import org.kinalrh.dao.Impl.UsuarioDAOImpl;
+import org.kinalrh.dao.impl.UsuarioDAOImpl; // Importación corregida (impl en minúsculas)
 import org.kinalrh.model.Usuario;
 import org.kinalrh.system.Main;
 import org.kinalrh.util.SecurityUtil;
@@ -58,7 +58,7 @@ public class LoginController implements Initializable {
         Usuario usuarioEncontrado = usuarioDAO.buscarPorUsername(usuarioIngresado);
 
         // Verificar credenciales — mensaje GENÉRICO, no revela detalles (T1.14)
-        if (usuarioEncontrado == null) {
+        if (usuarioEncontrado == null || !usuarioEncontrado.isActivo()) {
             mostrarError("Usuario o contraseña incorrectos.");
             return;
         }
@@ -93,12 +93,20 @@ public class LoginController implements Initializable {
                 titulo   = "Kinal RH – Administración";
                 break;
             case "rrhh":
+            case "encargado":
                 rutaFXML = "/org/kinalrh/view/Dashboard.fxml";
                 titulo   = "Kinal RH – Recursos Humanos";
                 break;
             case "supervisor":
+            case "gerentearea":
+            case "gerentegeneral":
+            case "jefe":
                 rutaFXML = "/org/kinalrh/view/Dashboard.fxml";
-                titulo   = "Kinal RH – Supervisor";
+                titulo   = "Kinal RH – " + usuario.getRol();
+                break;
+            case "visor":
+                rutaFXML = "/org/kinalrh/view/Dashboard.fxml";
+                titulo   = "Kinal RH – Visor Institucional";
                 break;
             default:
                 mostrarError("Su cuenta no tiene acceso al sistema.");

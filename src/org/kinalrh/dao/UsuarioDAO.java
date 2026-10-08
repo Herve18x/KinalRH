@@ -9,4 +9,5 @@ public interface UsuarioDAO {
     void guardar(Usuario usuario);
     void actualizar(Usuario usuario);
     void cambiarEstado(int id, boolean activo);
+    boolean autenticar(String nombreUsuario, String passwordHash);
 }

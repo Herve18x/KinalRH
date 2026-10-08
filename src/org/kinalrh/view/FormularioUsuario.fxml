@@ -2,7 +2,6 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
@@ -16,10 +15,10 @@
       <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
    </padding>
 
-   <Label fx:id="lblTituloFormulario" styleClass="content-title" text="Alta / Edicion de Usuario" />
+   <Label fx:id="lblTituloFormulario" styleClass="content-title" text="Nuevo Usuario" />
    
    <!-- Area de errores visuales (T2.13) -->
-   <Label fx:id="lblError" styleClass="form-error-label" text="Errores aquÃƒÆ’Ã‚Â­" textFill="RED" visible="false" />
+   <Label fx:id="lblError" styleClass="form-error-label" text="" textFill="RED" visible="false" />
 
    <GridPane hgap="15.0" vgap="15.0">
       <Label text="Nombre de Usuario:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
@@ -32,12 +31,11 @@
       <TextField fx:id="txtApellido" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
       <Label text="Contrasena:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-      <!-- El controlador asegurarÃƒÆ’Ã‚Â¡ que nunca reciba el hash (T2.02) -->
+      <!-- El controlador asegurara que nunca reciba el hash (T2.02) -->
       <TextField fx:id="txtPassword" promptText="Dejar vacio para no cambiar" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
       <Label text="Rol:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
-      <!-- El selector reutilizable de T2.07 -->
-      <ComboBox fx:id="cmbRol" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+      <Label text="ADMIN" style="-fx-font-weight: bold; -fx-text-fill: #1a5276;" GridPane.columnIndex="1" GridPane.rowIndex="4" />
 
       <Label text="Estado Activo:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
       <CheckBox fx:id="chkActivo" text="Cuenta Activa" GridPane.columnIndex="1" GridPane.rowIndex="5" />
