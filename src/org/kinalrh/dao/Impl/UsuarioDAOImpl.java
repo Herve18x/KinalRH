@@ -58,18 +58,24 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 
     @Override
     public void guardar(Usuario usuario) {
-        // Implementación básica, asumiendo inserción simple. 
-        // En la vida real se maneja la transacción para insertar en usuario y usuario_rol.
         String sql = "INSERT INTO usuario (nombre_usuario, password_hash, nombre_completo, activo) VALUES (?, ?, ?, ?)";
         try (Connection conn = Conexion.getInstancia().conectar();
              PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
              
+            conn.setAutoCommit(false); // Transacción
             stmt.setString(1, usuario.getUsername());
             stmt.setString(2, usuario.getPasswordHash());
-            stmt.setString(3, usuario.getNombre()); // usando nombre como nombre_completo
+            stmt.setString(3, usuario.getNombre()); 
             stmt.setInt(4, usuario.isActivo() ? 1 : 0);
             stmt.executeUpdate();
             
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    int idInsertado = rs.getInt(1);
+                    asignarRolBD(conn, idInsertado, usuario.getRol());
+                }
+            }
+            conn.commit();
         } catch (SQLException e) {
             System.err.println("Error al guardar usuario: " + e.getMessage());
         }
@@ -81,14 +87,34 @@ public class UsuarioDAOImpl implements UsuarioDAO {
         try (Connection conn = Conexion.getInstancia().conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
              
+            conn.setAutoCommit(false);
             stmt.setString(1, usuario.getNombre());
             stmt.setString(2, usuario.getPasswordHash());
             stmt.setInt(3, usuario.isActivo() ? 1 : 0);
             stmt.setInt(4, usuario.getId());
             stmt.executeUpdate();
             
+            // Borrar rol actual y asignar el nuevo
+            String sqlDel = "DELETE FROM usuario_rol WHERE id_usuario = ?";
+            try (PreparedStatement sDel = conn.prepareStatement(sqlDel)) {
+                sDel.setInt(1, usuario.getId());
+                sDel.executeUpdate();
+            }
+            asignarRolBD(conn, usuario.getId(), usuario.getRol());
+            
+            conn.commit();
         } catch (SQLException e) {
             System.err.println("Error al actualizar usuario: " + e.getMessage());
+        }
+    }
+    
+    private void asignarRolBD(Connection conn, int idUsuario, String rol) throws SQLException {
+        if (rol == null || rol.isEmpty()) return;
+        String sql = "INSERT INTO usuario_rol (id_usuario, id_rol) VALUES (?, (SELECT id_rol FROM rol WHERE nombre = ? LIMIT 1))";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idUsuario);
+            stmt.setString(2, rol.toLowerCase()); // en BD están en minúsculas (admin, encargado, etc)
+            stmt.executeUpdate();
         }
     }
 

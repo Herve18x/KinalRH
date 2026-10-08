@@ -18,6 +18,9 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
+import java.util.Optional;
+import org.kinalrh.util.SecurityUtil;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
@@ -45,6 +48,8 @@ public class UsuarioController implements Initializable {
     @FXML private TextField txtNombre;
     @FXML private TextField txtApellido;
     @FXML private PasswordField txtPassword;
+    @FXML private TextField txtPasswordVisible;
+    @FXML private Button btnDesbloquearPass;
     @FXML private ComboBox<String> cmbRol;
     @FXML private CheckBox chkActivo;
     @FXML private Button btnGuardar;
@@ -152,6 +157,9 @@ public class UsuarioController implements Initializable {
     // LÃ“GICA DEL FORMULARIO (FormularioUsuario.fxml)
     // ==========================================================
     private void configurarFormulario() {
+        if (txtPassword != null && txtPasswordVisible != null) {
+            txtPasswordVisible.textProperty().bindBidirectional(txtPassword.textProperty());
+        }
         ComponenteUtil.configurarSelectorRol(cmbRol);
         lblError.setVisible(false);
     }
@@ -178,6 +186,42 @@ public class UsuarioController implements Initializable {
         } else {
             lblTituloFormulario.setText("Nuevo Usuario");
             chkActivo.setSelected(true); // Activo por defecto
+        }
+    }
+
+    @FXML
+        @FXML
+    public void eventoDesbloquearPass(ActionEvent event) {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Seguridad");
+        dialog.setHeaderText("Autorización Requerida");
+        dialog.setContentText("Ingrese contraseña del administrador:");
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()) {
+            String passAdmin = result.get();
+            // Verifica contra la clave del admin (mock seguro por ahora)
+            if (SecurityUtil.hashSHA256(passAdmin).equals("8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918")) {
+                txtPassword.setDisable(false);
+                txtPasswordVisible.setDisable(false);
+                // Alternar vista de contrasena
+                if (txtPassword.isVisible()) {
+                    txtPassword.setVisible(false);
+                    txtPassword.setManaged(false);
+                    txtPasswordVisible.setVisible(true);
+                    txtPasswordVisible.setManaged(true);
+                    btnDesbloquearPass.setText("Ocultar Pass");
+                } else {
+                    txtPassword.setVisible(true);
+                    txtPassword.setManaged(true);
+                    txtPasswordVisible.setVisible(false);
+                    txtPasswordVisible.setManaged(false);
+                    btnDesbloquearPass.setText("Ver Pass");
+                }
+                lblError.setVisible(false);
+            } else {
+                lblError.setText("Error: Contraseña de admin incorrecta.");
+                lblError.setVisible(true);
+            }
         }
     }
 
@@ -256,3 +300,4 @@ public class UsuarioController implements Initializable {
         }
     }
 }
+

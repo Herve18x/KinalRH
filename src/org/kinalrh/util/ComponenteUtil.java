@@ -18,9 +18,11 @@ public class ComponenteUtil {
     public static void configurarSelectorRol(ComboBox<String> combo) {
         ObservableList<String> roles = FXCollections.observableArrayList(
             "ADMIN",
-            "RRHH",
-            "SUPERVISOR",
-            "EMPLEADO"
+            "ENCARGADO",
+            "GERENTEAREA",
+            "GERENTEGENERAL",
+            "JEFE",
+            "VISOR"
         );
         combo.setItems(roles);
     }

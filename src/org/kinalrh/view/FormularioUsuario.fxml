@@ -33,7 +33,7 @@
 
       <Label text="Contraseña:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
       <!-- El controlador asegurará que nunca reciba el hash (T2.02) -->
-      <PasswordField fx:id="txtPassword" promptText="Dejar vacío si no desea cambiarla" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+      <HBox spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="3"><PasswordField fx:id="txtPassword" promptText="Dejar vacio para no cambiar" disable="true"/><TextField fx:id="txtPasswordVisible" promptText="Dejar vacio para no cambiar" disable="true" visible="false" managed="false"/><Button fx:id="btnDesbloquearPass" text="Desbloquear" onAction="#eventoDesbloquearPass"/></HBox>
 
       <Label text="Rol:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
       <!-- El selector reutilizable de T2.07 -->
@@ -48,3 +48,4 @@
       <Button fx:id="btnCancelar" onAction="#eventoCancelar" text="Cancelar" styleClass="btn-cancel"/>
    </HBox>
 </VBox>
+
