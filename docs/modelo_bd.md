@@ -39,6 +39,7 @@
 | Columna SQL | Tipo SQL | Atributo Java | Tipo Java | Restricción / Relación |
 | :--- | :--- | :--- | :--- | :--- |
 | `id_usuario` | BIGINT UNSIGNED | `idUsuario` | `Long` | PRIMARY KEY |
+| `uuid_usuario` | VARCHAR(36) | `uuidUsuario` | `String` | UNIQUE (`uq_usuario_uuid`), NOT NULL, INMUTABLE |
 | `nombre_usuario` | VARCHAR(80) | `nombreUsuario` | `String` | UNIQUE (`uq_usuario_nombre`) |
 | `password_hash` | VARCHAR(255) | `passwordHash` | `String` | NOT NULL |
 | `nombre_completo` | VARCHAR(160) | `nombreCompleto` | `String` | NOT NULL |
