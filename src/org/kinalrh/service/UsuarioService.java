@@ -30,7 +30,7 @@ public class UsuarioService {
         }
         // Encriptar password si viene
         if (usuario.getPasswordHash() != null && !usuario.getPasswordHash().isEmpty()) {
-            usuario.setPasswordHash(SecurityUtil.hashSHA256(usuario.getPasswordHash()));
+            
         }
         usuarioDAO.guardar(usuario);
     }
@@ -39,9 +39,9 @@ public class UsuarioService {
         if (!autorizacionService.tienePermiso(rolActual, "USUARIO_GESTIONAR")) {
             throw new SecurityException("No tiene permiso para editar usuarios.");
         }
-        // Solo hashear la contraseña si la cambiaron (no viene vacía y no es el hash viejo)
+        // Solo hashear la contraseÃ±a si la cambiaron (no viene vacÃ­a y no es el hash viejo)
         if (usuario.getPasswordHash() != null && !usuario.getPasswordHash().isEmpty()) {
-            usuario.setPasswordHash(SecurityUtil.hashSHA256(usuario.getPasswordHash()));
+            
         } else {
             // Mantener el hash anterior
             Usuario viejo = usuarioDAO.buscarPorUsername(usuario.getUsername());
