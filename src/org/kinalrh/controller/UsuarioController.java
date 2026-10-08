@@ -1,4 +1,4 @@
-package org.kinalrh.controller;
+﻿package org.kinalrh.controller;
 
 import java.net.URL;
 import java.util.List;
@@ -57,7 +57,7 @@ public class UsuarioController implements Initializable {
 
     private UsuarioService usuarioService;
     
-    // Usuario logueado en la aplicación (simulado o inyectado, para validar permisos)
+    // Usuario logueado en la aplicaciÃ³n (simulado o inyectado, para validar permisos)
     private String rolActual = "ADMIN"; // Asumiremos ADMIN para pruebas, en prod se inyecta
     
     // Usuario siendo editado en el formulario
@@ -85,7 +85,7 @@ public class UsuarioController implements Initializable {
     }
 
     // ==========================================================
-    // LÓGICA DE LA VISTA DE LISTA (Usuarios.fxml)
+    // LÃ“GICA DE LA VISTA DE LISTA (Usuarios.fxml)
     // ==========================================================
     private void configurarLista() {
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -154,7 +154,7 @@ public class UsuarioController implements Initializable {
     }
 
     // ==========================================================
-    // LÓGICA DEL FORMULARIO (FormularioUsuario.fxml)
+    // LÃ“GICA DEL FORMULARIO (FormularioUsuario.fxml)
     // ==========================================================
     private void configurarFormulario() {
         if (txtPassword != null && txtPasswordVisible != null) {
@@ -173,16 +173,16 @@ public class UsuarioController implements Initializable {
         lblError.setVisible(false);
         
         if (usuario != null) {
-            lblTituloFormulario.setText("Edición de Usuario (ID: " + usuario.getId() + ")");
+            lblTituloFormulario.setText("EdiciÃ³n de Usuario (ID: " + usuario.getId() + ")");
             txtUsername.setText(usuario.getUsername());
             txtNombre.setText(usuario.getNombre());
             txtApellido.setText(usuario.getApellido());
             cmbRol.setValue(usuario.getRol());
             chkActivo.setSelected(usuario.isActivo());
             
-            // CRÍTICO T2.02: Nunca rellenar un campo de contraseña con el hash
+            // CRÃTICO T2.02: Nunca rellenar un campo de contraseÃ±a con el hash
             txtPassword.setText(""); 
-            txtPassword.setPromptText("Dejar vacío para no cambiar");
+            txtPassword.setPromptText("Dejar vacÃ­o para no cambiar");
         } else {
             lblTituloFormulario.setText("Nuevo Usuario");
             chkActivo.setSelected(true); // Activo por defecto
@@ -194,8 +194,8 @@ public class UsuarioController implements Initializable {
     public void eventoDesbloquearPass(ActionEvent event) {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Seguridad");
-        dialog.setHeaderText("Autorizaci�n Requerida");
-        dialog.setContentText("Ingrese contrase�a del administrador:");
+        dialog.setHeaderText("Autorizacion Requerida");
+        dialog.setContentText("Ingrese contrasena del administrador:");
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent()) {
             String passAdmin = result.get();
@@ -219,7 +219,7 @@ public class UsuarioController implements Initializable {
                 }
                 lblError.setVisible(false);
             } else {
-                lblError.setText("Error: Contrase�a de admin incorrecta.");
+                lblError.setText("Error: Contrasena de admin incorrecta.");
                 lblError.setVisible(true);
             }
         }
@@ -227,7 +227,7 @@ public class UsuarioController implements Initializable {
 
     @FXML
     public void eventoGuardar(ActionEvent event) {
-        // Validación visual clara (T2.13)
+        // ValidaciÃ³n visual clara (T2.13)
         if (txtUsername.getText() == null || txtUsername.getText().trim().isEmpty() ||
             txtNombre.getText() == null || txtNombre.getText().trim().isEmpty() ||
             cmbRol.getValue() == null) {
@@ -237,9 +237,9 @@ public class UsuarioController implements Initializable {
             return;
         }
 
-        // Si es nuevo, la contraseña es obligatoria
+        // Si es nuevo, la contraseÃ±a es obligatoria
         if (usuarioEdicion == null && (txtPassword.getText() == null || txtPassword.getText().trim().isEmpty())) {
-            lblError.setText("Error: La contraseña es obligatoria para usuarios nuevos.");
+            lblError.setText("Error: La contraseÃ±a es obligatoria para usuarios nuevos.");
             lblError.setVisible(true);
             return;
         }
@@ -254,7 +254,7 @@ public class UsuarioController implements Initializable {
                     txtUsername.getText().trim(),
                     txtNombre.getText().trim(),
                     txtApellido.getText() == null ? "" : txtApellido.getText().trim(),
-                    txtPassword.getText().trim(), // El Service lo haseará
+                    txtPassword.getText().trim(), // El Service lo hasearÃ¡
                     cmbRol.getValue(),
                     chkActivo.isSelected()
                 );
@@ -267,11 +267,11 @@ public class UsuarioController implements Initializable {
                 usuarioEdicion.setRol(cmbRol.getValue());
                 usuarioEdicion.setActivo(chkActivo.isSelected());
                 
-                // Si escribió algo en contraseña, actualizarla. Si no, dejarla como está.
+                // Si escribiÃ³ algo en contraseÃ±a, actualizarla. Si no, dejarla como estÃ¡.
                 if (txtPassword.getText() != null && !txtPassword.getText().trim().isEmpty()) {
                     usuarioEdicion.setPasswordHash(txtPassword.getText().trim());
                 } else {
-                    usuarioEdicion.setPasswordHash(null); // Señal para el service de no actualizar
+                    usuarioEdicion.setPasswordHash(null); // SeÃ±al para el service de no actualizar
                 }
                 
                 usuarioService.actualizarUsuario(usuarioEdicion, rolActual);
@@ -300,4 +300,5 @@ public class UsuarioController implements Initializable {
         }
     }
 }
+
 
