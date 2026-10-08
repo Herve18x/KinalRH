@@ -1,4 +1,4 @@
-﻿package org.kinalrh.controller;
+package org.kinalrh.controller;
 
 import java.net.URL;
 import java.util.List;
