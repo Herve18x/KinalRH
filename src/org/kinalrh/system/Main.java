@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.scene.image.Image;
 
 public class Main extends Application {
 
@@ -13,8 +14,11 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         escenarioPrincipal = stage;
+        try {
+            stage.getIcons().add(new Image(Main.class.getResourceAsStream("/org/kinalrh/image/icon.png")));
+        } catch(Exception e) { System.out.println("Error cargando icono"); }
         cambiarVista("/org/kinalrh/view/Login.fxml");
-        stage.setTitle("Kinal RH - Iniciar Sesión");
+        stage.setTitle("Kinal RH - Iniciar SesiÃ³n");
         stage.show();
     }
 
