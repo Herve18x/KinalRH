@@ -1,23 +1,48 @@
 package org.kinalrh.model;
 
+import java.sql.Timestamp;
+
+/**
+ * Entidad modelo que representa un Puesto laboral en la tabla 'puesto'.
+ */
 public class Puesto {
 
     private Long idPuesto;
     private String codigo;
     private String nombre;
     private String descripcion;
-    private boolean activo = true;
+    private boolean activo;
+    private Timestamp creadoEn;
+    private Timestamp actualizadoEn;
 
     public Puesto() {
+        this.activo = true;
     }
 
-    public Puesto(Long idPuesto, String codigo, String nombre,
-            String descripcion, boolean activo) {
+    public Puesto(String codigo, String nombre, String descripcion) {
+        this();
+        this.codigo = codigo;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+    }
+
+    public Puesto(Long idPuesto, String codigo, String nombre, String descripcion, boolean activo) {
         this.idPuesto = idPuesto;
         this.codigo = codigo;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.activo = activo;
+    }
+
+    public Puesto(Long idPuesto, String codigo, String nombre, String descripcion, boolean activo,
+                  Timestamp creadoEn, Timestamp actualizadoEn) {
+        this.idPuesto = idPuesto;
+        this.codigo = codigo;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.activo = activo;
+        this.creadoEn = creadoEn;
+        this.actualizadoEn = actualizadoEn;
     }
 
     public Long getIdPuesto() {
@@ -60,8 +85,29 @@ public class Puesto {
         this.activo = activo;
     }
 
+    public Timestamp getCreadoEn() {
+        return creadoEn;
+    }
+
+    public void setCreadoEn(Timestamp creadoEn) {
+        this.creadoEn = creadoEn;
+    }
+
+    public Timestamp getActualizadoEn() {
+        return actualizadoEn;
+    }
+
+    public void setActualizadoEn(Timestamp actualizadoEn) {
+        this.actualizadoEn = actualizadoEn;
+    }
+
     @Override
     public String toString() {
-        return nombre == null ? "" : nombre;
+        return "Puesto{" +
+                "idPuesto=" + idPuesto +
+                ", codigo='" + codigo + '\'' +
+                ", nombre='" + nombre + '\'' +
+                ", activo=" + activo +
+                '}';
     }
 }
