@@ -5,21 +5,17 @@ import java.security.NoSuchAlgorithmException;
 
 public class SecurityUtil {
 
-    public static String hashSHA256(String password) {
+    public static String hashSHA256(String input) {
         try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] encodedhash = digest.digest(password.getBytes(java.nio.charset.StandardCharsets.UTF_8));
-            StringBuilder hexString = new StringBuilder(2 * encodedhash.length);
-            for (byte b : encodedhash) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = md.digest(input.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : hashBytes) {
+                sb.append(String.format("%02x", b));
             }
-            return hexString.toString();
+            return sb.toString();
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Error al encriptar la contraseña", e);
+            throw new RuntimeException("Error en encriptación SHA-256", e);
         }
     }
 }

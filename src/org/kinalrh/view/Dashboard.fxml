@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:id="panelPrincipal" prefHeight="700.0" prefWidth="1200.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.kinalrh.controller.DashboardController">
+
+   <!-- HEADER -->
+   <top>
+      <HBox alignment="CENTER_LEFT" spacing="20.0" styleClass="dashboard-header">
+         <children>
+            <Label styleClass="header-logo" text="Kinal RH" />
+            <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+               <children>
+                  <Label fx:id="lblBienvenida" styleClass="header-welcome" text="Bienvenido" />
+                  <Label fx:id="lblRol" styleClass="header-rol" text="Rol: " />
+               </children>
+            </VBox>
+            <Button onAction="#eventoCerrarSesion" styleClass="btn-cerrar" text="Cerrar Sesión">
+               <HBox.margin>
+                  <Insets right="10.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+         <padding>
+            <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+         </padding>
+      </HBox>
+   </top>
+
+   <!-- MENÚ LATERAL DINÁMICO -->
+   <left>
+      <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" BorderPane.alignment="CENTER">
+         <content>
+            <VBox fx:id="panelNavegacion" prefWidth="240.0" spacing="15.0" styleClass="side-nav">
+               <padding>
+                  <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+               </padding>
+               <children>
+                  <!-- SECCIÓN RECURSOS HUMANOS -->
+                  <VBox fx:id="seccionRH" spacing="5.0">
+                     <Label styleClass="nav-section-title" text="RECURSOS HUMANOS" />
+                     <Button maxWidth="Infinity" onAction="#abrirColaboradores" styleClass="nav-button" text="👥 Colaboradores" />
+                     <Button maxWidth="Infinity" onAction="#abrirCatalogos" styleClass="nav-button" text="📑 Catálogos Generales" />
+                     <Button maxWidth="Infinity" onAction="#abrirImportacion" styleClass="nav-button" text="📂 Importar desde Excel" />
+                     <Button maxWidth="Infinity" onAction="#abrirReportes" styleClass="nav-button" text="📊 Reportes Exportables" />
+                  </VBox>
+
+                  <!-- SECCIÓN SOLICITUDES Y GERENCIA -->
+                  <VBox fx:id="seccionGerencia" spacing="5.0">
+                     <Label styleClass="nav-section-title" text="GESTIÓN Y APROBACIONES" />
+                     <Button maxWidth="Infinity" onAction="#abrirBandeja" styleClass="nav-button" text="📥 Bandeja de Solicitudes" />
+                     <Button maxWidth="Infinity" onAction="#abrirMiEquipo" styleClass="nav-button" text="👨‍💼 Mi Equipo" />
+                  </VBox>
+
+                  <!-- SECCIÓN VISOR / INSTITUCIONAL -->
+                  <VBox fx:id="seccionVisor" spacing="5.0">
+                     <Label styleClass="nav-section-title" text="IMAGEN INSTITUCIONAL" />
+                     <Button maxWidth="Infinity" onAction="#abrirDirectorio" styleClass="nav-button" text="📸 Directorio Público" />
+                  </VBox>
+
+                  <!-- SECCIÓN ADMINISTRADOR -->
+                  <VBox fx:id="seccionAdmin" spacing="5.0">
+                     <Label styleClass="nav-section-title" text="SEGURIDAD Y SISTEMA" />
+                     <Button maxWidth="Infinity" onAction="#abrirUsuarios" styleClass="nav-button" text="🔐 Gestión de Usuarios" />
+                     <Button maxWidth="Infinity" onAction="#abrirRoles" styleClass="nav-button" text="🛡 Roles y Permisos" />
+                     <Button maxWidth="Infinity" onAction="#abrirAuditoria" styleClass="nav-button" text="📝 Log de Auditoría" />
+                  </VBox>
+               </children>
+            </VBox>
+         </content>
+      </ScrollPane>
+   </left>
+
+   <!-- ÁREA DE CONTENIDO DINÁMICO -->
+   <center>
+      <VBox alignment="CENTER" spacing="20.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label style="-fx-font-size: 24px; -fx-text-fill: #888;" text="Seleccione una opción del menú para comenzar." />
+         </children>
+      </VBox>
+   </center>
+</BorderPane>

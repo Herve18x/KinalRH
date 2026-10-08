@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="15.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+
+   <Label styleClass="content-title" text="Bandeja de Solicitudes y Aprobaciones" />
+
+   <TableView VBox.vgrow="ALWAYS">
+     <columns>
+       <TableColumn prefWidth="100.0" text="ID Solicitud" />
+       <TableColumn prefWidth="120.0" text="Fecha" />
+       <TableColumn prefWidth="200.0" text="Colaborador" />
+       <TableColumn prefWidth="150.0" text="Motivo" />
+       <TableColumn prefWidth="150.0" text="Campo Anterior" />
+       <TableColumn prefWidth="150.0" text="Campo Nuevo" />
+       <TableColumn prefWidth="100.0" text="Estado" />
+     </columns>
+   </TableView>
+
+   <HBox spacing="15.0">
+      <VBox HBox.hgrow="ALWAYS" spacing="5.0">
+         <Label text="Comentarios de la resolución:" />
+         <TextArea prefHeight="60.0" promptText="Ingrese un comentario antes de aprobar o rechazar..." />
+      </VBox>
+      <VBox alignment="CENTER" spacing="10.0">
+         <Button styleClass="btn-save" text="Aprobar Solicitud" prefWidth="150.0" />
+         <Button styleClass="btn-cancel" text="Rechazar Solicitud" prefWidth="150.0" />
+      </VBox>
+   </HBox>
+</VBox>
