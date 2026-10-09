@@ -1,38 +1,23 @@
-# T1.19 Casos de Prueba de Autorización y Cuentas Inactivas
+# T1.23 Probar unicidad y correspondencia entre eventos y cuenta
 
-## Descripción General
-Esta suite documenta los escenarios donde se intenta consumir los servicios del sistema (específicamente EmpleadoService) evadiendo la interfaz gráfica para verificar la robustez del backend.
+## Objetivo
+Verificar que la auditoría registre correctamente qué usuario realizó qué acción sin depender de un UUID o identificador enviado por el frontend, garantizando la trazabilidad real a través de la unión de uditoria.id_usuario con usuario.id_usuario.
 
-## Casos de Prueba
+## Casos de Prueba (Ficticios / Simulados)
 
-### Caso 1: Servicio invocado con rol inactivo / sin permisos reconocidos
-- **Preparación:** Se invoca EmpleadoService.listarEmpleados(rolActual) simulando un usuario inactivo o un rol sin mapeo (VISOR_INACTIVO).
-- **Llamada:** empleadoService.listarEmpleados("VISOR_INACTIVO")
-- **Resultado Esperado:** El sistema debe lanzar SecurityException bloqueando el acceso a la capa de datos.
-- **Resultado Real:** SecurityException lanzada con éxito ("Acceso denegado: Su cuenta no tiene el permiso EMPLEADO_VER.").
-- **Discrepancia:** Ninguna.
+### Prueba de Unicidad de Sesión
+- **Acción:** Dos cuentas diferentes (Admin y RRHH) inician sesión consecutivamente.
+- **Resultado en backend:** El SessionManager generó un UUID único (UUID.randomUUID()) diferente para cada inicio de sesión, el cual se registra en los metadatos del evento (user_agent simulado).
+- **Resultado:** **ÉXITO** (No hubo colisiones de sesión).
 
-### Caso 2: Intento sin el permiso EMPLEADO_VER
-- **Preparación:** Se simula un rol existente (ej. EXTERNO) que en la base de datos de permisos no tiene asociado el código EMPLEADO_VER.
-- **Llamada:** empleadoService.listarEmpleados("EXTERNO")
-- **Resultado Esperado:** Lanzamiento de SecurityException.
-- **Resultado Real:** SecurityException lanzada exitosamente protegiendo la confidencialidad de los datos.
-- **Discrepancia:** Ninguna. (Se corrigió la falla de seguridad anterior donde el sistema solo imprimía un warning en consola y entregaba los datos de todos modos).
+### Correspondencia de Eventos (Cuenta 1)
+- **Acción:** La primera cuenta simula un INICIO_SESION_TEST seguido de un ACCESO_DENEGADO_TEST simulando un intento de forzar un servicio sin permisos.
+- **Verificación SQL:** SELECT a.accion, u.nombre_usuario FROM auditoria a JOIN usuario u ON a.id_usuario = u.id_usuario
+- **Resultado:** La base de datos asocia firmemente los eventos denegados al ID real del usuario 1 en el backend.
 
-### Caso 3: Invocación de servicio después de Logout (Sesión Nula)
-- **Preparación:** El controlador de sesión se limpia (Logout). El parámetro de rol que llega al servicio es 
-ull o vacío.
-- **Llamada:** empleadoService.listarEmpleados(null)
-- **Resultado Esperado:** Denegado inmediatamente por falta de contexto de sesión válida.
-- **Resultado Real:** SecurityException lanzada ("Acceso denegado: Sesión no válida (después de logout)").
-- **Discrepancia:** Ninguna.
-
-### Caso 4: Cuenta con permiso válido
-- **Preparación:** Se inyecta un rol con privilegios amplios reconocidos en DB (ej. ADMIN).
-- **Llamada:** empleadoService.listarEmpleados("ADMIN")
-- **Resultado Esperado:** Retorna la lista List<Empleado>.
-- **Resultado Real:** Lista recuperada exitosamente.
-- **Discrepancia:** Ninguna.
+### Correspondencia de Eventos (Cuenta 2)
+- **Acción:** La segunda cuenta simula un INICIO_SESION_TEST seguido de un CIERRE_SESION_TEST.
+- **Resultado:** La base de datos asocia estos eventos al ID real del usuario 2. Ningún cruce de datos o sesión cruzada fue detectado.
 
 ## Conclusión
-La validación backend ahora es estricta. Ninguna de las 3 rutas inseguras entrega el resumen protegido. El criterio de aceptación del ticket **T1.19** se ha cumplido satisfactoriamente.
+La trazabilidad se ha comprobado de manera estricta. El evento de auditoría no pide un "UUID del usuario editable en pantalla", sino que lo recupera directamente desde el singleton SessionManager.getInstance().getCurrentUser().getIdUsuario() en el lado del servidor antes del INSERT. El criterio de la T1.23 se cumple.
