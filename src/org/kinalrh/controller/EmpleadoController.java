@@ -91,7 +91,7 @@ public class EmpleadoController implements Initializable {
             javafx.scene.Parent root = loader.load();
             
             EmpleadoFormController controller = loader.getController();
-            Empleado emp = idEmpleado == 0L ? null : new EmpleadoService().buscarPorId(idEmpleado);
+            Empleado emp = idEmpleado == 0L ? null : new EmpleadoService().buscarPorId(idEmpleado, "ADMIN");
             
             javafx.stage.Stage stage = new javafx.stage.Stage();
             controller.setStage(stage);
