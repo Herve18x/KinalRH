@@ -1,17 +1,10 @@
-package org.kinalrh.controller;
+import os
+filepath = r'C:\danielmendia\KinalRH\src\org\kinalrh\controller\EmpleadoController.java'
+with open(filepath, 'r', encoding='utf-8') as f:
+    content = f.read()
 
-import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseEvent;
-import javafx.collections.FXCollections;
+# Add imports
+imports = '''import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
@@ -25,23 +18,11 @@ import org.kinalrh.dao.impl.AreaDAOImpl;
 import org.kinalrh.dao.impl.PuestoDAOImpl;
 import org.kinalrh.dao.impl.NivelAcademicoDAOImpl;
 import org.kinalrh.dao.impl.EstadoEmpleadoDAOImpl;
-import org.kinalrh.dao.impl.EmpleadoDAOImpl;
-import org.kinalrh.model.Empleado;
-import org.kinalrh.service.EmpleadoService;
+import org.kinalrh.dao.impl.EmpleadoDAOImpl;'''
+content = content.replace('import org.kinalrh.model.Empleado;', imports + '\nimport org.kinalrh.model.Empleado;')
 
-public class EmpleadoController implements Initializable {
-
-    @FXML private TableView<Empleado> tablaEmpleados;
-    @FXML private TableColumn<Empleado, Long> colId;
-    @FXML private TableColumn<Empleado, String> colNombre;
-    @FXML private TableColumn<Empleado, String> colEstado;
-    @FXML private TableColumn<Empleado, String> colArea;
-    @FXML private TableColumn<Empleado, String> colPuesto;
-
-    @FXML private Button btnNuevo;
-    @FXML private Button btnRefrescar;
-
-        @FXML private TextField txtBusqueda;
+# Add fields
+fields = '''    @FXML private TextField txtBusqueda;
     @FXML private ComboBox<Area> cmbFiltroArea;
     @FXML private ComboBox<Puesto> cmbFiltroPuesto;
     @FXML private ComboBox<NivelAcademico> cmbFiltroNivel;
@@ -49,11 +30,17 @@ public class EmpleadoController implements Initializable {
     @FXML private ComboBox<Empleado> cmbFiltroJefe;
     
     private ObservableList<Empleado> masterData = FXCollections.observableArrayList();
-    private FilteredList<Empleado> filteredData;
-    private EmpleadoService empleadoService;
-    private Long idSeleccionadoGuardado = null;
+    private FilteredList<Empleado> filteredData;'''
+content = content.replace('private EmpleadoService empleadoService;', fields + '\n    private EmpleadoService empleadoService;')
 
-    @Override
+# Update initialize
+init_old = '''    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        empleadoService = new EmpleadoService();
+        configurarTabla();
+        cargarDatos();
+    }'''
+init_new = '''    @Override
     public void initialize(URL url, ResourceBundle rb) {
         empleadoService = new EmpleadoService();
         configurarTabla();
@@ -124,77 +111,50 @@ public class EmpleadoController implements Initializable {
         cmbFiltroNivel.getSelectionModel().clearSelection();
         cmbFiltroEstado.getSelectionModel().clearSelection();
         cmbFiltroJefe.getSelectionModel().clearSelection();
-    }
+    }'''
+content = content.replace(init_old, init_new)
 
-    private void configurarTabla() {
-        colId.setCellValueFactory(new PropertyValueFactory<>("idEmpleado"));
-        colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
-        colEstado.setCellValueFactory(new PropertyValueFactory<>("estado"));
-        colArea.setCellValueFactory(new PropertyValueFactory<>("area"));
-        colPuesto.setCellValueFactory(new PropertyValueFactory<>("puesto"));
-    }
-
-    private void cargarDatos() {
-        // Guardar id visible seleccionado (si hay)
-        Empleado seleccionado = tablaEmpleados.getSelectionModel().getSelectedItem();
-        if (seleccionado != null) {
-            idSeleccionadoGuardado = seleccionado.getIdEmpleado();
-        }
-
-        List<Empleado> empleados = empleadoService.listarEmpleados(org.kinalrh.service.SesionService.getInstance().getUsuarioAutenticado() != null ? org.kinalrh.service.SesionService.getInstance().getUsuarioAutenticado().getRol() : "");
-        masterData.setAll(empleados);
-
-        // Restaurar seleccion
-        if (idSeleccionadoGuardado != null) {
-            for (Empleado e : tablaEmpleados.getItems()) {
-                if (e.getIdEmpleado().equals(idSeleccionadoGuardado)) {
-                    tablaEmpleados.getSelectionModel().select(e);
-                    break;
-                }
-            }
-        }
-    }
-
-    @FXML
-    public void eventoRefrescar(ActionEvent event) {
-        cargarDatos();
-    }
-
-    @FXML
-    public void eventoNuevo(ActionEvent event) {
-        abrirFichaEmpleado(0L);
-    }
-
-    @FXML
-    public void eventoSeleccionTabla(MouseEvent event) {
-        if (event.getClickCount() == 2) {
-            Empleado seleccionado = tablaEmpleados.getSelectionModel().getSelectedItem();
-            if (seleccionado != null) {
-                abrirFichaEmpleado(seleccionado.getIdEmpleado());
-            }
-        }
-    }
-
-    private void abrirFichaEmpleado(Long idEmpleado) {
+# Update cargarDatos
+cargar_old = '''    public void cargarDatos() {
         try {
-            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/org/kinalrh/view/FormularioEmpleado.fxml"));
-            javafx.scene.Parent root = loader.load();
+            java.util.List<Empleado> lista = empleadoService.listarEmpleados();
+            tablaEmpleados.getItems().setAll(lista);
             
-            EmpleadoFormController controller = loader.getController();
-            Empleado emp = idEmpleado == 0L ? null : new EmpleadoService().buscarPorId(idEmpleado, org.kinalrh.service.SesionService.getInstance().getUsuarioAutenticado() != null ? org.kinalrh.service.SesionService.getInstance().getUsuarioAutenticado().getRol() : "");
-            
-            javafx.stage.Stage stage = new javafx.stage.Stage();
-            controller.setStage(stage);
-            controller.setEmpleado(emp);
-            
-            stage.setTitle(idEmpleado == 0L ? "Nuevo Empleado" : "Editar Empleado");
-            stage.setScene(new javafx.scene.Scene(root));
-            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
-            stage.showAndWait();
-            
-            cargarDatos(); // Refrescar despus de cerrar
+            if (idSeleccionadoGuardado != null) {
+                for (Empleado e : tablaEmpleados.getItems()) {
+                    if (e.getIdEmpleado().equals(idSeleccionadoGuardado)) {
+                        tablaEmpleados.getSelectionModel().select(e);
+                        tablaEmpleados.scrollTo(e);
+                        break;
+                    }
+                }
+                idSeleccionadoGuardado = null;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-}
+    }'''
+cargar_new = '''    public void cargarDatos() {
+        try {
+            java.util.List<Empleado> lista = empleadoService.listarEmpleados();
+            masterData.setAll(lista);
+            
+            if (idSeleccionadoGuardado != null) {
+                for (Empleado e : tablaEmpleados.getItems()) {
+                    if (e.getIdEmpleado().equals(idSeleccionadoGuardado)) {
+                        tablaEmpleados.getSelectionModel().select(e);
+                        tablaEmpleados.scrollTo(e);
+                        break;
+                    }
+                }
+                idSeleccionadoGuardado = null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }'''
+content = content.replace(cargar_old, cargar_new)
+
+with open(filepath, 'w', encoding='utf-8') as f:
+    f.write(content)
+print("EmpleadoController updated!")

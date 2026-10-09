@@ -76,6 +76,8 @@
                         <TextField fx:id="txtTelefonoFijo" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                         <Label text="Correo Personal:" GridPane.rowIndex="4" />
                         <TextField fx:id="txtCorreo" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                        <Label text="Nivel Académico:" GridPane.rowIndex="5" />
+                        <ComboBox fx:id="cmbNivelAcademico" prefWidth="2000" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                      </children>
                   </GridPane>
 
@@ -87,7 +89,7 @@
                      </columnConstraints>
                      <children>
                         <Label text="Dirección:" GridPane.rowIndex="0" />
-                        <TextField fx:id="txtDirección" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                        <TextField fx:id="txtDireccion" GridPane.columnIndex="1" GridPane.rowIndex="0" />
                         <Label text="Zona:" GridPane.rowIndex="1" />
                         <TextField fx:id="txtZona" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <Label text="Municipio:" GridPane.rowIndex="2" />
@@ -112,6 +114,8 @@
                         <ComboBox fx:id="cmbPuesto" prefWidth="2000" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                         <Label text="Estado (*):" GridPane.rowIndex="3" />
                         <ComboBox fx:id="cmbEstado" prefWidth="2000" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <Label text="Jefe Inmediato:" GridPane.rowIndex="4" />
+                        <ComboBox fx:id="cmbJefe" prefWidth="2000" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                      </children>
                   </GridPane>
                </children>

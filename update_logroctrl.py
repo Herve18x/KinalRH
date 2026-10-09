@@ -1,4 +1,7 @@
-package org.kinalrh.controller;
+import os
+filepath = r'C:\danielmendia\KinalRH\src\org\kinalrh\controller\LogroController.java'
+
+content = '''package org.kinalrh.controller;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -61,11 +64,7 @@ public class LogroController implements Initializable {
     }
     
     private void cargarEmpleados() {
-        try {
-            cmbEmpleado.getItems().setAll(empleadoDAO.listarTodos());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        cmbEmpleado.getItems().setAll(empleadoDAO.listarTodos());
     }
 
     @FXML
@@ -121,3 +120,7 @@ public class LogroController implements Initializable {
         formPane.setManaged(false);
     }
 }
+'''
+with open(filepath, 'w', encoding='utf-8') as f:
+    f.write(content)
+print("LogroController updated.")

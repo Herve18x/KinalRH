@@ -5,6 +5,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
@@ -15,6 +17,22 @@
 
    <Label styleClass="content-title" text="Gestión de Empleados" />
 
+   <VBox spacing="10.0" style="-fx-padding: 10; -fx-border-color: #ccc; -fx-border-radius: 5; -fx-background-radius: 5; -fx-background-color: #f9f9f9;">
+      <HBox spacing="10.0" alignment="CENTER_LEFT">
+         <Label text="Búsqueda:" style="-fx-font-weight: bold;" />
+         <TextField fx:id="txtBusqueda" promptText="Nombre, DPI, NIT, Código..." prefWidth="300" />
+         <Button fx:id="btnLimpiarFiltros" onAction="#eventoLimpiarFiltros" text="Limpiar Filtros" />
+      </HBox>
+      <HBox spacing="10.0" alignment="CENTER_LEFT">
+         <Label text="Filtros:" style="-fx-font-weight: bold;" />
+         <ComboBox fx:id="cmbFiltroArea" promptText="Área" prefWidth="150" />
+         <ComboBox fx:id="cmbFiltroPuesto" promptText="Puesto" prefWidth="150" />
+         <ComboBox fx:id="cmbFiltroNivel" promptText="Nivel Académico" prefWidth="150" />
+         <ComboBox fx:id="cmbFiltroEstado" promptText="Estado" prefWidth="150" />
+         <ComboBox fx:id="cmbFiltroJefe" promptText="Jefe Inmediato" prefWidth="150" />
+      </HBox>
+   </VBox>
+   
    <HBox spacing="10.0">
       <Button fx:id="btnNuevo" onAction="#eventoNuevo" styleClass="btn-action" text="Nuevo Empleado" />
       <Button fx:id="btnRefrescar" onAction="#eventoRefrescar" styleClass="btn-action" text="Refrescar Lista" />
