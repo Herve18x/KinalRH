@@ -1,31 +1,34 @@
-package org.kinalrh.dao;
- 
-import java.sql.SQLException;
-import java.util.Optional;
-import org.kinalrh.model.Empleado;
- 
-/**
-* Interfaz para las operaciones de acceso a datos de Empleado.
-*
-* @author danielcatalan
-*/
-public interface EmpleadoDAO {
- 
-    /**
-     * Devuelve el empleado o Optional.empty() si no existe.
-     */
-    Optional<Empleado> buscarPorId(long idEmpleado) throws SQLException;
- 
-    /**
-     * Inserta el empleado y devuelve el ID generado por la base de datos.
-     * Si falla la inserción o no se obtiene el ID, lanza SQLException.
-     */
-    long insertar(Empleado empleado) throws SQLException;
- 
-    /**
-     * Actualiza usando empleado.getIdEmpleado(). Devuelve true si el registro
-     * existe y la operación tiene éxito, incluso si los datos eran iguales.
-     * Devuelve false si el ID no existe. Los errores SQL se propagan.
-     */
-    boolean actualizar(Empleado empleado) throws SQLException;
+package org.kinalrh.model;
+
+public class Empleado {
+    private int idEmpleado;
+    private String nombre;
+    private String estado;
+    private String area;
+    private String puesto;
+
+    public Empleado() {}
+
+    public Empleado(int idEmpleado, String nombre, String estado, String area, String puesto) {
+        this.idEmpleado = idEmpleado;
+        this.nombre = nombre;
+        this.estado = estado;
+        this.area = area;
+        this.puesto = puesto;
+    }
+
+    public int getIdEmpleado() { return idEmpleado; }
+    public void setIdEmpleado(int idEmpleado) { this.idEmpleado = idEmpleado; }
+
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
+
+    public String getArea() { return area; }
+    public void setArea(String area) { this.area = area; }
+
+    public String getPuesto() { return puesto; }
+    public void setPuesto(String puesto) { this.puesto = puesto; }
 }

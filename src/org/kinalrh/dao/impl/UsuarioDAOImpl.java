@@ -62,7 +62,7 @@ public class UsuarioDAOImpl implements UsuarioDAO {
         try (Connection conn = Conexion.getInstancia().conectar();
              PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
-            conn.setAutoCommit(false); // Transacción
+            conn.setAutoCommit(false); // TransacciÃƒÂ³n
             stmt.setString(1, usuario.getUsername());
             stmt.setString(2, usuario.getPasswordHash());
             String nombreCompleto = usuario.getNombre();
@@ -121,7 +121,7 @@ public class UsuarioDAOImpl implements UsuarioDAO {
         String sql = "INSERT INTO usuario_rol (id_usuario, id_rol) VALUES (?, (SELECT id_rol FROM rol WHERE nombre = ? LIMIT 1))";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, idUsuario);
-            stmt.setString(2, rol.toLowerCase()); // en BD están en minúsculas (admin, encargado, etc)
+            stmt.setString(2, rol.toLowerCase()); // en BD estÃƒÂ¡n en minÃƒÂºsculas (admin, encargado, etc)
             stmt.executeUpdate();
         }
     }
@@ -141,7 +141,6 @@ public class UsuarioDAOImpl implements UsuarioDAO {
         }
     }
 
-    @Override
     public boolean autenticar(String nombreUsuario, String passwordHash) {
         String sql = "SELECT id_usuario, nombre_usuario, password_hash, activo "
                    + "FROM usuario WHERE nombre_usuario = ? AND password_hash = ? AND activo = TRUE";
@@ -169,7 +168,7 @@ public class UsuarioDAOImpl implements UsuarioDAO {
         String nombreCompleto = rs.getString("nombre_completo");
         if (nombreCompleto != null) {
             u.setNombre(nombreCompleto);
-            u.setApellido(""); // El backend unificó a nombre_completo
+            u.setApellido(""); // El backend unificÃƒÂ³ a nombre_completo
         }
 
         u.setPasswordHash(rs.getString("password_hash"));
@@ -179,5 +178,15 @@ public class UsuarioDAOImpl implements UsuarioDAO {
         u.setRol(rol != null ? rol.toUpperCase() : "SIN_ROL");
 
         return u;
+    }
+    @Override
+    public java.util.Optional<Usuario> buscarPorNombreUsuario(String nombreUsuario) throws java.sql.SQLException {
+        Usuario u = buscarPorUsername(nombreUsuario);
+        return u != null ? java.util.Optional.of(u) : java.util.Optional.empty();
+    }
+
+    @Override
+    public java.util.Set<String> obtenerPermisos(long idUsuario) throws java.sql.SQLException {
+        return new java.util.HashSet<>();
     }
 }

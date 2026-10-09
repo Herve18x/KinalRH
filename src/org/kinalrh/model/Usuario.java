@@ -44,91 +44,67 @@ public class Usuario {
         setRoles(roles);
     }
  
-    public Long getIdUsuario() {
-        return idUsuario;
-    }
+    public Long getIdUsuario() { return idUsuario; }
+    public void setIdUsuario(Long idUsuario) { this.idUsuario = idUsuario; }
  
-    public void setIdUsuario(Long idUsuario) {
-        this.idUsuario = idUsuario;
-    }
+    public String getNombreUsuario() { return nombreUsuario; }
+    public void setNombreUsuario(String nombreUsuario) { this.nombreUsuario = nombreUsuario; }
  
-    public String getNombreUsuario() {
-        return nombreUsuario;
-    }
+    public String getPasswordHash() { return passwordHash; }
+    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
  
-    public void setNombreUsuario(String nombreUsuario) {
-        this.nombreUsuario = nombreUsuario;
-    }
+    public String getNombreCompleto() { return nombreCompleto; }
+    public void setNombreCompleto(String nombreCompleto) { this.nombreCompleto = nombreCompleto; }
  
-    public String getPasswordHash() {
-        return passwordHash;
-    }
+    public String getCorreo() { return correo; }
+    public void setCorreo(String correo) { this.correo = correo; }
  
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
-    }
+    public boolean isActivo() { return activo; }
+    public void setActivo(boolean activo) { this.activo = activo; }
  
-    public String getNombreCompleto() {
-        return nombreCompleto;
-    }
+    public Long getIdEmpleado() { return idEmpleado; }
+    public void setIdEmpleado(Long idEmpleado) { this.idEmpleado = idEmpleado; }
  
-    public void setNombreCompleto(String nombreCompleto) {
-        this.nombreCompleto = nombreCompleto;
-    }
+    public Timestamp getUltimoAccesoEn() { return ultimoAccesoEn; }
+    public void setUltimoAccesoEn(Timestamp ultimoAccesoEn) { this.ultimoAccesoEn = ultimoAccesoEn; }
  
-    public String getCorreo() {
-        return correo;
-    }
+    public Timestamp getCreadoEn() { return creadoEn; }
+    public void setCreadoEn(Timestamp creadoEn) { this.creadoEn = creadoEn; }
  
-    public void setCorreo(String correo) {
-        this.correo = correo;
-    }
+    public Timestamp getActualizadoEn() { return actualizadoEn; }
+    public void setActualizadoEn(Timestamp actualizadoEn) { this.actualizadoEn = actualizadoEn; }
  
-    public boolean isActivo() {
-        return activo;
+    public List<Rol> getRoles() { return roles; }
+    public void setRoles(List<Rol> roles) { this.roles = roles == null ? new ArrayList<>() : new ArrayList<>(roles); }
+
+    // ====================================================================
+    // WRAPPERS DE COMPATIBILIDAD CON LA INTERFAZ ANTIGUA (ft/seguridad)
+    // ====================================================================
+
+    public int getId() { return idUsuario != null ? idUsuario.intValue() : 0; }
+    public void setId(int id) { this.idUsuario = (long) id; }
+
+    public String getUsername() { return nombreUsuario; }
+    public void setUsername(String username) { this.nombreUsuario = username; }
+
+    public String getNombre() { return nombreCompleto; }
+    public void setNombre(String nombre) { this.nombreCompleto = nombre; }
+
+    public String getApellido() { return ""; } // El frontend asume que el backend unificó a nombreCompleto
+    public void setApellido(String apellido) { 
+        if(apellido != null && !apellido.trim().isEmpty()) {
+            this.nombreCompleto = (this.nombreCompleto == null ? "" : this.nombreCompleto + " ") + apellido;
+        }
     }
- 
-    public void setActivo(boolean activo) {
-        this.activo = activo;
+
+    public String getRol() {
+        return (roles == null || roles.isEmpty()) ? "SIN_ROL" : roles.get(0).getNombre();
     }
- 
-    public Long getIdEmpleado() {
-        return idEmpleado;
-    }
- 
-    public void setIdEmpleado(Long idEmpleado) {
-        this.idEmpleado = idEmpleado;
-    }
- 
-    public Timestamp getUltimoAccesoEn() {
-        return ultimoAccesoEn;
-    }
- 
-    public void setUltimoAccesoEn(Timestamp ultimoAccesoEn) {
-        this.ultimoAccesoEn = ultimoAccesoEn;
-    }
- 
-    public Timestamp getCreadoEn() {
-        return creadoEn;
-    }
- 
-    public void setCreadoEn(Timestamp creadoEn) {
-        this.creadoEn = creadoEn;
-    }
- 
-    public Timestamp getActualizadoEn() {
-        return actualizadoEn;
-    }
- 
-    public void setActualizadoEn(Timestamp actualizadoEn) {
-        this.actualizadoEn = actualizadoEn;
-    }
- 
-    public List<Rol> getRoles() {
-        return roles;
-    }
- 
-    public void setRoles(List<Rol> roles) {
-        this.roles = roles == null ? new ArrayList<>() : new ArrayList<>(roles);
+    public void setRol(String rolStr) {
+        Rol r = new Rol();
+        r.setNombre(rolStr);
+        if (this.roles == null) this.roles = new ArrayList<>();
+        this.roles.clear();
+        this.roles.add(r);
     }
 }

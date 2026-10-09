@@ -14,7 +14,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.kinalrh.dao.UsuarioDAO;
-import org.kinalrh.dao.impl.UsuarioDAOImpl; // Importación corregida (impl en minúsculas)
+import org.kinalrh.dao.impl.UsuarioDAOImpl; // ImportaciÃ³n corregida (impl en minÃºsculas)
 import org.kinalrh.model.Usuario;
 import org.kinalrh.system.Main;
 import org.kinalrh.util.SecurityUtil;
@@ -23,10 +23,10 @@ import org.kinalrh.util.SecurityUtil;
  * Controlador del Login.
  *
  * Seguridad (T1.14 / T1.06):
- * - El mensaje de error es GENÉRICO ("Usuario o contraseña incorrectos.")
- *   para no revelar si el usuario existe o si la contraseña es incorrecta.
- * - El campo de contraseña usa PasswordField (caracteres enmascarados).
- * - La contraseña NUNCA se imprime en consola ni en logs.
+ * - El mensaje de error es GENÃ‰RICO ("Usuario o contraseÃ±a incorrectos.")
+ *   para no revelar si el usuario existe o si la contraseÃ±a es incorrecta.
+ * - El campo de contraseÃ±a usa PasswordField (caracteres enmascarados).
+ * - La contraseÃ±a NUNCA se imprime en consola ni en logs.
  */
 public class LoginController implements Initializable {
 
@@ -43,7 +43,7 @@ public class LoginController implements Initializable {
         lblError.setVisible(false);
     }
 
-    // ── Evento: botón ENTRAR ───────────────────────────────────────────────────
+    // â”€â”€ Evento: botÃ³n ENTRAR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     @FXML
     public void eventoInicioSesion(ActionEvent evento) {
         String usuarioIngresado  = txtUsername.getText().trim();
@@ -54,29 +54,27 @@ public class LoginController implements Initializable {
             return;
         }
 
-        // Buscar usuario en BD (solo retorna si está activo)
+        // Buscar usuario en BD (solo retorna si estÃ¡ activo)
         Usuario usuarioEncontrado = usuarioDAO.buscarPorUsername(usuarioIngresado);
 
-        // Verificar credenciales — mensaje GENÉRICO, no revela detalles (T1.14)
+        // Verificar credenciales â€” mensaje GENÃ‰RICO, no revela detalles (T1.14)
         if (usuarioEncontrado == null || !usuarioEncontrado.isActivo()) {
-            mostrarError("Usuario o contraseña incorrectos.");
+            mostrarError("Usuario o contraseÃ±a incorrectos.");
             return;
         }
 
-        String hash = SecurityUtil.hashSHA256(passwordIngresada);
-        boolean credencialesValidas = usuarioEncontrado.getPasswordHash() != null
-            && (usuarioEncontrado.getPasswordHash().equals(hash)
-                || usuarioEncontrado.getPasswordHash().equals(passwordIngresada));
+                boolean credencialesValidas = usuarioEncontrado.getPasswordHash() != null
+            && usuarioEncontrado.getPasswordHash().equals(passwordIngresada);
 
         if (!credencialesValidas) {
-            mostrarError("Usuario o contraseña incorrectos.");
+            mostrarError("Usuario o contraseÃ±a incorrectos.");
             return;
         }
 
         abrirDashboard(usuarioEncontrado);
     }
 
-    // ── Navegación por rol (T1.17) ─────────────────────────────────────────────
+    // â”€â”€ NavegaciÃ³n por rol (T1.17) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     private void abrirDashboard(Usuario usuario) {
         if (usuario.getRol() == null) {
             mostrarError("No se pudo determinar su nivel de acceso.");
@@ -90,23 +88,23 @@ public class LoginController implements Initializable {
         switch (rol) {
             case "admin":
                 rutaFXML = "/org/kinalrh/view/Dashboard.fxml";
-                titulo   = "Kinal RH – Administración";
+                titulo   = "Kinal RH â€“ AdministraciÃ³n";
                 break;
             case "rrhh":
             case "encargado":
                 rutaFXML = "/org/kinalrh/view/Dashboard.fxml";
-                titulo   = "Kinal RH – Recursos Humanos";
+                titulo   = "Kinal RH â€“ Recursos Humanos";
                 break;
             case "supervisor":
             case "gerentearea":
             case "gerentegeneral":
             case "jefe":
                 rutaFXML = "/org/kinalrh/view/Dashboard.fxml";
-                titulo   = "Kinal RH – " + usuario.getRol();
+                titulo   = "Kinal RH â€“ " + usuario.getRol();
                 break;
             case "visor":
                 rutaFXML = "/org/kinalrh/view/Dashboard.fxml";
-                titulo   = "Kinal RH – Visor Institucional";
+                titulo   = "Kinal RH â€“ Visor Institucional";
                 break;
             default:
                 mostrarError("Su cuenta no tiene acceso al sistema.");
@@ -134,7 +132,7 @@ public class LoginController implements Initializable {
         }
     }
 
-    // ── Helpers ────────────────────────────────────────────────────────────────
+    // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     private void mostrarError(String mensaje) {
         lblError.setText(mensaje);
         lblError.setVisible(true);
