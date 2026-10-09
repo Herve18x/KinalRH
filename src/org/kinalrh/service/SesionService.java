@@ -11,9 +11,11 @@ public class SesionService {
     private Usuario usuarioAutenticado;
     private Set<String> permisosVigentes;
     private UsuarioDAO usuarioDAO;
+    private AuditoriaService auditoriaService;
 
     private SesionService() {
         this.usuarioDAO = new UsuarioDAOImpl();
+        this.auditoriaService = new AuditoriaService();
     }
 
     public static SesionService getInstance() {
@@ -31,11 +33,13 @@ public class SesionService {
             e.printStackTrace();
             this.permisosVigentes = new java.util.HashSet<>();
         }
-        // Compatibilidad con SessionManager si existe
         org.kinalrh.util.SessionManager.getInstance().login(usuario);
     }
 
     public void cerrarSesion() {
+        if (this.usuarioAutenticado != null) {
+            this.auditoriaService.auditarLogout(this.usuarioAutenticado.getIdUsuario());
+        }
         this.usuarioAutenticado = null;
         if (this.permisosVigentes != null) {
             this.permisosVigentes.clear();

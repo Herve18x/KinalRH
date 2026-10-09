@@ -10,35 +10,41 @@ import java.util.Optional;
 public class AutenticacionService {
 
     private UsuarioDAO usuarioDAO;
+    private AuditoriaService auditoriaService;
 
     public AutenticacionService() {
         this.usuarioDAO = new UsuarioDAOImpl();
+        this.auditoriaService = new AuditoriaService();
     }
 
     public Usuario autenticar(String username, String password) {
         try {
             Optional<Usuario> optUsuario = usuarioDAO.buscarPorNombreUsuario(username);
             if (!optUsuario.isPresent()) {
+                auditoriaService.auditarAccesoDenegado(null, username);
                 throw new SecurityException("Usuario o contraseña incorrectos");
             }
             
             Usuario u = optUsuario.get();
             if (!u.isActivo()) {
-                throw new SecurityException("Usuario o contraseña incorrectos"); // Rechaza inactivos con el mismo mensaje
+                auditoriaService.auditarAccesoDenegado(u.getIdUsuario(), username);
+                throw new SecurityException("Usuario o contraseña incorrectos");
             }
             
             boolean match = PasswordHasher.verifyPassword(password, u.getPasswordHash());
             if (!match) {
-                // Posibilidad de fallback a SecurityUtil.hashSHA256 si hay contraseñas viejas, pero por T1.12 lo dejamos limpio
-                if (u.getPasswordHash().length() == 64 && !u.getPasswordHash().contains(":")) {
+                if (u.getPasswordHash() != null && u.getPasswordHash().length() == 64 && !u.getPasswordHash().contains(":")) {
                     String oldHash = org.kinalrh.util.SecurityUtil.hashSHA256(password);
                     if (oldHash.equals(u.getPasswordHash())) {
+                        auditoriaService.auditarLoginOk(u.getIdUsuario());
                         return u;
                     }
                 }
+                auditoriaService.auditarAccesoDenegado(u.getIdUsuario(), username);
                 throw new SecurityException("Usuario o contraseña incorrectos");
             }
             
+            auditoriaService.auditarLoginOk(u.getIdUsuario());
             return u;
             
         } catch (SQLException e) {
