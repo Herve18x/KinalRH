@@ -1,6 +1,8 @@
 package org.kinalrh.service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.regex.Pattern;
 import org.kinalrh.dao.UsuarioDAO;
 import org.kinalrh.dao.impl.UsuarioDAOImpl;
 import org.kinalrh.model.Usuario;
@@ -16,12 +18,18 @@ public class UsuarioService {
         this.autorizacionService = new AutorizacionService();
     }
 
-    // Retorna la lista solo si el usuario actual tiene el permiso USUARIO_GESTIONAR
     public List<Usuario> listarUsuarios(String rolActual) {
         if (!autorizacionService.tienePermiso(rolActual, "USUARIO_GESTIONAR")) {
             throw new SecurityException("No tiene permiso para gestionar usuarios.");
         }
         return usuarioDAO.listarTodos();
+    }
+    
+    public Optional<Usuario> buscarPorId(long id, String rolActual) {
+        if (!autorizacionService.tienePermiso(rolActual, "USUARIO_GESTIONAR")) {
+            throw new SecurityException("No tiene permiso para gestionar usuarios.");
+        }
+        return usuarioDAO.buscarPorId(id);
     }
 
     public void guardarUsuario(Usuario usuario, String rolActual) {
@@ -29,11 +37,24 @@ public class UsuarioService {
             throw new SecurityException("No tiene permiso para crear usuarios.");
         }
         
-        // Encriptar password si viene
-        if (usuario.getPasswordHash() != null && !usuario.getPasswordHash().isEmpty()) {
-            String hash = SecurityUtil.hashSHA256(usuario.getPasswordHash());
-            usuario.setPasswordHash(hash);
+        // Validar nombre_usuario único
+        if (usuarioDAO.buscarPorUsername(usuario.getUsername()) != null) {
+            throw new IllegalArgumentException("El nombre de usuario ya está en uso.");
         }
+        
+        // Validar correo si se informa
+        if (usuario.getCorreo() != null && !usuario.getCorreo().trim().isEmpty()) {
+            if (!Pattern.matches("^[A-Za-z0-9+_.-]+@(.+)$", usuario.getCorreo())) {
+                throw new IllegalArgumentException("El formato del correo es inválido.");
+            }
+        }
+        
+        // Validar y encriptar contraseña inicial (T1.12)
+        if (usuario.getPasswordHash() == null || usuario.getPasswordHash().isEmpty()) {
+            throw new IllegalArgumentException("La contraseña inicial es obligatoria para nuevas cuentas.");
+        }
+        String hash = SecurityUtil.hashSHA256(usuario.getPasswordHash());
+        usuario.setPasswordHash(hash);
         
         usuarioDAO.guardar(usuario);
     }
@@ -43,17 +64,32 @@ public class UsuarioService {
             throw new SecurityException("No tiene permiso para editar usuarios.");
         }
         
+        // Validar correo si se informa
+        if (usuario.getCorreo() != null && !usuario.getCorreo().trim().isEmpty()) {
+            if (!Pattern.matches("^[A-Za-z0-9+_.-]+@(.+)$", usuario.getCorreo())) {
+                throw new IllegalArgumentException("El formato del correo es inválido.");
+            }
+        }
+        
+        // Evitar actualización si el ID no está seteado
+        if (usuario.getIdUsuario() == null || usuario.getIdUsuario() == 0) {
+            throw new IllegalArgumentException("El ID de usuario es requerido para actualizar.");
+        }
+
+        Usuario viejo = usuarioDAO.buscarPorId(usuario.getIdUsuario()).orElse(null);
+        if (viejo == null) {
+            throw new IllegalArgumentException("El usuario a actualizar no existe.");
+        }
+        
         // Solo hashear la contraseña si la cambiaron (no viene vacía y no es el hash viejo)
-        if (usuario.getPasswordHash() != null && !usuario.getPasswordHash().isEmpty()) {
+        if (usuario.getPasswordHash() != null && !usuario.getPasswordHash().isEmpty() && !usuario.getPasswordHash().equals(viejo.getPasswordHash())) {
             String hash = SecurityUtil.hashSHA256(usuario.getPasswordHash());
             usuario.setPasswordHash(hash);
         } else {
             // Mantener el hash anterior si no se modificó la contraseña
-            Usuario viejo = usuarioDAO.buscarPorUsername(usuario.getUsername());
-            if (viejo != null) {
-                usuario.setPasswordHash(viejo.getPasswordHash());
-            }
+            usuario.setPasswordHash(viejo.getPasswordHash());
         }
+        
         usuarioDAO.actualizar(usuario);
     }
 

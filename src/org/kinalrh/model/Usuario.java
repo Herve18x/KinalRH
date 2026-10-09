@@ -7,6 +7,7 @@ import java.util.List;
 public class Usuario {
  
     private Long idUsuario;
+    private String uuidUsuario;
     private String nombreUsuario;
     private String passwordHash;
     private String nombreCompleto;
@@ -45,6 +46,8 @@ public class Usuario {
     }
  
     public Long getIdUsuario() { return idUsuario; }
+    public String getUuidUsuario() { return uuidUsuario; }
+    public void setUuidUsuario(String uuid) { this.uuidUsuario = uuid; }
     public void setIdUsuario(Long idUsuario) { this.idUsuario = idUsuario; }
  
     public String getNombreUsuario() { return nombreUsuario; }
@@ -90,7 +93,7 @@ public class Usuario {
     public String getNombre() { return nombreCompleto; }
     public void setNombre(String nombre) { this.nombreCompleto = nombre; }
 
-    public String getApellido() { return ""; } // El frontend asume que el backend unificó a nombreCompleto
+    public String getApellido() { return ""; } // El frontend asume que el backend unificÃ³ a nombreCompleto
     public void setApellido(String apellido) { 
         if(apellido != null && !apellido.trim().isEmpty()) {
             this.nombreCompleto = (this.nombreCompleto == null ? "" : this.nombreCompleto + " ") + apellido;
