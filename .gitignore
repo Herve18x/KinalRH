@@ -34,3 +34,5 @@ desktop.ini
 .env
 .env.*
 !.env.example
+# Config
+config.properties
