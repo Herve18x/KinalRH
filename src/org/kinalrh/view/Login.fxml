@@ -9,6 +9,8 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 
 <HBox prefHeight="500.0" prefWidth="800.0"
       stylesheets="@styles.css"
@@ -20,15 +22,11 @@
       <!-- ═══════════════ PANEL IZQUIERDO: Branding ════════════════ -->
       <VBox styleClass="left-pane" HBox.hgrow="ALWAYS" prefWidth="400.0">
          <children>
-            <StackPane prefHeight="130.0" prefWidth="130.0">
-               <children>
-                  <Circle radius="60.0" styleClass="logo-circle" />
-                  <Label text="RH" styleClass="logo-text" />
-               </children>
-               <VBox.margin><Insets bottom="30.0" /></VBox.margin>
-            </StackPane>
-            <Label styleClass="title-light" text="fundación" />
-            <Label styleClass="title-bold"  text="Kinal RH" />
+            <ImageView fitHeight="200.0" preserveRatio="true">
+               <image>
+                  <Image url="@../image/logo_kinal.png" />
+               </image>
+            </ImageView>
          </children>
       </VBox>
 

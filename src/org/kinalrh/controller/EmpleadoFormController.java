@@ -96,7 +96,12 @@ public class EmpleadoFormController implements Initializable {
     }
 
     public void setEmpleado(Empleado emp) {
-        this.empleado = emp;
+        if (emp == null) {
+            this.empleado = new Empleado();
+        } else {
+            this.empleado = emp;
+        }
+        
         if (emp != null && emp.getIdEmpleado() != null && emp.getIdEmpleado() > 0) {
             lblTitulo.setText("Editar Empleado");
             txtId.setText(String.valueOf(emp.getIdEmpleado()));
