@@ -16,7 +16,6 @@ public interface UsuarioDAO {
     void cambiarEstado(int id, boolean activo);
     int contarAdministradoresActivos();
     
-    // T2.03
     void activar(long id);
     void desactivar(long id);
     void asignarRol(long idUsuario, long idRol);
