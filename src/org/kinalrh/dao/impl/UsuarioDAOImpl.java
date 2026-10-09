@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import org.kinalrh.dao.UsuarioDAO;
 import org.kinalrh.model.Usuario;
 import org.kinalrh.util.Conexion;
@@ -17,7 +16,7 @@ public class UsuarioDAOImpl implements UsuarioDAO {
     @Override
     public List<Usuario> listarTodos() {
         List<Usuario> usuarios = new ArrayList<>();
-        String sql = "SELECT u.id_usuario, u.uuid_usuario, u.nombre_usuario, u.nombre_completo, u.correo, u.password_hash, u.activo, r.nombre AS rol " +
+        String sql = "SELECT u.id_usuario, u.nombre_usuario, u.nombre_completo, u.correo, u.password_hash, u.activo, r.nombre AS rol " +
                      "FROM usuario u " +
                      "LEFT JOIN usuario_rol ur ON u.id_usuario = ur.id_usuario " +
                      "LEFT JOIN rol r ON ur.id_rol = r.id_rol";
@@ -37,7 +36,7 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 
     @Override
     public Usuario buscarPorUsername(String username) {
-        String sql = "SELECT u.id_usuario, u.uuid_usuario, u.nombre_usuario, u.nombre_completo, u.correo, u.password_hash, u.activo, r.nombre AS rol " +
+        String sql = "SELECT u.id_usuario, u.nombre_usuario, u.nombre_completo, u.correo, u.password_hash, u.activo, r.nombre AS rol " +
                      "FROM usuario u " +
                      "LEFT JOIN usuario_rol ur ON u.id_usuario = ur.id_usuario " +
                      "LEFT JOIN rol r ON ur.id_rol = r.id_rol " +
@@ -60,7 +59,7 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 
     @Override
     public Optional<Usuario> buscarPorId(long id) {
-        String sql = "SELECT u.id_usuario, u.uuid_usuario, u.nombre_usuario, u.nombre_completo, u.correo, u.password_hash, u.activo, r.nombre AS rol " +
+        String sql = "SELECT u.id_usuario, u.nombre_usuario, u.nombre_completo, u.correo, u.password_hash, u.activo, r.nombre AS rol " +
                      "FROM usuario u " +
                      "LEFT JOIN usuario_rol ur ON u.id_usuario = ur.id_usuario " +
                      "LEFT JOIN rol r ON ur.id_rol = r.id_rol " +
@@ -83,27 +82,21 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 
     @Override
     public void guardar(Usuario usuario) {
-        // T2.01: Asignar uuid_usuario solo al crear
-        if (usuario.getUuidUsuario() == null || usuario.getUuidUsuario().isEmpty()) {
-            usuario.setUuidUsuario(UUID.randomUUID().toString());
-        }
-
-        String sql = "INSERT INTO usuario (uuid_usuario, nombre_usuario, password_hash, nombre_completo, correo, activo) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO usuario (nombre_usuario, password_hash, nombre_completo, correo, activo) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = Conexion.getInstancia().conectar();
              PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             conn.setAutoCommit(false);
-            stmt.setString(1, usuario.getUuidUsuario());
-            stmt.setString(2, usuario.getUsername());
-            stmt.setString(3, usuario.getPasswordHash());
+            stmt.setString(1, usuario.getUsername());
+            stmt.setString(2, usuario.getPasswordHash());
             
             String nombreCompleto = usuario.getNombre();
             if (usuario.getApellido() != null && !usuario.getApellido().trim().isEmpty()) {
                 nombreCompleto = (nombreCompleto + " " + usuario.getApellido()).trim();
             }
-            stmt.setString(4, nombreCompleto);
-            stmt.setString(5, usuario.getCorreo());
-            stmt.setInt(6, usuario.isActivo() ? 1 : 0);
+            stmt.setString(3, nombreCompleto);
+            stmt.setString(4, usuario.getCorreo());
+            stmt.setInt(5, usuario.isActivo() ? 1 : 0);
             
             stmt.executeUpdate();
 
@@ -123,7 +116,6 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 
     @Override
     public void actualizar(Usuario usuario) {
-        // T2.01: no incluir UUID en el UPDATE; conservar roles mediante usuario_rol
         String sql = "UPDATE usuario SET nombre_completo = ?, correo = ?, password_hash = ?, activo = ? WHERE id_usuario = ?";
         try (Connection conn = Conexion.getInstancia().conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -140,7 +132,6 @@ public class UsuarioDAOImpl implements UsuarioDAO {
             stmt.setLong(5, usuario.getIdUsuario());
             stmt.executeUpdate();
 
-            // Solo actualizar rol si viene uno nuevo, conservar los que existen si no
             if (usuario.getRol() != null && !usuario.getRol().equals("SIN_ROL")) {
                 String sqlDel = "DELETE FROM usuario_rol WHERE id_usuario = ?";
                 try (PreparedStatement sDel = conn.prepareStatement(sqlDel)) {
@@ -198,7 +189,6 @@ public class UsuarioDAOImpl implements UsuarioDAO {
     private Usuario mapearUsuario(ResultSet rs) throws SQLException {
         Usuario u = new Usuario();
         u.setIdUsuario(rs.getLong("id_usuario"));
-        u.setUuidUsuario(rs.getString("uuid_usuario"));
         u.setUsername(rs.getString("nombre_usuario"));
         u.setCorreo(rs.getString("correo"));
 
@@ -256,6 +246,7 @@ public class UsuarioDAOImpl implements UsuarioDAO {
         }
         return permisos;
     }
+
     @Override
     public void activar(long id) {
         String sql = "UPDATE usuario SET activo = 1 WHERE id_usuario = ?";
