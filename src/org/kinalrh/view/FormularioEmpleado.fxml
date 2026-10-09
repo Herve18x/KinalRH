@@ -19,7 +19,7 @@
          <content>
             <VBox spacing="15.0" style="-fx-padding: 10;">
                <children>
-                  <Label text="Identificación" style="-fx-font-weight: bold; -fx-text-fill: #003366;" />
+                  <Label text="IdentificaciÃ³n" style="-fx-font-weight: bold; -fx-text-fill: #003366;" />
                   <GridPane hgap="10.0" vgap="10.0">
                      <columnConstraints>
                         <javafx.scene.layout.ColumnConstraints minWidth="120.0" />
@@ -29,10 +29,10 @@
                         <Label text="ID Empleado:" GridPane.rowIndex="0" />
                         <TextField fx:id="txtId" editable="false" promptText="Autogenerado" GridPane.columnIndex="1" GridPane.rowIndex="0" />
                         <Label text="DPI (*):" GridPane.rowIndex="1" />
-                        <TextField fx:id="txtDpi" promptText="13 dígitos numéricos" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <TextField fx:id="txtDpi" promptText="13 dÃ­gitos numÃ©ricos" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <Label text="NIT:" GridPane.rowIndex="2" />
                         <TextField fx:id="txtNit" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                        <Label text="Código Emp.:" GridPane.rowIndex="3" />
+                        <Label text="CÃ³digo Emp.:" GridPane.rowIndex="3" />
                         <TextField fx:id="txtCodigo" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                      </children>
                   </GridPane>
@@ -70,7 +70,7 @@
                         <DatePicker fx:id="dpFechaNac" prefWidth="2000" GridPane.columnIndex="1" GridPane.rowIndex="0" />
                         <Label text="Estado Civil:" GridPane.rowIndex="1" />
                         <ComboBox fx:id="cmbEstadoCivil" prefWidth="2000" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <Label text="Tel. Móvil:" GridPane.rowIndex="2" />
+                        <Label text="Tel. MÃ³vil:" GridPane.rowIndex="2" />
                         <TextField fx:id="txtTelefonoMovil" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                         <Label text="Tel. Fijo:" GridPane.rowIndex="3" />
                         <TextField fx:id="txtTelefonoFijo" GridPane.columnIndex="1" GridPane.rowIndex="3" />
@@ -79,14 +79,14 @@
                      </children>
                   </GridPane>
 
-                  <Label text="Dirección" style="-fx-font-weight: bold; -fx-text-fill: #003366;" />
+                  <Label text="DirecciÃ³n" style="-fx-font-weight: bold; -fx-text-fill: #003366;" />
                   <GridPane hgap="10.0" vgap="10.0">
                      <columnConstraints>
                         <javafx.scene.layout.ColumnConstraints minWidth="120.0" />
                         <javafx.scene.layout.ColumnConstraints minWidth="150.0" hgrow="ALWAYS" />
                      </columnConstraints>
                      <children>
-                        <Label text="Dirección:" GridPane.rowIndex="0" />
+                        <Label text="DirecciÃ³n:" GridPane.rowIndex="0" />
                         <TextField fx:id="txtDireccion" GridPane.columnIndex="1" GridPane.rowIndex="0" />
                         <Label text="Zona:" GridPane.rowIndex="1" />
                         <TextField fx:id="txtZona" GridPane.columnIndex="1" GridPane.rowIndex="1" />
@@ -106,12 +106,16 @@
                      <children>
                         <Label text="Fecha Ingreso:" GridPane.rowIndex="0" />
                         <DatePicker fx:id="dpFechaIngreso" prefWidth="2000" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-                        <Label text="Área Principal:" GridPane.rowIndex="1" />
+                        <Label text="Ãrea Principal:" GridPane.rowIndex="1" />
                         <ComboBox fx:id="cmbArea" prefWidth="2000" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <Label text="Puesto Actual:" GridPane.rowIndex="2" />
                         <ComboBox fx:id="cmbPuesto" prefWidth="2000" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                         <Label text="Estado (*):" GridPane.rowIndex="3" />
                         <ComboBox fx:id="cmbEstado" prefWidth="2000" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <Label text="Nivel Académico:" GridPane.rowIndex="4" />
+                        <ComboBox fx:id="cmbNivelAcademico" prefWidth="2000" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                        <Label text="Jefe Inmediato:" GridPane.rowIndex="5" />
+                        <ComboBox fx:id="cmbJefe" prefWidth="2000" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                      </children>
                   </GridPane>
                </children>

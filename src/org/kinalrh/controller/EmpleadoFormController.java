@@ -15,6 +15,9 @@ import javafx.stage.Stage;
 import org.kinalrh.model.Empleado;
 import org.kinalrh.model.Area;
 import org.kinalrh.model.Puesto;
+import org.kinalrh.model.NivelAcademico;
+import org.kinalrh.dao.impl.NivelAcademicoDAOImpl;
+import org.kinalrh.dao.impl.EmpleadoDAOImpl;
 import org.kinalrh.model.EstadoEmpleado;
 import org.kinalrh.dao.impl.AreaDAOImpl;
 import org.kinalrh.dao.impl.PuestoDAOImpl;
@@ -26,7 +29,7 @@ public class EmpleadoFormController implements Initializable {
     @FXML private Label lblTitulo;
     @FXML private Label lblError;
     
-    // IdentificaciÃƒÆ’Ã‚Â³n
+    // IdentificaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n
     @FXML private TextField txtId;
     @FXML private TextField txtDpi;
     @FXML private TextField txtNit;
@@ -47,7 +50,7 @@ public class EmpleadoFormController implements Initializable {
     @FXML private TextField txtTelefonoFijo;
     @FXML private TextField txtCorreo;
     
-    // DirecciÃƒÆ’Ã‚Â³n
+    // DirecciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n
     @FXML private TextField txtDireccion;
     @FXML private TextField txtZona;
     @FXML private TextField txtMunicipio;
@@ -58,6 +61,8 @@ public class EmpleadoFormController implements Initializable {
     @FXML private ComboBox<Area> cmbArea;
     @FXML private ComboBox<Puesto> cmbPuesto;
     @FXML private ComboBox<EstadoEmpleado> cmbEstado;
+    @FXML private ComboBox<NivelAcademico> cmbNivelAcademico;
+    @FXML private ComboBox<Empleado> cmbJefe;
     
     private Empleado empleado;
     private Stage stage;
@@ -66,6 +71,8 @@ public class EmpleadoFormController implements Initializable {
     private AreaDAOImpl areaDAO = new AreaDAOImpl();
     private PuestoDAOImpl puestoDAO = new PuestoDAOImpl();
     private EstadoEmpleadoDAOImpl estadoDAO = new EstadoEmpleadoDAOImpl();
+    private NivelAcademicoDAOImpl nivelAcademicoDAO = new NivelAcademicoDAOImpl();
+    private EmpleadoDAOImpl empleadoDAO = new EmpleadoDAOImpl();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -77,6 +84,10 @@ public class EmpleadoFormController implements Initializable {
         cmbArea.getItems().setAll(areaDAO.listarActivas());
         cmbPuesto.getItems().setAll(puestoDAO.listarActivos());
         cmbEstado.getItems().setAll(estadoDAO.listarTodos());
+        try {
+            cmbNivelAcademico.getItems().setAll(nivelAcademicoDAO.listarTodos());
+            cmbJefe.getItems().setAll(empleadoDAO.listarTodos());
+        } catch (Exception ex) { ex.printStackTrace(); }
         cmbEstadoCivil.getItems().addAll("Soltero(a)", "Casado(a)", "Divorciado(a)", "Viudo(a)", "Unido(a)");
     }
 
@@ -116,6 +127,8 @@ public class EmpleadoFormController implements Initializable {
             seleccionarArea(emp.getIdAreaPrincipal());
             seleccionarPuesto(emp.getIdPuestoActual());
             seleccionarEstado(emp.getIdEstadoEmpleado());
+            seleccionarNivelAcademico(emp.getIdNivelAcademico());
+            seleccionarJefe(emp.getIdJefeInmediato());
         } else {
             lblTitulo.setText("Nuevo Empleado");
             this.empleado = new Empleado();
@@ -142,6 +155,24 @@ public class EmpleadoFormController implements Initializable {
         }
     }
     
+    private void seleccionarNivelAcademico(Long id) {
+        if(id == null) return;
+        for(NivelAcademico n : cmbNivelAcademico.getItems()) {
+            if(n.getIdNivelAcademico().equals(id)) {
+                cmbNivelAcademico.getSelectionModel().select(n);
+                break;
+            }
+        }
+    }
+    private void seleccionarJefe(Long id) {
+        if(id == null) return;
+        for(Empleado e : cmbJefe.getItems()) {
+            if(e.getIdEmpleado().equals(id)) {
+                cmbJefe.getSelectionModel().select(e);
+                break;
+            }
+        }
+    }
     private void seleccionarEstado(Long id) {
         if(id == null) return;
         for(EstadoEmpleado e : cmbEstado.getItems()) {
@@ -185,6 +216,8 @@ public class EmpleadoFormController implements Initializable {
         empleado.setIdAreaPrincipal(cmbArea.getValue() != null ? cmbArea.getValue().getIdArea() : null);
         empleado.setIdPuestoActual(cmbPuesto.getValue() != null ? cmbPuesto.getValue().getIdPuesto() : null);
         empleado.setIdEstadoEmpleado(cmbEstado.getValue().getIdEstadoEmpleado());
+        empleado.setIdNivelAcademico(cmbNivelAcademico.getValue() != null ? cmbNivelAcademico.getValue().getIdNivelAcademico() : null);
+        empleado.setIdJefeInmediato(cmbJefe.getValue() != null ? cmbJefe.getValue().getIdEmpleado() : null);
 
         empleadoService.guardarEmpleado(empleado, org.kinalrh.service.SesionService.getInstance().getUsuarioAutenticado() != null ? org.kinalrh.service.SesionService.getInstance().getUsuarioAutenticado().getRol() : "");
         if (stage != null) {
@@ -205,16 +238,16 @@ public class EmpleadoFormController implements Initializable {
             return false;
         }
 
-        // 2. ValidaciÃƒÆ’Ã‚Â³n de formato de DPI (13 dÃƒÆ’Ã‚Â­gitos)
+        // 2. ValidaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de formato de DPI (13 dÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­gitos)
         if (!Pattern.matches("^\\d{13}$", dpi)) {
-            lblError.setText("Error: El DPI debe contener exactamente 13 dÃƒÆ’Ã‚Â­gitos numÃƒÆ’Ã‚Â©ricos.");
+            lblError.setText("Error: El DPI debe contener exactamente 13 dÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­gitos numÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©ricos.");
             lblError.setVisible(true);
             return false;
         }
 
-        // 3. ValidaciÃƒÆ’Ã‚Â³n de formato de correo (bÃƒÆ’Ã‚Â¡sico)
+        // 3. ValidaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de formato de correo (bÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡sico)
         if (!correo.isEmpty() && !Pattern.matches("^[A-Za-z0-9+_.-]+@(.+)$", correo)) {
-            lblError.setText("Error: El formato del correo personal no es vÃƒÆ’Ã‚Â¡lido.");
+            lblError.setText("Error: El formato del correo personal no es vÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡lido.");
             lblError.setVisible(true);
             return false;
         }

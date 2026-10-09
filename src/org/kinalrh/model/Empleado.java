@@ -145,4 +145,9 @@ public class Empleado {
     public void setArea(String area) { this.area = area; }
     public String getPuesto() { return puesto; }
     public void setPuesto(String puesto) { this.puesto = puesto; }
+
+    @Override
+    public String toString() {
+        return (primerNombre != null ? primerNombre : "") + " " + (primerApellido != null ? primerApellido : "");
+    }
 }

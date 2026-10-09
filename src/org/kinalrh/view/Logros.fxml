@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="600.0" prefWidth="800.0" stylesheets="@../style/estilos.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.kinalrh.controller.LogroController">
+   <top>
+      <VBox spacing="10.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label styleClass="titulo-ventana" text="Gestión de Logros" />
+            <HBox spacing="10.0">
+               <children>
+                  <Button fx:id="btnNuevo" mnemonicParsing="false" onAction="#eventoNuevo" styleClass="btn-nuevo" text="Nuevo Logro" />
+                  <Button fx:id="btnEditar" mnemonicParsing="false" onAction="#eventoEditar" styleClass="btn-editar" text="Editar Seleccionado" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin>
+            </HBox>
+         </children>
+         <BorderPane.margin>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+         </BorderPane.margin>
+      </VBox>
+   </top>
+   <center>
+      <TableView fx:id="tablaLogros" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <columns>
+          <TableColumn fx:id="colNombre" prefWidth="200.0" text="Nombre" />
+          <TableColumn fx:id="colInstitucion" prefWidth="200.0" text="Institución" />
+          <TableColumn fx:id="colOrigen" prefWidth="100.0" text="Origen" />
+          <TableColumn fx:id="colFecha" prefWidth="150.0" text="Fecha Obtención" />
+        </columns>
+         <BorderPane.margin>
+            <Insets bottom="20.0" left="20.0" right="20.0" />
+         </BorderPane.margin>
+      </TableView>
+   </center>
+   <bottom>
+       <!-- Simple form area -->
+       <VBox fx:id="formPane" visible="false" managed="false" spacing="10">
+           <Label text="Formulario de Logro" styleClass="subtitulo" />
+           <HBox spacing="10">
+               <Label text="Nombre:" />
+               <TextField fx:id="txtNombre" />
+               <Label text="Institución:" />
+               <TextField fx:id="txtInstitucion" />
+               <Button text="Guardar" onAction="#eventoGuardar" styleClass="btn-guardar" />
+               <Button text="Cancelar" onAction="#eventoCancelar" />
+           </HBox>
+       </VBox>
+   </bottom>
+</BorderPane>
