@@ -11,7 +11,7 @@ public class AutorizacionService {
             return "ADMIN".equals(upperRol);
         }
         
-        if ("RRHH".equals(upperRol)) {
+        if ("RRHH".equals(upperRol) || "ENCARGADO".equals(upperRol)) {
             // Recursos humanos puede ver empleados y gestionar usuarios (T2.02)
             if ("EMPLEADO_VER".equals(permiso) || "USUARIO_GESTIONAR".equals(permiso)) {
                 return true;

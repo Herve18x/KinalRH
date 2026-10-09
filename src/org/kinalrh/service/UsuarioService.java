@@ -2,7 +2,7 @@ package org.kinalrh.service;
 
 import java.util.List;
 import org.kinalrh.dao.UsuarioDAO;
-import org.kinalrh.dao.Impl.UsuarioDAOImpl;
+import org.kinalrh.dao.impl.UsuarioDAOImpl;
 import org.kinalrh.model.Usuario;
 import org.kinalrh.util.SecurityUtil;
 
@@ -28,10 +28,13 @@ public class UsuarioService {
         if (!autorizacionService.tienePermiso(rolActual, "USUARIO_GESTIONAR")) {
             throw new SecurityException("No tiene permiso para crear usuarios.");
         }
+        
         // Encriptar password si viene
         if (usuario.getPasswordHash() != null && !usuario.getPasswordHash().isEmpty()) {
-            
+            String hash = SecurityUtil.hashSHA256(usuario.getPasswordHash());
+            usuario.setPasswordHash(hash);
         }
+        
         usuarioDAO.guardar(usuario);
     }
 
@@ -39,11 +42,13 @@ public class UsuarioService {
         if (!autorizacionService.tienePermiso(rolActual, "USUARIO_GESTIONAR")) {
             throw new SecurityException("No tiene permiso para editar usuarios.");
         }
-        // Solo hashear la contraseÃ±a si la cambiaron (no viene vacÃ­a y no es el hash viejo)
+        
+        // Solo hashear la contraseña si la cambiaron (no viene vacía y no es el hash viejo)
         if (usuario.getPasswordHash() != null && !usuario.getPasswordHash().isEmpty()) {
-            
+            String hash = SecurityUtil.hashSHA256(usuario.getPasswordHash());
+            usuario.setPasswordHash(hash);
         } else {
-            // Mantener el hash anterior
+            // Mantener el hash anterior si no se modificó la contraseña
             Usuario viejo = usuarioDAO.buscarPorUsername(usuario.getUsername());
             if (viejo != null) {
                 usuario.setPasswordHash(viejo.getPasswordHash());

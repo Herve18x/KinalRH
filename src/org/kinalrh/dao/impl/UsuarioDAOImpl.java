@@ -1,4 +1,4 @@
-package org.kinalrh.dao.Impl;
+package org.kinalrh.dao.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,11 +19,11 @@ public class UsuarioDAOImpl implements UsuarioDAO {
                      "FROM usuario u " +
                      "LEFT JOIN usuario_rol ur ON u.id_usuario = ur.id_usuario " +
                      "LEFT JOIN rol r ON ur.id_rol = r.id_rol";
-                     
+
         try (Connection conn = Conexion.getInstancia().conectar();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
-             
+
             while (rs.next()) {
                 usuarios.add(mapearUsuario(rs));
             }
@@ -40,10 +40,10 @@ public class UsuarioDAOImpl implements UsuarioDAO {
                      "LEFT JOIN usuario_rol ur ON u.id_usuario = ur.id_usuario " +
                      "LEFT JOIN rol r ON ur.id_rol = r.id_rol " +
                      "WHERE u.nombre_usuario = ?";
-                     
+
         try (Connection conn = Conexion.getInstancia().conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-             
+
             stmt.setString(1, username);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -61,14 +61,18 @@ public class UsuarioDAOImpl implements UsuarioDAO {
         String sql = "INSERT INTO usuario (nombre_usuario, password_hash, nombre_completo, activo) VALUES (?, ?, ?, ?)";
         try (Connection conn = Conexion.getInstancia().conectar();
              PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
-             
+
             conn.setAutoCommit(false); // Transacción
             stmt.setString(1, usuario.getUsername());
             stmt.setString(2, usuario.getPasswordHash());
-            stmt.setString(3, usuario.getNombre()); 
+            String nombreCompleto = usuario.getNombre();
+            if (usuario.getApellido() != null && !usuario.getApellido().trim().isEmpty()) {
+                nombreCompleto = (nombreCompleto + " " + usuario.getApellido()).trim();
+            }
+            stmt.setString(3, nombreCompleto);
             stmt.setInt(4, usuario.isActivo() ? 1 : 0);
             stmt.executeUpdate();
-            
+
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 if (rs.next()) {
                     int idInsertado = rs.getInt(1);
@@ -86,14 +90,18 @@ public class UsuarioDAOImpl implements UsuarioDAO {
         String sql = "UPDATE usuario SET nombre_completo = ?, password_hash = ?, activo = ? WHERE id_usuario = ?";
         try (Connection conn = Conexion.getInstancia().conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-             
+
             conn.setAutoCommit(false);
-            stmt.setString(1, usuario.getNombre());
+            String nombreCompleto = usuario.getNombre();
+            if (usuario.getApellido() != null && !usuario.getApellido().trim().isEmpty()) {
+                nombreCompleto = (nombreCompleto + " " + usuario.getApellido()).trim();
+            }
+            stmt.setString(1, nombreCompleto);
             stmt.setString(2, usuario.getPasswordHash());
             stmt.setInt(3, usuario.isActivo() ? 1 : 0);
             stmt.setInt(4, usuario.getId());
             stmt.executeUpdate();
-            
+
             // Borrar rol actual y asignar el nuevo
             String sqlDel = "DELETE FROM usuario_rol WHERE id_usuario = ?";
             try (PreparedStatement sDel = conn.prepareStatement(sqlDel)) {
@@ -101,13 +109,13 @@ public class UsuarioDAOImpl implements UsuarioDAO {
                 sDel.executeUpdate();
             }
             asignarRolBD(conn, usuario.getId(), usuario.getRol());
-            
+
             conn.commit();
         } catch (SQLException e) {
             System.err.println("Error al actualizar usuario: " + e.getMessage());
         }
     }
-    
+
     private void asignarRolBD(Connection conn, int idUsuario, String rol) throws SQLException {
         if (rol == null || rol.isEmpty()) return;
         String sql = "INSERT INTO usuario_rol (id_usuario, id_rol) VALUES (?, (SELECT id_rol FROM rol WHERE nombre = ? LIMIT 1))";
@@ -123,33 +131,53 @@ public class UsuarioDAOImpl implements UsuarioDAO {
         String sql = "UPDATE usuario SET activo = ? WHERE id_usuario = ?";
         try (Connection conn = Conexion.getInstancia().conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-             
+
             stmt.setInt(1, activo ? 1 : 0);
             stmt.setInt(2, id);
             stmt.executeUpdate();
-            
+
         } catch (SQLException e) {
             System.err.println("Error al cambiar estado: " + e.getMessage());
         }
     }
-    
+
+    @Override
+    public boolean autenticar(String nombreUsuario, String passwordHash) {
+        String sql = "SELECT id_usuario, nombre_usuario, password_hash, activo "
+                   + "FROM usuario WHERE nombre_usuario = ? AND password_hash = ? AND activo = TRUE";
+
+        try (Connection conn = Conexion.getInstancia().conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, nombreUsuario);
+            stmt.setString(2, passwordHash);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al autenticar usuario: " + e.getMessage());
+            return false;
+        }
+    }
+
     private Usuario mapearUsuario(ResultSet rs) throws SQLException {
         Usuario u = new Usuario();
         u.setId(rs.getInt("id_usuario"));
         u.setUsername(rs.getString("nombre_usuario"));
-        
+
         String nombreCompleto = rs.getString("nombre_completo");
         if (nombreCompleto != null) {
             u.setNombre(nombreCompleto);
             u.setApellido(""); // El backend unificó a nombre_completo
         }
-        
+
         u.setPasswordHash(rs.getString("password_hash"));
         u.setActivo(rs.getInt("activo") == 1);
-        
+
         String rol = rs.getString("rol");
         u.setRol(rol != null ? rol.toUpperCase() : "SIN_ROL");
-        
+
         return u;
     }
 }

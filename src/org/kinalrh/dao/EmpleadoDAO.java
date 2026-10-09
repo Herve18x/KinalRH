@@ -1,13 +1,11 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package org.kinalrh.dao;
-
-/**
- *
- * @author informatica
- */
-public class EmpleadoDAO {
-    
+ 
+import java.sql.SQLException;
+import java.util.Optional;
+import org.kinalrh.model.Empleado;
+ 
+public interface EmpleadoDAO {
+    Optional<Empleado> buscarPorId(long idEmpleado) throws SQLException;
+    long insertar(Empleado empleado) throws SQLException;
+    boolean actualizar(Empleado empleado) throws SQLException;
 }
