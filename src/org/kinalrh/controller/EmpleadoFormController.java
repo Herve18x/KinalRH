@@ -26,7 +26,7 @@ public class EmpleadoFormController implements Initializable {
     @FXML private Label lblTitulo;
     @FXML private Label lblError;
     
-    // IdentificaciÃ³n
+    // IdentificaciÃƒÂ³n
     @FXML private TextField txtId;
     @FXML private TextField txtDpi;
     @FXML private TextField txtNit;
@@ -47,7 +47,7 @@ public class EmpleadoFormController implements Initializable {
     @FXML private TextField txtTelefonoFijo;
     @FXML private TextField txtCorreo;
     
-    // DirecciÃ³n
+    // DirecciÃƒÂ³n
     @FXML private TextField txtDireccion;
     @FXML private TextField txtZona;
     @FXML private TextField txtMunicipio;
@@ -186,7 +186,7 @@ public class EmpleadoFormController implements Initializable {
         empleado.setIdPuestoActual(cmbPuesto.getValue() != null ? cmbPuesto.getValue().getIdPuesto() : null);
         empleado.setIdEstadoEmpleado(cmbEstado.getValue().getIdEstadoEmpleado());
 
-        empleadoService.guardarEmpleado(empleado);
+        empleadoService.guardarEmpleado(empleado, "ADMIN");
         if (stage != null) {
             stage.close();
         }
@@ -205,16 +205,16 @@ public class EmpleadoFormController implements Initializable {
             return false;
         }
 
-        // 2. ValidaciÃ³n de formato de DPI (13 dÃ­gitos)
+        // 2. ValidaciÃƒÂ³n de formato de DPI (13 dÃƒÂ­gitos)
         if (!Pattern.matches("^\\d{13}$", dpi)) {
-            lblError.setText("Error: El DPI debe contener exactamente 13 dÃ­gitos numÃ©ricos.");
+            lblError.setText("Error: El DPI debe contener exactamente 13 dÃƒÂ­gitos numÃƒÂ©ricos.");
             lblError.setVisible(true);
             return false;
         }
 
-        // 3. ValidaciÃ³n de formato de correo (bÃ¡sico)
+        // 3. ValidaciÃƒÂ³n de formato de correo (bÃƒÂ¡sico)
         if (!correo.isEmpty() && !Pattern.matches("^[A-Za-z0-9+_.-]+@(.+)$", correo)) {
-            lblError.setText("Error: El formato del correo personal no es vÃ¡lido.");
+            lblError.setText("Error: El formato del correo personal no es vÃƒÂ¡lido.");
             lblError.setVisible(true);
             return false;
         }
