@@ -173,4 +173,73 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
         
         return e;
     }
+    @Override
+    public boolean existeDpi(String dpi, Long idExcluido) {
+        String sql = "SELECT 1 FROM empleado WHERE dpi = ?";
+        if (idExcluido != null) sql += " AND id_empleado != ?";
+        try (Connection conn = Conexion.getInstancia().conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, dpi);
+            if (idExcluido != null) stmt.setLong(2, idExcluido);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al validar DPI: " + e.getMessage());
+        }
+        return false;
+    }
+
+    @Override
+    public boolean existeNit(String nit, Long idExcluido) {
+        String sql = "SELECT 1 FROM empleado WHERE nit = ?";
+        if (idExcluido != null) sql += " AND id_empleado != ?";
+        try (Connection conn = Conexion.getInstancia().conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, nit);
+            if (idExcluido != null) stmt.setLong(2, idExcluido);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al validar NIT: " + e.getMessage());
+        }
+        return false;
+    }
+
+    @Override
+    public boolean existeCorreoPersonal(String correo, Long idExcluido) {
+        String sql = "SELECT 1 FROM empleado WHERE correo_personal = ?";
+        if (idExcluido != null) sql += " AND id_empleado != ?";
+        try (Connection conn = Conexion.getInstancia().conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, correo);
+            if (idExcluido != null) stmt.setLong(2, idExcluido);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al validar correo: " + e.getMessage());
+        }
+        return false;
+    }
+
+    @Override
+    public boolean existeReferencia(String tabla, String pkColumna, Long id) {
+        // Evitamos inyección validando nombres de tabla permitidos
+        if (!tabla.equals("area") && !tabla.equals("puesto") && !tabla.equals("estado_empleado") && !tabla.equals("nivel_academico")) {
+            return false;
+        }
+        String sql = "SELECT 1 FROM " + tabla + " WHERE " + pkColumna + " = ?";
+        try (Connection conn = Conexion.getInstancia().conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al validar referencia " + tabla + ": " + e.getMessage());
+        }
+        return false;
+    }
 }

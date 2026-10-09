@@ -53,12 +53,36 @@ public class EmpleadoService {
         if (rolActual == null || rolActual.trim().isEmpty()) {
             throw new SecurityException("Acceso denegado: Sesión no válida.");
         }
-        // Asumiendo que el permiso es el mismo o requiere otro superior
         if (!autorizacionService.tienePermiso(rolActual, "EMPLEADO_EDITAR") && !rolActual.equalsIgnoreCase("ADMIN") && !rolActual.equalsIgnoreCase("RRHH")) {
             throw new SecurityException("Acceso denegado: Su cuenta no tiene permiso para modificar empleados.");
         }
+        
+        Long idExcluido = (emp.getIdEmpleado() != null && emp.getIdEmpleado() > 0) ? emp.getIdEmpleado() : null;
+        
+        // T2.09 Validar duplicados (US-44)
+        if (emp.getDpi() != null && empleadoDAO.existeDpi(emp.getDpi(), idExcluido)) {
+            throw new IllegalArgumentException("Error: Ya existe un empleado registrado con el DPI " + emp.getDpi());
+        }
+        if (emp.getNit() != null && !emp.getNit().trim().isEmpty() && empleadoDAO.existeNit(emp.getNit(), idExcluido)) {
+            throw new IllegalArgumentException("Error: Ya existe un empleado registrado con el NIT " + emp.getNit());
+        }
+        if (emp.getCorreoPersonal() != null && !emp.getCorreoPersonal().trim().isEmpty() && empleadoDAO.existeCorreoPersonal(emp.getCorreoPersonal(), idExcluido)) {
+            throw new IllegalArgumentException("Error: Ya existe un empleado con el correo personal " + emp.getCorreoPersonal());
+        }
+        
+        // T2.09 Validar referencias existentes
+        if (emp.getIdAreaPrincipal() != null && !empleadoDAO.existeReferencia("area", "id_area", emp.getIdAreaPrincipal())) {
+            throw new IllegalArgumentException("Error: El área seleccionada no existe en la base de datos.");
+        }
+        if (emp.getIdPuestoActual() != null && !empleadoDAO.existeReferencia("puesto", "id_puesto", emp.getIdPuestoActual())) {
+            throw new IllegalArgumentException("Error: El puesto seleccionado no existe en la base de datos.");
+        }
+        if (emp.getIdEstadoEmpleado() != null && !empleadoDAO.existeReferencia("estado_empleado", "id_estado_empleado", emp.getIdEstadoEmpleado())) {
+            throw new IllegalArgumentException("Error: El estado laboral seleccionado no existe.");
+        }
+        
         try {
-            if (emp.getIdEmpleado() == null || emp.getIdEmpleado() == 0) {
+            if (idExcluido == null) {
                 long id = empleadoDAO.insertar(emp);
                 emp.setIdEmpleado(id);
             } else {
@@ -66,6 +90,7 @@ public class EmpleadoService {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new RuntimeException("Error al guardar en base de datos: " + e.getMessage());
         }
     }
 }
