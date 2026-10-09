@@ -2,44 +2,123 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="15.0" style="-fx-padding: 20; -fx-background-color: white;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.kinalrh.controller.EmpleadoFormController">
+<VBox spacing="10.0" style="-fx-padding: 20; -fx-background-color: white;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.kinalrh.controller.EmpleadoFormController" prefWidth="600" prefHeight="700">
    <children>
-      <Label fx:id="lblTitulo" style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Ficha de Empleado" />
-      <Label fx:id="lblError" textFill="RED" visible="false" />
-      <GridPane hgap="10.0" vgap="10.0">
-         <columnConstraints>
-            <javafx.scene.layout.ColumnConstraints minWidth="100.0" />
-            <javafx.scene.layout.ColumnConstraints minWidth="200.0" hgrow="ALWAYS" />
-         </columnConstraints>
-         <children>
-            <Label text="ID:" GridPane.rowIndex="0" />
-            <TextField fx:id="txtId" editable="false" promptText="Autogenerado" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-            
-            <Label text="DPI:" GridPane.rowIndex="1" />
-            <TextField fx:id="txtDpi" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            
-            <Label text="Primer Nombre:" GridPane.rowIndex="2" />
-            <TextField fx:id="txtPrimerNombre" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            
-            <Label text="Primer Apellido:" GridPane.rowIndex="3" />
-            <TextField fx:id="txtPrimerApellido" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            
-            <Label text="Área:" GridPane.rowIndex="4" />
-            <ComboBox fx:id="cmbArea" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-            
-            <Label text="Puesto:" GridPane.rowIndex="5" />
-            <ComboBox fx:id="cmbPuesto" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-            
-            <Label text="Estado:" GridPane.rowIndex="6" />
-            <ComboBox fx:id="cmbEstado" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-         </children>
-      </GridPane>
+      <Label fx:id="lblTitulo" style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Ficha Completa de Empleado" />
+      <Label fx:id="lblError" textFill="RED" visible="false" wrapText="true" />
+      
+      <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
+         <content>
+            <VBox spacing="15.0" style="-fx-padding: 10;">
+               <children>
+                  <Label text="Identificación" style="-fx-font-weight: bold; -fx-text-fill: #003366;" />
+                  <GridPane hgap="10.0" vgap="10.0">
+                     <columnConstraints>
+                        <javafx.scene.layout.ColumnConstraints minWidth="120.0" />
+                        <javafx.scene.layout.ColumnConstraints minWidth="150.0" hgrow="ALWAYS" />
+                     </columnConstraints>
+                     <children>
+                        <Label text="ID Empleado:" GridPane.rowIndex="0" />
+                        <TextField fx:id="txtId" editable="false" promptText="Autogenerado" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                        <Label text="DPI (*):" GridPane.rowIndex="1" />
+                        <TextField fx:id="txtDpi" promptText="13 dígitos numéricos" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label text="NIT:" GridPane.rowIndex="2" />
+                        <TextField fx:id="txtNit" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Label text="Código Emp.:" GridPane.rowIndex="3" />
+                        <TextField fx:id="txtCodigo" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                     </children>
+                  </GridPane>
+
+                  <Label text="Nombres y Apellidos" style="-fx-font-weight: bold; -fx-text-fill: #003366;" />
+                  <GridPane hgap="10.0" vgap="10.0">
+                     <columnConstraints>
+                        <javafx.scene.layout.ColumnConstraints minWidth="120.0" />
+                        <javafx.scene.layout.ColumnConstraints minWidth="150.0" hgrow="ALWAYS" />
+                     </columnConstraints>
+                     <children>
+                        <Label text="Primer Nombre (*):" GridPane.rowIndex="0" />
+                        <TextField fx:id="txtPrimerNombre" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                        <Label text="Segundo Nombre:" GridPane.rowIndex="1" />
+                        <TextField fx:id="txtSegundoNombre" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label text="Tercer Nombre:" GridPane.rowIndex="2" />
+                        <TextField fx:id="txtTercerNombre" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Label text="Primer Apellido (*):" GridPane.rowIndex="3" />
+                        <TextField fx:id="txtPrimerApellido" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <Label text="Segundo Apellido:" GridPane.rowIndex="4" />
+                        <TextField fx:id="txtSegundoApellido" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                        <Label text="Apellido Casada:" GridPane.rowIndex="5" />
+                        <TextField fx:id="txtApellidoCasada" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                     </children>
+                  </GridPane>
+
+                  <Label text="Datos Personales y Contacto" style="-fx-font-weight: bold; -fx-text-fill: #003366;" />
+                  <GridPane hgap="10.0" vgap="10.0">
+                     <columnConstraints>
+                        <javafx.scene.layout.ColumnConstraints minWidth="120.0" />
+                        <javafx.scene.layout.ColumnConstraints minWidth="150.0" hgrow="ALWAYS" />
+                     </columnConstraints>
+                     <children>
+                        <Label text="Fecha Nac.:" GridPane.rowIndex="0" />
+                        <DatePicker fx:id="dpFechaNac" prefWidth="2000" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                        <Label text="Estado Civil:" GridPane.rowIndex="1" />
+                        <ComboBox fx:id="cmbEstadoCivil" prefWidth="2000" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label text="Tel. Móvil:" GridPane.rowIndex="2" />
+                        <TextField fx:id="txtTelefonoMovil" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Label text="Tel. Fijo:" GridPane.rowIndex="3" />
+                        <TextField fx:id="txtTelefonoFijo" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <Label text="Correo Personal:" GridPane.rowIndex="4" />
+                        <TextField fx:id="txtCorreo" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                     </children>
+                  </GridPane>
+
+                  <Label text="Dirección" style="-fx-font-weight: bold; -fx-text-fill: #003366;" />
+                  <GridPane hgap="10.0" vgap="10.0">
+                     <columnConstraints>
+                        <javafx.scene.layout.ColumnConstraints minWidth="120.0" />
+                        <javafx.scene.layout.ColumnConstraints minWidth="150.0" hgrow="ALWAYS" />
+                     </columnConstraints>
+                     <children>
+                        <Label text="Dirección:" GridPane.rowIndex="0" />
+                        <TextField fx:id="txtDireccion" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                        <Label text="Zona:" GridPane.rowIndex="1" />
+                        <TextField fx:id="txtZona" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label text="Municipio:" GridPane.rowIndex="2" />
+                        <TextField fx:id="txtMunicipio" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Label text="Departamento:" GridPane.rowIndex="3" />
+                        <TextField fx:id="txtDepartamento" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                     </children>
+                  </GridPane>
+
+                  <Label text="Datos Institucionales" style="-fx-font-weight: bold; -fx-text-fill: #003366;" />
+                  <GridPane hgap="10.0" vgap="10.0">
+                     <columnConstraints>
+                        <javafx.scene.layout.ColumnConstraints minWidth="120.0" />
+                        <javafx.scene.layout.ColumnConstraints minWidth="150.0" hgrow="ALWAYS" />
+                     </columnConstraints>
+                     <children>
+                        <Label text="Fecha Ingreso:" GridPane.rowIndex="0" />
+                        <DatePicker fx:id="dpFechaIngreso" prefWidth="2000" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                        <Label text="Área Principal:" GridPane.rowIndex="1" />
+                        <ComboBox fx:id="cmbArea" prefWidth="2000" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label text="Puesto Actual:" GridPane.rowIndex="2" />
+                        <ComboBox fx:id="cmbPuesto" prefWidth="2000" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Label text="Estado (*):" GridPane.rowIndex="3" />
+                        <ComboBox fx:id="cmbEstado" prefWidth="2000" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                     </children>
+                  </GridPane>
+               </children>
+            </VBox>
+         </content>
+      </ScrollPane>
+      
       <HBox alignment="CENTER_RIGHT" spacing="10.0">
          <children>
             <Button fx:id="btnCancelar" mnemonicParsing="false" onAction="#eventoCancelar" text="Cancelar" />
