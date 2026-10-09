@@ -48,4 +48,9 @@ public class EstadoEmpleado {
 
     public Timestamp getActualizadoEn() { return actualizadoEn; }
     public void setActualizadoEn(Timestamp actualizadoEn) { this.actualizadoEn = actualizadoEn; }
+
+    @Override
+    public String toString() {
+        return nombre == null ? "" : nombre;
+    }
 }

@@ -1,25 +1,21 @@
 package org.kinalrh.service;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import org.kinalrh.dao.EmpleadoDAO;
+import org.kinalrh.dao.impl.EmpleadoDAOImpl;
 import org.kinalrh.model.Empleado;
 
 public class EmpleadoService {
 
     private AutorizacionService autorizacionService;
-    
-    // MOCK en memoria temporal para que funcione sin Base de Datos
-    private static List<Empleado> mockList = new ArrayList<>();
-    private static int nextId = 4;
-    
-    static {
-        mockList.add(new Empleado(1, "Ana Gomez", "Activo", "IT", "Analista"));
-        mockList.add(new Empleado(2, "Carlos Ruiz", "Activo", "RRHH", "Reclutador"));
-        mockList.add(new Empleado(3, "Daniel Perez", "Inactivo", "Ventas", "Vendedor"));
-    }
+    private EmpleadoDAO empleadoDAO;
 
     public EmpleadoService() {
         this.autorizacionService = new AutorizacionService();
+        this.empleadoDAO = new EmpleadoDAOImpl();
     }
 
     public List<Empleado> listarEmpleados(String rolActual) {
@@ -28,28 +24,34 @@ public class EmpleadoService {
                  System.out.println("Alerta: Sin permisos estrictos para ver empleados");
             }
         }
-        return new ArrayList<>(mockList);
+        try {
+            return empleadoDAO.listarTodos();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
     
-    public Empleado buscarPorId(int idEmpleado) {
-        for(Empleado e : mockList) {
-            if(e.getIdEmpleado() == idEmpleado) return e;
+    public Empleado buscarPorId(long idEmpleado) {
+        try {
+            Optional<Empleado> opt = empleadoDAO.buscarPorId(idEmpleado);
+            return opt.orElse(null);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
         }
-        return null;
     }
     
     public void guardarEmpleado(Empleado emp) {
-        if(emp.getIdEmpleado() == 0) {
-            emp.setIdEmpleado(nextId++);
-            mockList.add(emp);
-        } else {
-            Empleado existente = buscarPorId(emp.getIdEmpleado());
-            if(existente != null) {
-                existente.setNombre(emp.getNombre());
-                existente.setArea(emp.getArea());
-                existente.setPuesto(emp.getPuesto());
-                existente.setEstado(emp.getEstado());
+        try {
+            if (emp.getIdEmpleado() == null || emp.getIdEmpleado() == 0) {
+                long id = empleadoDAO.insertar(emp);
+                emp.setIdEmpleado(id);
+            } else {
+                empleadoDAO.actualizar(emp);
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }

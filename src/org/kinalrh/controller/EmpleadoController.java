@@ -17,7 +17,7 @@ import org.kinalrh.service.EmpleadoService;
 public class EmpleadoController implements Initializable {
 
     @FXML private TableView<Empleado> tablaEmpleados;
-    @FXML private TableColumn<Empleado, Integer> colId;
+    @FXML private TableColumn<Empleado, Long> colId;
     @FXML private TableColumn<Empleado, String> colNombre;
     @FXML private TableColumn<Empleado, String> colEstado;
     @FXML private TableColumn<Empleado, String> colArea;
@@ -27,7 +27,7 @@ public class EmpleadoController implements Initializable {
     @FXML private Button btnRefrescar;
 
     private EmpleadoService empleadoService;
-    private int idSeleccionadoGuardado = -1;
+    private Long idSeleccionadoGuardado = null;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -55,9 +55,9 @@ public class EmpleadoController implements Initializable {
         tablaEmpleados.getItems().setAll(empleados);
 
         // Restaurar seleccion
-        if (idSeleccionadoGuardado != -1) {
+        if (idSeleccionadoGuardado != null) {
             for (Empleado e : tablaEmpleados.getItems()) {
-                if (e.getIdEmpleado() == idSeleccionadoGuardado) {
+                if (e.getIdEmpleado().equals(idSeleccionadoGuardado)) {
                     tablaEmpleados.getSelectionModel().select(e);
                     break;
                 }
@@ -72,7 +72,7 @@ public class EmpleadoController implements Initializable {
 
     @FXML
     public void eventoNuevo(ActionEvent event) {
-        abrirFichaEmpleado(0);
+        abrirFichaEmpleado(0L);
     }
 
     @FXML
@@ -85,19 +85,19 @@ public class EmpleadoController implements Initializable {
         }
     }
 
-    private void abrirFichaEmpleado(int idEmpleado) {
+    private void abrirFichaEmpleado(Long idEmpleado) {
         try {
             javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/org/kinalrh/view/FormularioEmpleado.fxml"));
             javafx.scene.Parent root = loader.load();
             
             EmpleadoFormController controller = loader.getController();
-            Empleado emp = idEmpleado == 0 ? null : new EmpleadoService().buscarPorId(idEmpleado);
+            Empleado emp = idEmpleado == 0L ? null : new EmpleadoService().buscarPorId(idEmpleado);
             
             javafx.stage.Stage stage = new javafx.stage.Stage();
             controller.setStage(stage);
             controller.setEmpleado(emp);
             
-            stage.setTitle(idEmpleado == 0 ? "Nuevo Empleado" : "Editar Empleado");
+            stage.setTitle(idEmpleado == 0L ? "Nuevo Empleado" : "Editar Empleado");
             stage.setScene(new javafx.scene.Scene(root));
             stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
             stage.showAndWait();
