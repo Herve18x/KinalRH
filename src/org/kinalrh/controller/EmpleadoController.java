@@ -72,8 +72,7 @@ public class EmpleadoController implements Initializable {
 
     @FXML
     public void eventoNuevo(ActionEvent event) {
-        // TBD: LÃ³gica para nuevo empleado
-        System.out.println("Abriendo ficha para nuevo empleado...");
+        abrirFichaEmpleado(0);
     }
 
     @FXML
@@ -81,14 +80,31 @@ public class EmpleadoController implements Initializable {
         if (event.getClickCount() == 2) {
             Empleado seleccionado = tablaEmpleados.getSelectionModel().getSelectedItem();
             if (seleccionado != null) {
-                // T2.18: "nunca por Ã­ndice de la tabla, abrir ficha por id_empleado"
                 abrirFichaEmpleado(seleccionado.getIdEmpleado());
             }
         }
     }
 
     private void abrirFichaEmpleado(int idEmpleado) {
-        // TBD: LÃ³gica para abrir ficha
-        System.out.println("Abriendo ficha para el empleado con ID: " + idEmpleado);
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/org/kinalrh/view/FormularioEmpleado.fxml"));
+            javafx.scene.Parent root = loader.load();
+            
+            EmpleadoFormController controller = loader.getController();
+            Empleado emp = idEmpleado == 0 ? null : new EmpleadoService().buscarPorId(idEmpleado);
+            
+            javafx.stage.Stage stage = new javafx.stage.Stage();
+            controller.setStage(stage);
+            controller.setEmpleado(emp);
+            
+            stage.setTitle(idEmpleado == 0 ? "Nuevo Empleado" : "Editar Empleado");
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+            
+            cargarDatos(); // Refrescar despus de cerrar
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
