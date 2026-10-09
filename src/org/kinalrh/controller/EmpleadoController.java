@@ -51,7 +51,7 @@ public class EmpleadoController implements Initializable {
             idSeleccionadoGuardado = seleccionado.getIdEmpleado();
         }
 
-        List<Empleado> empleados = empleadoService.listarEmpleados("ADMIN");
+        List<Empleado> empleados = empleadoService.listarEmpleados(org.kinalrh.service.SesionService.getInstance().getUsuarioAutenticado() != null ? org.kinalrh.service.SesionService.getInstance().getUsuarioAutenticado().getRol() : "");
         tablaEmpleados.getItems().setAll(empleados);
 
         // Restaurar seleccion
@@ -91,7 +91,7 @@ public class EmpleadoController implements Initializable {
             javafx.scene.Parent root = loader.load();
             
             EmpleadoFormController controller = loader.getController();
-            Empleado emp = idEmpleado == 0L ? null : new EmpleadoService().buscarPorId(idEmpleado, "ADMIN");
+            Empleado emp = idEmpleado == 0L ? null : new EmpleadoService().buscarPorId(idEmpleado, org.kinalrh.service.SesionService.getInstance().getUsuarioAutenticado() != null ? org.kinalrh.service.SesionService.getInstance().getUsuarioAutenticado().getRol() : "");
             
             javafx.stage.Stage stage = new javafx.stage.Stage();
             controller.setStage(stage);

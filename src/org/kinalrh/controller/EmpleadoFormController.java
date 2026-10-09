@@ -26,7 +26,7 @@ public class EmpleadoFormController implements Initializable {
     @FXML private Label lblTitulo;
     @FXML private Label lblError;
     
-    // IdentificaciÃƒÂ³n
+    // IdentificaciÃƒÆ’Ã‚Â³n
     @FXML private TextField txtId;
     @FXML private TextField txtDpi;
     @FXML private TextField txtNit;
@@ -47,7 +47,7 @@ public class EmpleadoFormController implements Initializable {
     @FXML private TextField txtTelefonoFijo;
     @FXML private TextField txtCorreo;
     
-    // DirecciÃƒÂ³n
+    // DirecciÃƒÆ’Ã‚Â³n
     @FXML private TextField txtDireccion;
     @FXML private TextField txtZona;
     @FXML private TextField txtMunicipio;
@@ -186,7 +186,7 @@ public class EmpleadoFormController implements Initializable {
         empleado.setIdPuestoActual(cmbPuesto.getValue() != null ? cmbPuesto.getValue().getIdPuesto() : null);
         empleado.setIdEstadoEmpleado(cmbEstado.getValue().getIdEstadoEmpleado());
 
-        empleadoService.guardarEmpleado(empleado, "ADMIN");
+        empleadoService.guardarEmpleado(empleado, org.kinalrh.service.SesionService.getInstance().getUsuarioAutenticado() != null ? org.kinalrh.service.SesionService.getInstance().getUsuarioAutenticado().getRol() : "");
         if (stage != null) {
             stage.close();
         }
@@ -205,16 +205,16 @@ public class EmpleadoFormController implements Initializable {
             return false;
         }
 
-        // 2. ValidaciÃƒÂ³n de formato de DPI (13 dÃƒÂ­gitos)
+        // 2. ValidaciÃƒÆ’Ã‚Â³n de formato de DPI (13 dÃƒÆ’Ã‚Â­gitos)
         if (!Pattern.matches("^\\d{13}$", dpi)) {
-            lblError.setText("Error: El DPI debe contener exactamente 13 dÃƒÂ­gitos numÃƒÂ©ricos.");
+            lblError.setText("Error: El DPI debe contener exactamente 13 dÃƒÆ’Ã‚Â­gitos numÃƒÆ’Ã‚Â©ricos.");
             lblError.setVisible(true);
             return false;
         }
 
-        // 3. ValidaciÃƒÂ³n de formato de correo (bÃƒÂ¡sico)
+        // 3. ValidaciÃƒÆ’Ã‚Â³n de formato de correo (bÃƒÆ’Ã‚Â¡sico)
         if (!correo.isEmpty() && !Pattern.matches("^[A-Za-z0-9+_.-]+@(.+)$", correo)) {
-            lblError.setText("Error: El formato del correo personal no es vÃƒÂ¡lido.");
+            lblError.setText("Error: El formato del correo personal no es vÃƒÆ’Ã‚Â¡lido.");
             lblError.setVisible(true);
             return false;
         }

@@ -239,7 +239,22 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 
     @Override
     public java.util.Set<String> obtenerPermisos(long idUsuario) throws java.sql.SQLException {
-        return new java.util.HashSet<>();
+        java.util.Set<String> permisos = new java.util.HashSet<>();
+        String sql = "SELECT p.nombre FROM permiso p " +
+                     "INNER JOIN rol_permiso rp ON p.id_permiso = rp.id_permiso " +
+                     "INNER JOIN usuario_rol ur ON rp.id_rol = ur.id_rol " +
+                     "WHERE ur.id_usuario = ?";
+                     
+        try (Connection conn = Conexion.getInstancia().conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, idUsuario);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    permisos.add(rs.getString("nombre"));
+                }
+            }
+        }
+        return permisos;
     }
     @Override
     public void activar(long id) {
