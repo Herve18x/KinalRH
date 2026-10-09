@@ -21,7 +21,7 @@
                   <Label fx:id="lblRol" styleClass="header-rol" text="Rol: " />
                </children>
             </VBox>
-            <Button onAction="#eventoCerrarSesion" styleClass="btn-cerrar" text="Cerrar SesiÃ³n">
+            <Button onAction="#eventoCerrarSesion" styleClass="btn-cerrar" text="Cerrar Sesión">
                <HBox.margin>
                   <Insets right="10.0" />
                </HBox.margin>
@@ -33,7 +33,7 @@
       </HBox>
    </top>
 
-   <!-- MENÃš LATERAL DINÃMICO -->
+   <!-- MENÚ LATERAL DINÁMICO -->
    <left>
       <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" BorderPane.alignment="CENTER">
          <content>
@@ -42,34 +42,35 @@
                   <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
                </padding>
                <children>
-                  <!-- SECCIÃ“N RECURSOS HUMANOS -->
+                  <!-- SECCIÓN RECURSOS HUMANOS -->
                   <VBox fx:id="seccionRH" spacing="5.0">
                      <Label styleClass="nav-section-title" text="RECURSOS HUMANOS" />
-                     <Button maxWidth="Infinity" onAction="#abrirColaboradores" styleClass="nav-button" text="ðŸ‘¥ Colaboradores" />
-                     <Button maxWidth="Infinity" onAction="#abrirCatalogos" styleClass="nav-button" text="ðŸ“‘ CatÃ¡logos Generales" />
-                     <Button maxWidth="Infinity" onAction="#abrirImportacion" styleClass="nav-button" text="ðŸ“‚ Importar desde Excel" />
-                     <Button maxWidth="Infinity" onAction="#abrirReportes" styleClass="nav-button" text="ðŸ“Š Reportes Exportables" />
+                     <Button maxWidth="Infinity" onAction="#abrirColaboradores" styleClass="nav-button" text="💼 Colaboradores" />
+                     <Button maxWidth="Infinity" onAction="#abrirCatalogos" styleClass="nav-button" text="📂 Catálogos Generales" />
+                     <Button maxWidth="Infinity" onAction="#abrirImportacion" styleClass="nav-button" text="📥 Importar desde Excel" />
+                     <Button maxWidth="Infinity" onAction="#abrirReportes" styleClass="nav-button" text="📊 Reportes Exportables" />
                   </VBox>
 
-                  <!-- SECCIÃ“N SOLICITUDES Y GERENCIA -->
+                  <!-- SECCIÓN SOLICITUDES Y GERENCIA -->
                   <VBox fx:id="seccionGerencia" spacing="5.0">
-                     <Label styleClass="nav-section-title" text="GESTIÃ“N Y APROBACIONES" />
-                     <Button maxWidth="Infinity" onAction="#abrirBandeja" styleClass="nav-button" text="ðŸ“¥ Bandeja de Solicitudes" />
-                     <Button maxWidth="Infinity" onAction="#abrirMiEquipo" styleClass="nav-button" text="ðŸ‘¨â€ðŸ’¼ Mi Equipo" />
+                     <Label styleClass="nav-section-title" text="GESTIÓN Y APROBACIONES" />
+                     <Button maxWidth="Infinity" onAction="#abrirBandeja" styleClass="nav-button" text="📥 Bandeja de Solicitudes" />
+                     <Button maxWidth="Infinity" onAction="#abrirMiEquipo" styleClass="nav-button" text="👥 Mi Equipo" />
                   </VBox>
 
-                  <!-- SECCIÃ“N VISOR / INSTITUCIONAL -->
+                  <!-- SECCIÓN VISOR / INSTITUCIONAL -->
                   <VBox fx:id="seccionVisor" spacing="5.0">
                      <Label styleClass="nav-section-title" text="IMAGEN INSTITUCIONAL" />
-                     <Button maxWidth="Infinity" onAction="#abrirDirectorio" styleClass="nav-button" text="ðŸ“¸ Directorio PÃºblico" />
+                     <Button maxWidth="Infinity" onAction="#abrirDirectorio" styleClass="nav-button" text="📸 Directorio Público" />
+                     <Button maxWidth="Infinity" onAction="#abrirLogros" styleClass="nav-button" text="🌟 Logros y Reconocimientos" />
                   </VBox>
 
-                  <!-- SECCIÃ“N ADMINISTRADOR -->
+                  <!-- SECCIÓN ADMINISTRADOR -->
                   <VBox fx:id="seccionAdmin" spacing="5.0">
                      <Label styleClass="nav-section-title" text="SEGURIDAD Y SISTEMA" />
-                     <Button maxWidth="Infinity" onAction="#abrirUsuarios" styleClass="nav-button" text="ðŸ” GestiÃ³n de Usuarios" />
-                     <Button maxWidth="Infinity" onAction="#abrirRoles" styleClass="nav-button" text="ðŸ›¡ Roles y Permisos" />
-                     <Button maxWidth="Infinity" onAction="#abrirAuditoria" styleClass="nav-button" text="ðŸ“ Log de AuditorÃ­a" />
+                     <Button maxWidth="Infinity" onAction="#abrirUsuarios" styleClass="nav-button" text="👥 Gestión de Usuarios" />
+                     <Button maxWidth="Infinity" onAction="#abrirRoles" styleClass="nav-button" text="🛡️ Roles y Permisos" />
+                     <Button maxWidth="Infinity" onAction="#abrirAuditoria" styleClass="nav-button" text="📜 Log de Auditoría" />
                   </VBox>
                </children>
             </VBox>
@@ -77,11 +78,11 @@
       </ScrollPane>
    </left>
 
-   <!-- ÃREA DE CONTENIDO DINÃMICO -->
+   <!-- ÁREA DE CONTENIDO DINÁMICO -->
    <center>
       <VBox alignment="CENTER" spacing="20.0" BorderPane.alignment="CENTER">
          <children>
-            <Label style="-fx-font-size: 24px; -fx-text-fill: #888;" text="Seleccione una opciÃ³n del menÃº para comenzar." />
+            <Label style="-fx-font-size: 24px; -fx-text-fill: #888;" text="Seleccione una opción del menú para comenzar." />
          </children>
       </VBox>
    </center>

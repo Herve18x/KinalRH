@@ -29,7 +29,7 @@ public class EmpleadoFormController implements Initializable {
     @FXML private Label lblTitulo;
     @FXML private Label lblError;
     
-    // IdentificaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n
+    // IdentificaciÃƒÂ³n
     @FXML private TextField txtId;
     @FXML private TextField txtDpi;
     @FXML private TextField txtNit;
@@ -50,7 +50,7 @@ public class EmpleadoFormController implements Initializable {
     @FXML private TextField txtTelefonoFijo;
     @FXML private TextField txtCorreo;
     
-    // DirecciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n
+    // Dirección
     @FXML private TextField txtDireccion;
     @FXML private TextField txtZona;
     @FXML private TextField txtMunicipio;
@@ -238,16 +238,16 @@ public class EmpleadoFormController implements Initializable {
             return false;
         }
 
-        // 2. ValidaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de formato de DPI (13 dÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­gitos)
+        // 2. Validación de formato de DPI (13 dígitos)
         if (!Pattern.matches("^\\d{13}$", dpi)) {
-            lblError.setText("Error: El DPI debe contener exactamente 13 dÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â­gitos numÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©ricos.");
+            lblError.setText("Error: El DPI debe contener exactamente 13 dígitos numéricos.");
             lblError.setVisible(true);
             return false;
         }
 
-        // 3. ValidaciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n de formato de correo (bÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡sico)
+        // 3. Validación de formato de correo (bÃƒÂ¡sico)
         if (!correo.isEmpty() && !Pattern.matches("^[A-Za-z0-9+_.-]+@(.+)$", correo)) {
-            lblError.setText("Error: El formato del correo personal no es vÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡lido.");
+            lblError.setText("Error: El formato del correo personal no es válido.");
             lblError.setVisible(true);
             return false;
         }
