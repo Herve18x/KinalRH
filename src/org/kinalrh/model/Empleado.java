@@ -1,34 +1,34 @@
 package org.kinalrh.model;
 
 public class Empleado {
-    private String codigo;
+    private int idEmpleado;
     private String nombre;
-    private String apellido;
+    private String estado;
+    private String area;
     private String puesto;
-    private String departamento;
 
     public Empleado() {}
 
-    public Empleado(String codigo, String nombre, String apellido, String puesto, String departamento) {
-        this.codigo = codigo;
+    public Empleado(int idEmpleado, String nombre, String estado, String area, String puesto) {
+        this.idEmpleado = idEmpleado;
         this.nombre = nombre;
-        this.apellido = apellido;
+        this.estado = estado;
+        this.area = area;
         this.puesto = puesto;
-        this.departamento = departamento;
     }
 
-    public String getCodigo() { return codigo; }
-    public void setCodigo(String codigo) { this.codigo = codigo; }
+    public int getIdEmpleado() { return idEmpleado; }
+    public void setIdEmpleado(int idEmpleado) { this.idEmpleado = idEmpleado; }
 
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
 
-    public String getApellido() { return apellido; }
-    public void setApellido(String apellido) { this.apellido = apellido; }
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
+
+    public String getArea() { return area; }
+    public void setArea(String area) { this.area = area; }
 
     public String getPuesto() { return puesto; }
     public void setPuesto(String puesto) { this.puesto = puesto; }
-
-    public String getDepartamento() { return departamento; }
-    public void setDepartamento(String departamento) { this.departamento = departamento; }
 }
