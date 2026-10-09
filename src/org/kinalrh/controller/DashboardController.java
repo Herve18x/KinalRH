@@ -19,7 +19,7 @@ public class DashboardController implements Initializable, BaseDashboardControll
     @FXML private Label lblBienvenida;
     @FXML private Label lblRol;
 
-    // Secciones del menÃƒÆ’Ã‚Âº lateral
+    // Secciones del menÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âº lateral
     @FXML private VBox seccionRH;
     @FXML private VBox seccionGerencia;
     @FXML private VBox seccionVisor;
@@ -43,12 +43,12 @@ public class DashboardController implements Initializable, BaseDashboardControll
     }
 
     private void configurarNavegacionSegunRol(String rol) {
-        // En una app real, esto se evalÃƒÆ’Ã‚Âºa con autorizacionService.tienePermiso(...)
-        // Por ahora lo hacemos genÃƒÆ’Ã‚Â©rico para que tu compaÃƒÆ’Ã‚Â±ero tenga la base
+        // En una app real, esto se evalÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºa con autorizacionService.tienePermiso(...)
+        // Por ahora lo hacemos genÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©rico para que tu compaÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â±ero tenga la base
         String r = rol.toUpperCase();
         
         boolean esAdmin = r.equals("ADMIN");
-        // Encargado es el rol de RRHH segÃƒÆ’Ã‚Âºn la BD
+        // Encargado es el rol de RRHH segÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Âºn la BD
         boolean esRh = r.equals("ENCARGADO") || esAdmin;
         // Jefatura / Gerencia
         boolean esGerente = r.equals("GERENTEAREA") || r.equals("GERENTEGENERAL") || r.equals("JEFE") || esAdmin;
@@ -68,7 +68,7 @@ public class DashboardController implements Initializable, BaseDashboardControll
         seccionVisor.setManaged(esVisor);
     }
 
-    // --- CARGADOR DINÃƒÆ’Ã‚ÂMICO DE VISTAS ---
+    // --- CARGADOR DINÃƒÆ’Ã†â€™Ãƒâ€šÃ‚ÂMICO DE VISTAS ---
     private void cargarVistaCentral(String fxml) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/kinalrh/view/" + fxml));
@@ -84,13 +84,13 @@ public class DashboardController implements Initializable, BaseDashboardControll
         }
     }
 
-    // --- EVENTOS DEL MENÃƒÆ’Ã…Â¡ (NAVEGACIÃƒÆ’Ã¢â‚¬Å“N) ---
+    // --- EVENTOS DEL MENÃƒÆ’Ã†â€™Ãƒâ€¦Ã‚Â¡ (NAVEGACIÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œN) ---
     @FXML public void abrirColaboradores() { cargarVistaCentral("Empleados.fxml"); }
     @FXML public void abrirCatalogos() { cargarVistaCentral("Catalogos.fxml"); } // Vista pendiente
     @FXML public void abrirImportacion() { cargarVistaCentral("Importacion.fxml"); }
     @FXML public void abrirReportes() { cargarVistaCentral("Reportes.fxml"); } // Vista pendiente
     @FXML public void abrirBandeja() { cargarVistaCentral("Bandeja.fxml"); }
-    @FXML public void abrirMiEquipo() { cargarVistaCentral("Empleados.fxml"); } // Reutiliza colaboradores pero filtrado (tu compa harÃƒÆ’Ã‚Â¡ el filtro)
+    @FXML public void abrirMiEquipo() { cargarVistaCentral("Empleados.fxml"); } // Reutiliza colaboradores pero filtrado (tu compa harÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡ el filtro)
     @FXML public void abrirDirectorio() { cargarVistaCentral("Directorio.fxml"); }
     @FXML public void abrirUsuarios() { cargarVistaCentral("Usuarios.fxml"); } // Esta ya la programamos
     @FXML public void abrirRoles() { cargarVistaCentral("Roles.fxml"); } // Vista pendiente
@@ -101,7 +101,7 @@ public class DashboardController implements Initializable, BaseDashboardControll
         try {
             org.kinalrh.service.SesionService.getInstance().cerrarSesion();
             org.kinalrh.system.Main.cambiarVista("/org/kinalrh/view/Login.fxml");
-            org.kinalrh.system.Main.getEscenarioPrincipal().setTitle("Kinal RH - Iniciar SesiÃ³n");
+            org.kinalrh.system.Main.getEscenarioPrincipal().setTitle("Kinal RH - Iniciar SesiÃƒÂ³n");
         } catch (Exception e) {
             e.printStackTrace();
         }
