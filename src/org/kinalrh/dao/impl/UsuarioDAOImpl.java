@@ -217,6 +217,21 @@ public class UsuarioDAOImpl implements UsuarioDAO {
     }
 
     @Override
+    public int contarAdministradoresActivos() {
+        String sql = "SELECT COUNT(*) FROM usuario u INNER JOIN usuario_rol ur ON u.id_usuario = ur.id_usuario INNER JOIN rol r ON ur.id_rol = r.id_rol WHERE r.nombre = 'admin' AND u.activo = 1";
+        try (Connection conn = Conexion.getInstancia().conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al contar admins: " + e.getMessage());
+        }
+        return 0;
+    }
+
+    @Override
     public java.util.Optional<Usuario> buscarPorNombreUsuario(String nombreUsuario) throws java.sql.SQLException {
         Usuario u = buscarPorUsername(nombreUsuario);
         return u != null ? java.util.Optional.of(u) : java.util.Optional.empty();
@@ -225,5 +240,53 @@ public class UsuarioDAOImpl implements UsuarioDAO {
     @Override
     public java.util.Set<String> obtenerPermisos(long idUsuario) throws java.sql.SQLException {
         return new java.util.HashSet<>();
+    }
+    @Override
+    public void activar(long id) {
+        String sql = "UPDATE usuario SET activo = 1 WHERE id_usuario = ?";
+        try (Connection conn = Conexion.getInstancia().conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error al activar usuario: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void desactivar(long id) {
+        String sql = "UPDATE usuario SET activo = 0 WHERE id_usuario = ?";
+        try (Connection conn = Conexion.getInstancia().conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Error al desactivar usuario: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void asignarRol(long idUsuario, long idRol) {
+        String sqlDel = "DELETE FROM usuario_rol WHERE id_usuario = ?";
+        String sqlIns = "INSERT INTO usuario_rol (id_usuario, id_rol) VALUES (?, ?)";
+        try (Connection conn = Conexion.getInstancia().conectar()) {
+            conn.setAutoCommit(false);
+            
+            try (PreparedStatement sDel = conn.prepareStatement(sqlDel)) {
+                sDel.setLong(1, idUsuario);
+                sDel.executeUpdate();
+            }
+            
+            try (PreparedStatement sIns = conn.prepareStatement(sqlIns)) {
+                sIns.setLong(1, idUsuario);
+                sIns.setLong(2, idRol);
+                sIns.executeUpdate();
+            }
+            
+            conn.commit();
+        } catch (SQLException e) {
+            System.err.println("Error al asignar rol: " + e.getMessage());
+            throw new RuntimeException("Error en base de datos al asignar rol", e);
+        }
     }
 }
