@@ -1,13 +1,14 @@
 package org.kinalrh.controller;
 
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
+import java.util.regex.Pattern;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -24,16 +25,40 @@ public class EmpleadoFormController implements Initializable {
 
     @FXML private Label lblTitulo;
     @FXML private Label lblError;
+    
+    // IdentificaciÃ³n
     @FXML private TextField txtId;
     @FXML private TextField txtDpi;
+    @FXML private TextField txtNit;
+    @FXML private TextField txtCodigo;
+    
+    // Nombres y Apellidos
     @FXML private TextField txtPrimerNombre;
+    @FXML private TextField txtSegundoNombre;
+    @FXML private TextField txtTercerNombre;
     @FXML private TextField txtPrimerApellido;
+    @FXML private TextField txtSegundoApellido;
+    @FXML private TextField txtApellidoCasada;
+    
+    // Personales
+    @FXML private DatePicker dpFechaNac;
+    @FXML private ComboBox<String> cmbEstadoCivil;
+    @FXML private TextField txtTelefonoMovil;
+    @FXML private TextField txtTelefonoFijo;
+    @FXML private TextField txtCorreo;
+    
+    // DirecciÃ³n
+    @FXML private TextField txtDireccion;
+    @FXML private TextField txtZona;
+    @FXML private TextField txtMunicipio;
+    @FXML private TextField txtDepartamento;
+    
+    // Institucionales
+    @FXML private DatePicker dpFechaIngreso;
     @FXML private ComboBox<Area> cmbArea;
     @FXML private ComboBox<Puesto> cmbPuesto;
     @FXML private ComboBox<EstadoEmpleado> cmbEstado;
-    @FXML private Button btnGuardar;
-    @FXML private Button btnCancelar;
-
+    
     private Empleado empleado;
     private Stage stage;
     private EmpleadoService empleadoService;
@@ -52,6 +77,7 @@ public class EmpleadoFormController implements Initializable {
         cmbArea.getItems().setAll(areaDAO.listarActivas());
         cmbPuesto.getItems().setAll(puestoDAO.listarActivos());
         cmbEstado.getItems().setAll(estadoDAO.listarTodos());
+        cmbEstadoCivil.getItems().addAll("Soltero(a)", "Casado(a)", "Divorciado(a)", "Viudo(a)", "Unido(a)");
     }
 
     public void setStage(Stage stage) {
@@ -64,8 +90,28 @@ public class EmpleadoFormController implements Initializable {
             lblTitulo.setText("Editar Empleado");
             txtId.setText(String.valueOf(emp.getIdEmpleado()));
             txtDpi.setText(emp.getDpi());
+            txtNit.setText(emp.getNit());
+            txtCodigo.setText(emp.getCodigoEmpleado());
+            
             txtPrimerNombre.setText(emp.getPrimerNombre());
+            txtSegundoNombre.setText(emp.getSegundoNombre());
+            txtTercerNombre.setText(emp.getTercerNombre());
             txtPrimerApellido.setText(emp.getPrimerApellido());
+            txtSegundoApellido.setText(emp.getSegundoApellido());
+            txtApellidoCasada.setText(emp.getApellidoCasada());
+            
+            dpFechaNac.setValue(emp.getFechaNacimiento());
+            cmbEstadoCivil.setValue(emp.getEstadoCivil());
+            txtTelefonoMovil.setText(emp.getTelefonoMovil());
+            txtTelefonoFijo.setText(emp.getTelefonoFijo());
+            txtCorreo.setText(emp.getCorreoPersonal());
+            
+            txtDireccion.setText(emp.getDireccion());
+            txtZona.setText(emp.getZona());
+            txtMunicipio.setText(emp.getMunicipio());
+            txtDepartamento.setText(emp.getDepartamento());
+            
+            dpFechaIngreso.setValue(emp.getFechaIngresoKinal());
             
             seleccionarArea(emp.getIdAreaPrincipal());
             seleccionarPuesto(emp.getIdPuestoActual());
@@ -108,25 +154,73 @@ public class EmpleadoFormController implements Initializable {
 
     @FXML
     public void eventoGuardar(ActionEvent event) {
-        if (txtDpi.getText().isEmpty() || txtPrimerNombre.getText().isEmpty() || txtPrimerApellido.getText().isEmpty() ||
-            cmbArea.getValue() == null || cmbPuesto.getValue() == null || cmbEstado.getValue() == null) {
-            lblError.setText("Error: DPI, Nombres y Catálogos son obligatorios.");
-            lblError.setVisible(true);
+        if (!validarEntradas()) {
             return;
         }
 
-        empleado.setDpi(txtDpi.getText());
-        empleado.setPrimerNombre(txtPrimerNombre.getText());
-        empleado.setPrimerApellido(txtPrimerApellido.getText());
+        empleado.setDpi(txtDpi.getText().trim());
+        empleado.setNit(txtNit.getText().trim());
+        empleado.setCodigoEmpleado(txtCodigo.getText().trim());
         
-        empleado.setIdAreaPrincipal(cmbArea.getValue().getIdArea());
-        empleado.setIdPuestoActual(cmbPuesto.getValue().getIdPuesto());
+        empleado.setPrimerNombre(txtPrimerNombre.getText().trim());
+        empleado.setSegundoNombre(txtSegundoNombre.getText().trim());
+        empleado.setTercerNombre(txtTercerNombre.getText().trim());
+        empleado.setPrimerApellido(txtPrimerApellido.getText().trim());
+        empleado.setSegundoApellido(txtSegundoApellido.getText().trim());
+        empleado.setApellidoCasada(txtApellidoCasada.getText().trim());
+        
+        empleado.setFechaNacimiento(dpFechaNac.getValue());
+        empleado.setEstadoCivil(cmbEstadoCivil.getValue());
+        empleado.setTelefonoMovil(txtTelefonoMovil.getText().trim());
+        empleado.setTelefonoFijo(txtTelefonoFijo.getText().trim());
+        empleado.setCorreoPersonal(txtCorreo.getText().trim());
+        
+        empleado.setDireccion(txtDireccion.getText().trim());
+        empleado.setZona(txtZona.getText().trim());
+        empleado.setMunicipio(txtMunicipio.getText().trim());
+        empleado.setDepartamento(txtDepartamento.getText().trim());
+        
+        empleado.setFechaIngresoKinal(dpFechaIngreso.getValue());
+        
+        empleado.setIdAreaPrincipal(cmbArea.getValue() != null ? cmbArea.getValue().getIdArea() : null);
+        empleado.setIdPuestoActual(cmbPuesto.getValue() != null ? cmbPuesto.getValue().getIdPuesto() : null);
         empleado.setIdEstadoEmpleado(cmbEstado.getValue().getIdEstadoEmpleado());
 
         empleadoService.guardarEmpleado(empleado);
         if (stage != null) {
             stage.close();
         }
+    }
+
+    private boolean validarEntradas() {
+        String dpi = txtDpi.getText() != null ? txtDpi.getText().trim() : "";
+        String pNombre = txtPrimerNombre.getText() != null ? txtPrimerNombre.getText().trim() : "";
+        String pApellido = txtPrimerApellido.getText() != null ? txtPrimerApellido.getText().trim() : "";
+        String correo = txtCorreo.getText() != null ? txtCorreo.getText().trim() : "";
+
+        // 1. Campos obligatorios
+        if (dpi.isEmpty() || pNombre.isEmpty() || pApellido.isEmpty() || cmbEstado.getValue() == null) {
+            lblError.setText("Error: Los campos DPI, Primer Nombre, Primer Apellido y Estado son obligatorios.");
+            lblError.setVisible(true);
+            return false;
+        }
+
+        // 2. ValidaciÃ³n de formato de DPI (13 dÃ­gitos)
+        if (!Pattern.matches("^\\d{13}$", dpi)) {
+            lblError.setText("Error: El DPI debe contener exactamente 13 dÃ­gitos numÃ©ricos.");
+            lblError.setVisible(true);
+            return false;
+        }
+
+        // 3. ValidaciÃ³n de formato de correo (bÃ¡sico)
+        if (!correo.isEmpty() && !Pattern.matches("^[A-Za-z0-9+_.-]+@(.+)$", correo)) {
+            lblError.setText("Error: El formato del correo personal no es vÃ¡lido.");
+            lblError.setVisible(true);
+            return false;
+        }
+
+        lblError.setVisible(false);
+        return true;
     }
 
     @FXML
