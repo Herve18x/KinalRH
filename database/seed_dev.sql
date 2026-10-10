@@ -20,7 +20,7 @@ INSERT INTO usuario (
     nombre_usuario, password_hash, nombre_completo, correo, activo, id_empleado
 ) VALUES (
     'encargado_demo', 
-    '1e58a842c6ab12101a6664d452f69bd670fca2416f4ce5be9b91aee5d1711798',
+    SHA2('admin123', 256),
     'Encargado de Demostración', 
     'encargado.demo@kinal.edu.gt', 
     TRUE, 
@@ -34,7 +34,7 @@ INSERT INTO usuario (
     nombre_usuario, password_hash, nombre_completo, correo, activo, id_empleado
 ) VALUES (
     'visor_demo', 
-    'cbc926e1e7a561e29084172acf99db732cdad83cc706f4998e69ed27197dcb3b',
+    SHA2('visor123', 256),
     'Visor Institucional Demo', 
     'visor.demo@kinal.edu.gt', 
     TRUE, 
