@@ -49,6 +49,8 @@ public class Empleado {
     private String estado;
     private String area;
     private String puesto;
+    private String nivelAcademico;
+    private String jefeInmediato;
 
     public Empleado() {}
 
@@ -145,6 +147,10 @@ public class Empleado {
     public void setArea(String area) { this.area = area; }
     public String getPuesto() { return puesto; }
     public void setPuesto(String puesto) { this.puesto = puesto; }
+    public String getNivelAcademico() { return nivelAcademico; }
+    public void setNivelAcademico(String nivelAcademico) { this.nivelAcademico = nivelAcademico; }
+    public String getJefeInmediato() { return jefeInmediato; }
+    public void setJefeInmediato(String jefeInmediato) { this.jefeInmediato = jefeInmediato; }
 
     @Override
     public String toString() {

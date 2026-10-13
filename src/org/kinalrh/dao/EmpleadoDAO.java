@@ -16,4 +16,7 @@ public interface EmpleadoDAO {
     boolean existeNit(String nit, Long idExcluido);
     boolean existeCorreoPersonal(String correo, Long idExcluido);
     boolean existeReferencia(String tabla, String pkColumna, Long id);
+
+    // T3.10
+    boolean actualizarNivelAcademico(long idEmpleado, Long idNivelAcademico) throws SQLException;
 }

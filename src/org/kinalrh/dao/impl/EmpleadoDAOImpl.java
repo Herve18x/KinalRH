@@ -19,11 +19,14 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
     @Override
     public List<Empleado> listarTodos() throws SQLException {
         List<Empleado> lista = new ArrayList<>();
-        String sql = "SELECT e.*, a.nombre as area_nombre, p.nombre as puesto_nombre, ee.nombre as estado_nombre " +
+        String sql = "SELECT e.*, a.nombre as area_nombre, p.nombre as puesto_nombre, ee.nombre as estado_nombre, " +
+                     "na.nombre as nivel_academico_nombre, j.nombre_completo as jefe_nombre " +
                      "FROM empleado e " +
                      "LEFT JOIN area a ON e.id_area_principal = a.id_area " +
                      "LEFT JOIN puesto p ON e.id_puesto_actual = p.id_puesto " +
-                     "LEFT JOIN estado_empleado ee ON e.id_estado_empleado = ee.id_estado_empleado";
+                     "LEFT JOIN estado_empleado ee ON e.id_estado_empleado = ee.id_estado_empleado " +
+                     "LEFT JOIN nivel_academico na ON e.id_nivel_academico = na.id_nivel_academico " +
+                     "LEFT JOIN empleado j ON e.id_jefe_inmediato = j.id_empleado";
         
         try (Connection conn = Conexion.getInstancia().conectar();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -37,11 +40,14 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
 
     @Override
     public Optional<Empleado> buscarPorId(long idEmpleado) throws SQLException {
-        String sql = "SELECT e.*, a.nombre as area_nombre, p.nombre as puesto_nombre, ee.nombre as estado_nombre " +
+        String sql = "SELECT e.*, a.nombre as area_nombre, p.nombre as puesto_nombre, ee.nombre as estado_nombre, " +
+                     "na.nombre as nivel_academico_nombre, j.nombre_completo as jefe_nombre " +
                      "FROM empleado e " +
                      "LEFT JOIN area a ON e.id_area_principal = a.id_area " +
                      "LEFT JOIN puesto p ON e.id_puesto_actual = p.id_puesto " +
                      "LEFT JOIN estado_empleado ee ON e.id_estado_empleado = ee.id_estado_empleado " +
+                     "LEFT JOIN nivel_academico na ON e.id_nivel_academico = na.id_nivel_academico " +
+                     "LEFT JOIN empleado j ON e.id_jefe_inmediato = j.id_empleado " +
                      "WHERE e.id_empleado = ?";
         try (Connection conn = Conexion.getInstancia().conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -70,7 +76,11 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
 
             stmt.executeUpdate();
             try (ResultSet rs = stmt.getGeneratedKeys()) {
-                if (rs.next()) return rs.getLong(1);
+                if (rs.next()) {
+                    long idGenerado = rs.getLong(1);
+                    sincronizarAreaPrincipal(conn, idGenerado, e.getIdAreaPrincipal());
+                    return idGenerado;
+                }
             }
         }
         return 0;
@@ -90,7 +100,40 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
             setParametros(stmt, e);
             stmt.setLong(27, e.getIdEmpleado());
 
+            boolean actualizado = stmt.executeUpdate() > 0;
+            if (actualizado) {
+                sincronizarAreaPrincipal(conn, e.getIdEmpleado(), e.getIdAreaPrincipal());
+            }
+            return actualizado;
+        }
+    }
+
+    @Override
+    public boolean actualizarNivelAcademico(long idEmpleado, Long idNivelAcademico) throws SQLException {
+        String sql = "UPDATE empleado SET id_nivel_academico = ? WHERE id_empleado = ?";
+        try (Connection conn = Conexion.getInstancia().conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setObject(1, idNivelAcademico);
+            stmt.setLong(2, idEmpleado);
             return stmt.executeUpdate() > 0;
+        }
+    }
+
+    private void sincronizarAreaPrincipal(Connection conn, long idEmpleado, Long idAreaPrincipal) {
+        if (idAreaPrincipal == null) return;
+        String desmarcarSql = "UPDATE empleado_area SET es_principal = FALSE WHERE id_empleado = ?";
+        String upsertSql = "INSERT INTO empleado_area (id_empleado, id_area, es_principal, fecha_inicio) " +
+                           "VALUES (?, ?, TRUE, CURRENT_DATE) " +
+                           "ON DUPLICATE KEY UPDATE es_principal = TRUE";
+        try (PreparedStatement stmt1 = conn.prepareStatement(desmarcarSql);
+             PreparedStatement stmt2 = conn.prepareStatement(upsertSql)) {
+            stmt1.setLong(1, idEmpleado);
+            stmt1.executeUpdate();
+            stmt2.setLong(1, idEmpleado);
+            stmt2.setLong(2, idAreaPrincipal);
+            stmt2.executeUpdate();
+        } catch (SQLException ex) {
+            System.err.println("Advertencia al sincronizar empleado_area: " + ex.getMessage());
         }
     }
     
@@ -106,10 +149,10 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
         stmt.setString(9, e.getApellidoCasada());
         
         String nombreCompleto = e.getPrimerNombre() + 
-            (e.getSegundoNombre() != null ? " " + e.getSegundoNombre() : "") + 
+            (e.getSegundoNombre() != null && !e.getSegundoNombre().trim().isEmpty() ? " " + e.getSegundoNombre().trim() : "") + 
             " " + e.getPrimerApellido() + 
-            (e.getSegundoApellido() != null ? " " + e.getSegundoApellido() : "");
-        stmt.setString(10, nombreCompleto);
+            (e.getSegundoApellido() != null && !e.getSegundoApellido().trim().isEmpty() ? " " + e.getSegundoApellido().trim() : "");
+        stmt.setString(10, nombreCompleto.trim());
         
         if(e.getFechaNacimiento() != null) stmt.setDate(11, Date.valueOf(e.getFechaNacimiento())); else stmt.setNull(11, Types.DATE);
         stmt.setString(12, e.getEstadoCivil());
@@ -170,9 +213,12 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
         e.setArea(rs.getString("area_nombre"));
         e.setPuesto(rs.getString("puesto_nombre"));
         e.setEstado(rs.getString("estado_nombre"));
+        e.setNivelAcademico(rs.getString("nivel_academico_nombre"));
+        e.setJefeInmediato(rs.getString("jefe_nombre"));
         
         return e;
     }
+
     @Override
     public boolean existeDpi(String dpi, Long idExcluido) {
         String sql = "SELECT 1 FROM empleado WHERE dpi = ?";
@@ -227,7 +273,8 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
     @Override
     public boolean existeReferencia(String tabla, String pkColumna, Long id) {
         // Evitamos inyección validando nombres de tabla permitidos
-        if (!tabla.equals("area") && !tabla.equals("puesto") && !tabla.equals("estado_empleado") && !tabla.equals("nivel_academico")) {
+        if (!tabla.equals("area") && !tabla.equals("puesto") && !tabla.equals("estado_empleado")
+                && !tabla.equals("nivel_academico") && !tabla.equals("empleado")) {
             return false;
         }
         String sql = "SELECT 1 FROM " + tabla + " WHERE " + pkColumna + " = ?";

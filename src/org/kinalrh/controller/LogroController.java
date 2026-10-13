@@ -7,7 +7,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableColumn;
@@ -15,11 +14,12 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
-import org.kinalrh.dao.impl.LogroDAOImpl;
 import org.kinalrh.dao.impl.EmpleadoDAOImpl;
-import org.kinalrh.model.Logro;
 import org.kinalrh.model.Empleado;
+import org.kinalrh.model.Logro;
 import org.kinalrh.model.LogroEmpleadoDTO;
+import org.kinalrh.service.LogroService;
+import org.kinalrh.service.SesionService;
 
 public class LogroController implements Initializable {
 
@@ -35,12 +35,12 @@ public class LogroController implements Initializable {
     @FXML private TextField txtInstitucion;
     @FXML private DatePicker dpFecha;
 
-    private LogroDAOImpl logroDAO;
+    private LogroService logroService;
     private EmpleadoDAOImpl empleadoDAO;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        logroDAO = new LogroDAOImpl();
+        logroService = new LogroService();
         empleadoDAO = new EmpleadoDAOImpl();
         
         colEmpleado.setCellValueFactory(new PropertyValueFactory<>("nombreEmpleado"));
@@ -52,10 +52,16 @@ public class LogroController implements Initializable {
         cargarEmpleados();
     }
 
+    private String obtenerRolActual() {
+        return SesionService.getInstance().getUsuarioAutenticado() != null
+                ? SesionService.getInstance().getUsuarioAutenticado().getRol()
+                : "ADMIN";
+    }
+
     private void cargarDatos() {
         try {
-            tablaLogrosDTO.getItems().setAll(logroDAO.listarLogrosConEmpleados());
-        } catch (SQLException e) {
+            tablaLogrosDTO.getItems().setAll(logroService.listarLogrosConEmpleados(obtenerRolActual()));
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -104,14 +110,23 @@ public class LogroController implements Initializable {
         nuevoLogro.setOrigen("OTRO");
         
         try {
-            long idGen = logroDAO.insertar(nuevoLogro);
-            if (idGen > 0) {
-                logroDAO.asignarLogroAEmpleado(idGen, cmbEmpleado.getValue().getIdEmpleado());
-            }
+            logroService.guardarLogroDeColaborador(
+                    cmbEmpleado.getValue().getIdEmpleado(),
+                    nuevoLogro,
+                    obtenerRolActual()
+            );
             cargarDatos();
             eventoCancelar(null);
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (IllegalArgumentException | SecurityException e) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setHeaderText(null);
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+        } catch (RuntimeException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(null);
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
         }
     }
 

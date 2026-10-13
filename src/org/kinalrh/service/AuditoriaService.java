@@ -53,4 +53,13 @@ public class AuditoriaService {
             System.err.println("Error al registrar auditoria: " + e.getMessage());
         }
     }
+
+    public java.util.List<String> obtenerEventosConUsuario(int limite) {
+        try {
+            return auditoriaDAO.obtenerEventosConUsuario(limite);
+        } catch (SQLException e) {
+            System.err.println("Error al consultar eventos de auditoría: " + e.getMessage());
+            return new java.util.ArrayList<>();
+        }
+    }
 }

@@ -224,9 +224,20 @@ public class EmpleadoFormController implements Initializable {
         empleado.setIdNivelAcademico(cmbNivelAcademico.getValue() != null ? cmbNivelAcademico.getValue().getIdNivelAcademico() : null);
         empleado.setIdJefeInmediato(cmbJefe.getValue() != null ? cmbJefe.getValue().getIdEmpleado() : null);
 
-        empleadoService.guardarEmpleado(empleado, org.kinalrh.service.SesionService.getInstance().getUsuarioAutenticado() != null ? org.kinalrh.service.SesionService.getInstance().getUsuarioAutenticado().getRol() : "");
-        if (stage != null) {
-            stage.close();
+        try {
+            String rolActual = org.kinalrh.service.SesionService.getInstance().getUsuarioAutenticado() != null
+                    ? org.kinalrh.service.SesionService.getInstance().getUsuarioAutenticado().getRol()
+                    : "";
+            empleadoService.guardarEmpleado(empleado, rolActual);
+            if (stage != null) {
+                stage.close();
+            }
+        } catch (IllegalArgumentException | SecurityException ex) {
+            lblError.setText(ex.getMessage());
+            lblError.setVisible(true);
+        } catch (RuntimeException ex) {
+            lblError.setText(ex.getMessage() != null ? ex.getMessage() : "Error al guardar el empleado.");
+            lblError.setVisible(true);
         }
     }
 
