@@ -20,6 +20,8 @@ public class EmpleadoListaAutorizacionTest {
         System.out.println("=================================================================\n");
 
         EmpleadoService empleadoService = new EmpleadoService();
+        org.kinalrh.dao.impl.UsuarioDAOImpl usuarios = new org.kinalrh.dao.impl.UsuarioDAOImpl();
+        org.kinalrh.util.SessionManager.getInstance().login(usuarios.buscarPorUsername("encargado_demo"));
 
         // -------------------------------------------------------------
         // CASO 1: Contrastar lista de servicio vs conteo real en BD
@@ -38,7 +40,6 @@ public class EmpleadoListaAutorizacionTest {
                 Empleado primero = listaServicio.get(0);
                 System.out.println("   [MUESTRA REGISTRO] ID: " + primero.getIdEmpleado() + 
                                    " | Nombre: " + primero.getPrimerNombre() + " " + primero.getPrimerApellido() +
-                                   " | DPI: " + primero.getDpi() +
                                    " | Estado: " + (primero.getEstado() != null ? primero.getEstado() : primero.getIdEstadoEmpleado()));
             }
         } else {
@@ -63,6 +64,7 @@ public class EmpleadoListaAutorizacionTest {
         // -------------------------------------------------------------
         System.out.println("\n--- CASO 3: Rechazo de rol sin permiso EMPLEADO_VER ---");
         boolean rolSinPermisoOk = false;
+        org.kinalrh.util.SessionManager.getInstance().login(usuarios.buscarPorUsername("visor_demo"));
         try {
             empleadoService.listarEmpleados("USUARIO_SIN_PERMISO");
             System.err.println("   [FALLO] Un rol sin permiso pudo consultar la lista de colaboradores.");
@@ -76,6 +78,7 @@ public class EmpleadoListaAutorizacionTest {
         // -------------------------------------------------------------
         System.out.println("\n--- CASO 4: Rechazo ante invocación sin sesión (null / logout) ---");
         boolean sesionNulaOk = false;
+        org.kinalrh.util.SessionManager.getInstance().logout();
         try {
             empleadoService.listarEmpleados(null);
             System.err.println("   [FALLO] Se permitió consultar empleados con rol null.");
@@ -92,6 +95,7 @@ public class EmpleadoListaAutorizacionTest {
             System.out.println("   RESULTADO T2.19: TODAS LAS PRUEBAS PASARON EXITOSAMENTE [OK]  ");
         } else {
             System.err.println("   RESULTADO T2.19: FALLO EN AL MENOS UN CASO DE PRUEBA          ");
+            throw new AssertionError("Falló la consulta o autorización de empleados.");
         }
         System.out.println("=================================================================");
     }

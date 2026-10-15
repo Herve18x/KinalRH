@@ -30,7 +30,7 @@ public class SesionService {
         try {
             this.permisosVigentes = usuarioDAO.obtenerPermisos(usuario.getIdUsuario());
         } catch (java.sql.SQLException e) {
-            e.printStackTrace();
+            System.err.println("No se pudieron cargar los permisos de sesión.");
             this.permisosVigentes = new java.util.HashSet<>();
         }
         org.kinalrh.util.SessionManager.getInstance().login(usuario);
@@ -48,11 +48,12 @@ public class SesionService {
     }
 
     public Usuario getUsuarioAutenticado() {
-        return usuarioAutenticado;
+        return org.kinalrh.util.SessionManager.getInstance().getCurrentUser();
     }
 
     public boolean tienePermiso(String permiso) {
-        if (permisosVigentes == null) return false;
+        Usuario actual = getUsuarioAutenticado();
+        if (actual == null || !actual.isActivo() || actual != usuarioAutenticado || permisosVigentes == null) return false;
         return permisosVigentes.contains(permiso.toUpperCase());
     }
 }

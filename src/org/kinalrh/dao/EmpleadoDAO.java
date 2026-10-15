@@ -6,6 +6,10 @@ import java.util.Optional;
 import org.kinalrh.model.Empleado;
 
 public interface EmpleadoDAO {
+    default List<Empleado> buscar(String nombre, String dpi, Long idArea, Long idEstado,
+            int tamanioPagina, int desplazamiento) throws SQLException {
+        throw new UnsupportedOperationException("Consulta filtrada no disponible.");
+    }
     List<Empleado> listarTodos() throws SQLException;
     List<Empleado> listarPaginado(int tamanioPagina, int desplazamiento) throws SQLException;
     List<Empleado> listarActivosPaginado(int tamanioPagina, int desplazamiento) throws SQLException;

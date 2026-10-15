@@ -840,6 +840,10 @@ WHERE l.activo = TRUE;
 
 -- 1) La integridad "un solo area principal vigente por empleado"
 --    deberá validarse en la capa de aplicación o mediante trigger.
+--    Fuente actual: empleado.id_area_principal; empleado_area tiene PK por pareja,
+--    fechas nullable y no conserva varios periodos para la misma pareja.
+--    FK de jefe permite autorreferencia: la aplicación debe impedir jefe=empleado.
+--    Área, puesto y jefe actuales son nullable (ON DELETE SET NULL).
 --
 -- 2) La vigencia de contratos y salarios (sin solapamientos)
 --    deberá validarse en la capa de servicio/transacción.
