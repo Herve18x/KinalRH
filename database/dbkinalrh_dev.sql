@@ -6,8 +6,7 @@
 -- Fecha: 2026-08-17
 -- ============================================================
 
-DROP DATABASE IF EXISTS IN4CM;
-CREATE DATABASE IN4CM
+CREATE DATABASE IF NOT EXISTS IN4CM
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_0900_ai_ci;
 

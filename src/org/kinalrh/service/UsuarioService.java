@@ -149,4 +149,11 @@ public class UsuarioService {
         
         usuarioDAO.asignarRol(idUsuario, idRol);
     }
+
+    public List<org.kinalrh.model.ColaboradorSinRol> listarColaboradoresSinRol(String rolActual) {
+        if (rolActual == null || rolActual.trim().isEmpty()) {
+            throw new SecurityException("Acceso denegado: Sesión no válida.");
+        }
+        return usuarioDAO.listarColaboradoresSinRol();
+    }
 }

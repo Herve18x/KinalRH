@@ -47,8 +47,8 @@ public class Conexion {
         String host = prop.getProperty("db.host", "localhost");
         String port = prop.getProperty("db.port", "3306");
         String dbName = prop.getProperty("db.name", "IN4CM");
-        this.user = prop.getProperty("db.user", "root");
-        this.password = prop.getProperty("db.password", "");
+        this.user = prop.getProperty("db.user", "IN4CM");
+        this.password = prop.getProperty("db.password", "#NdimAM4");
 
         this.url = "jdbc:mysql://" + host + ":" + port + "/" + dbName
                 + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
