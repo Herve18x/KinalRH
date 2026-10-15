@@ -22,4 +22,5 @@ public interface UsuarioDAO {
 
     Optional<Usuario> buscarPorNombreUsuario(String nombreUsuario) throws SQLException;
     Set<String> obtenerPermisos(long idUsuario) throws SQLException;
+    List<org.kinalrh.model.ColaboradorSinRol> listarColaboradoresSinRol();
 }
