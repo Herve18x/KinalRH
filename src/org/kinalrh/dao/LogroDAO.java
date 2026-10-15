@@ -6,6 +6,9 @@ import org.kinalrh.model.Logro;
 import org.kinalrh.model.LogroEmpleadoDTO;
 
 public interface LogroDAO {
+    default long guardarConEmpleado(Logro logro, long idEmpleado, boolean destacado, String observaciones) throws SQLException {
+        throw new UnsupportedOperationException("Guardado transaccional no disponible.");
+    }
     List<Logro> listarTodos() throws SQLException;
     List<Logro> listarPorEmpleado(long idEmpleado) throws SQLException;
     List<LogroEmpleadoDTO> listarLogrosConEmpleados() throws SQLException;

@@ -48,3 +48,31 @@
 | `ultimo_acceso_en` | DATETIME | `ultimoAccesoEn` | `Timestamp` | NULL |
 | `creado_en` | TIMESTAMP | `creadoEn` | `Timestamp` | DEFAULT CURRENT_TIMESTAMP |
 | `actualizado_en` | TIMESTAMP | `actualizadoEn` | `Timestamp` | ON UPDATE |
+# Relaciones organizacionales — T3.05
+
+Fuente: `database/dbkinalrh_dev.sql`, MySQL 8, tablas InnoDB.
+
+| Columna | FK | Nulabilidad | Borrado / actualización |
+| --- | --- | --- | --- |
+| empleado.id_area_principal | area.id_area | NULL | SET NULL / CASCADE |
+| empleado.id_puesto_actual | puesto.id_puesto | NULL | SET NULL / CASCADE |
+| empleado.id_jefe_inmediato | empleado.id_empleado | NULL | SET NULL / CASCADE |
+| empleado_area.id_empleado | empleado.id_empleado | NOT NULL | CASCADE / CASCADE |
+| empleado_area.id_area | area.id_area | NOT NULL | RESTRICT / CASCADE |
+
+`empleado.id_area_principal` es la referencia actual para filtros y reportes.
+El DAO sincroniza su vínculo `empleado_area` en la misma transacción: desmarca
+las demás áreas y marca la seleccionada. `fecha_inicio` y `fecha_fin` son DATE
+nullable. Una asignación principal actual debe tener `fecha_fin` NULL y
+`fecha_inicio` no posterior a hoy. El puesto/jefe actuales no tienen fechas propias.
+
+La PK `(id_empleado,id_area)` permite una sola fila por pareja, no un historial
+de múltiples periodos. No existe constraint de una sola bandera principal, de
+igualdad con `id_area_principal`, ni de orden de fechas. SQL externo puede romper
+esa coherencia. La aplicación debe escribir ambos lados transaccionalmente.
+No se agrega un historial ni se alteran tablas destructivamente.
+
+La FK de jefe garantiza existencia, pero permite jefe igual al propio empleado.
+`EmpleadoService.validarJefeInmediato` lo impide y rechaza ciclos directos de dos
+empleados. No hay trigger ni detección de ciclos arbitrarios en el esquema real.
+Una sola columna por empleado representa un puesto, jefe y área principal actuales.

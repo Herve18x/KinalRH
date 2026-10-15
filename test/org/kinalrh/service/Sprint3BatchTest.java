@@ -41,6 +41,7 @@ public class Sprint3BatchTest {
             autorTest.setUsername("encargado_demo");
             autorTest.setRol("ADMIN");
         }
+        autorTest.setRol("ADMIN");
         SessionManager.getInstance().login(autorTest);
         System.out.println("[SESIÓN] Usuario autenticado: " + autorTest.getUsername() + " (ID: " + autorTest.getIdUsuario() + ", Rol: " + autorTest.getRol() + ")\n");
 

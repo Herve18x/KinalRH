@@ -148,22 +148,14 @@ public class LogroService {
         }
 
         try {
-            long idLogro;
-            if (logro.getIdLogro() != null && logro.getIdLogro() > 0) {
-                logroDAO.actualizar(logro);
-                idLogro = logro.getIdLogro();
-            } else {
-                idLogro = logroDAO.insertar(logro);
-                logro.setIdLogro(idLogro);
-            }
+            long idLogro = logroDAO.guardarConEmpleado(logro, idEmpleado, destacado, observaciones);
             if (idLogro > 0) {
-                logroDAO.asignarLogroAEmpleado(idLogro, idEmpleado, destacado, observaciones);
                 auditoriaService.registrarEvento("GUARDAR_LOGRO_COLABORADOR", "empleado_logro", idLogro,
                         "id_empleado", null, String.valueOf(idEmpleado));
             }
             return idLogro;
         } catch (SQLException e) {
-            throw new RuntimeException("Error al guardar el logro del colaborador: " + e.getMessage(), e);
+            throw new IllegalStateException("No se pudo guardar el logro del colaborador.");
         }
     }
 

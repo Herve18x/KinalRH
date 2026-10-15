@@ -185,3 +185,45 @@ Asegurar que cada mutación en el flujo de colaboradores registre el evento en l
 3. **Enmascaramiento de Datos Sensibles (T1.22 / T3.20):**
    - **Acción:** Registro de evento sobre el campo `password_hash`.
    - **Resultado:** **ÉXITO**. Persistido en BD como `[PROTEGIDO]`, evitando exposición de hashes o contraseñas.
+# Verificación de integración — 2026-10-14
+
+Estos resultados corresponden a pruebas automatizadas con aserciones, ejecutadas
+en MySQL 8.0.46, puerto local de pruebas 3317 y esquema único descartable por JVM.
+No se usan tablas ni cuentas reales. El esquema y configuración temporal se
+eliminan al terminar cada prueba. Los casos históricos que siguen conservan su
+contexto original y no sustituyen esta evidencia.
+
+| Caso / ejecutable | Estado inicial y pasos | Esperado | Real | Estado final |
+| --- | --- | --- | --- | --- |
+| T3.01 / PendientesSprint3Test | Un empleado con área principal A y secundaria B; filtrar nombre, DPI, área, estado, combinación y página | Un resultado, sin duplicados; valores literales seguros | PASÓ | Sin modificaciones por consulta |
+| T3.14 / PendientesSprint3Test | Crear dos logros; repetir vínculo; intentar FK inválida | Dos logros; PK rechaza duplicado; rollback de alta fallida | PASÓ | Dos vínculos válidos, sin logro huérfano |
+| T3.19 / PendientesSprint3Test | Auditar campos sensibles y un ID de área | Sin valores sensibles; conservar ID y metadatos | PASÓ | Eventos mínimos registrados |
+| T4.08 válido / ImportacionXlsxServiceTest | Empleado FICTICIO-001 con campos extra; leer lote_valido.xlsx, validar y confirmar | Un alta y una actualización; conservar extras y opcionales vacíos | PASÓ | Dos empleados y área principal coherente |
+| T4.08 inválido / ImportacionXlsxServiceTest | lote_invalido.xlsx: encabezado incorrecto, DPI repetido/largo, obligatorios, fecha y códigos inválidos | Todos los errores incluyen fila, columna y mensaje; cero escrituras | PASÓ | Estado anterior intacto |
+| T4.08 cancelar / ImportacionXlsxServiceTest | Previsualizar lote válido y cancelar; intentar confirmar | Denegado sin INSERT/UPDATE | PASÓ | Un empleado original |
+| T4.08 rollback / ImportacionXlsxServiceTest | Trigger de prueba impide segunda fila tras una actualización | Rollback total; una conexión; autoCommit restaurado | PASÓ | Apellido y cantidad originales |
+| T4.02 corrupto / ImportacionXlsxServiceTest | Archivo inexistente y archivo de texto con extensión xlsx | Mensaje seguro; ninguna escritura | PASÓ | Sin cambios |
+| T4.07 / ImportacionXlsxServiceTest | Usuario sin permiso y luego logout; llamadas directas a leer/previsualizar/confirmar | SecurityException antes de consultar empleados | PASÓ | Sin cambios ni reutilización del lote |
+| T4.03 catálogos / ImportacionXlsxServiceTest | Deshabilitar estado, área y puesto existentes en BD descartable | Errores de referencia inactiva acumulados | PASÓ | Ninguna escritura de empleado |
+| T4.13 / ReporteServiceTest | Dos activos en áreas/puestos distintos y un retirado; consulta general/aislada/combinada; exportar y abrir POI | IDs/conteos/orden iguales al control, cinco encabezados exactos, sin retirado ni columnas sensibles | PASÓ | Solo archivos de prueba, eliminados al finalizar |
+| T4.14 login / AutenticacionServiceTest | Crear cuenta con contraseña aleatoria en memoria; credencial correcta/incorrecta, cuenta inexistente e inactiva, logout | Acceso correcto o SecurityException; sin sesión residual | PASÓ | Sesión cerrada, esquema eliminado |
+| T4.14 permisos / AutorizacionServiceTest | Conceder/revocar códigos en SQL; buscar, editar, importar, exportar; repetir tras logout pasando rol anterior | Permisos requeridos por operación; revocación impide confirmar; logout deniega | PASÓ | Sin archivo ni escritura denegados |
+| T4.15 / EmpleadoIntegridadTest | DPI duplicado, estado/área/puesto inexistentes y nombre vacío, tanto alta como edición | Rechazo entendible sin SQL/DPI/causa sensible; conservar fila previa | PASÓ | Sin altas parciales ni huérfanos; cambio a estado válido persiste |
+| T4.16 / PruebaIntegradaTest | Login encargado; importar fixture; obtener IDs; ficha; reporte B/B; XLSX; logout | Recorrido completo de servicios coherente | PASÓ | Archivos y esquema descartables retirados |
+| T4.22/T4.23 / ExportacionTrazabilidadTest | Dos exportaciones; cotejar Metadatos/tabla/usuario/fecha/auditoría; cancelar; fallar escritura/auditoría/commit | Folios distintos; cero trazas de éxito en fallos; compensación del destino | PASÓ | Dos trazas válidas antes de eliminar el esquema |
+| FXML / FxmlImportacionTest | Iniciar JavaFX y cargar Importacion.fxml con FXMLLoader | Controlador y acciones válidos | PASÓ | Plataforma cerrada, sin abrir FileChooser |
+| Regresión DAO / EmpleadoDAOImplTest | Ejecutable previo sobre esquema propio, actualización parcial, paginación y retiro | 107 comprobaciones correctas | PASÓ | Sin cambios en bases reales |
+
+## Pruebas históricas
+
+Se ejecutaron en esquemas nuevos mediante `PruebaLegadaAislada`, cargando la semilla
+ficticia. EmpleadoGestionTest, EmpleadoListaAutorizacionTest,
+CargaEmpleadosSimuladosTest, EmpleadoLogroMultipleTest, AuditoriaServiceTest,
+AuditoriaFlujoPermisosTest, AlertaColaboradorSinRolTest, Sprint3BatchTest y
+SprintHerberthBatchTest terminaron sin marcas de fallo después de adaptar las
+expectativas de sesión y exclusión de datos sensibles. UsuarioServiceTest también
+terminó sus casos funcionales; expuso un mensaje SQL en duplicado (INC-09), defecto
+previo fuera del alcance. Los agregados históricos no siempre devuelven código de
+error al fallar: también se revisaron sus mensajes, no solo el exit code.
+Los logs locales de pruebas quedan en `build/revision/legadas/` (ignorados por Git);
+no se adjuntan porque los ejecutables históricos imprimen datos ficticios y errores.

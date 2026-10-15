@@ -78,3 +78,30 @@ El nombre de un rol no concede permisos automáticamente. Solo las asociaciones 
 | Autorización en interfaz y servicio | Pendiente de T1.17 / T1.20 | Capturas o casos de prueba |
 
 Adjuntar únicamente los resultados de asociaciones y permisos. No incluir el resultado que contiene las claves temporales. T1.18 se cierra cuando la ejecución real de la semilla y las consultas devuelve exactamente la diferencia de permisos descrita en esta matriz.
+# Operaciones Sprint 3/4
+
+Los servicios usan la sesión vigente de `SessionManager`, nunca el rol recibido
+como autorización. `ADMIN` conserva el acceso total compatible con la política
+integrada. Para otras cuentas se consultan los códigos de `permiso`, asociados
+por `usuario_rol` y `rol_permiso`, con cuenta, rol y permiso activos.
+No se conceden automáticamente permisos nuevos a roles existentes.
+
+| Operación directa | Permiso requerido | Servicio |
+| --- | --- | --- |
+| Buscar/listar empleado, ficha, filtros | EMPLEADO_VER | EmpleadoService |
+| Alta empleado | EMPLEADO_CREAR | EmpleadoService |
+| Edición/asignación organizacional | EMPLEADO_EDITAR | EmpleadoService |
+| Retirar empleado | EMPLEADO_CAMBIAR_ESTADO | EmpleadoService |
+| Leer/validar/previsualizar/confirmar XLSX | IMPORTACION_EJECUTAR | ImportacionXlsxService |
+| Consultar reporte de activos | EMPLEADO_VER | ReporteService |
+| Exportar reporte de activos | REPORTES_XLSX y EMPLEADO_VER para consultar | ReporteService |
+| Escribir XLSX mediante llamada directa | REPORTES_XLSX | ExportacionXlsxService |
+
+Importación vuelve a verificar antes de confirmar y antes del commit, usando la
+conexión del lote en este último caso. El lote pertenece al UUID de sesión que lo
+previsualizó. Logout invalida la sesión y los permisos almacenados; un parámetro
+de rol anterior no habilita operaciones. Cancelar no requiere permiso.
+
+`AutorizacionServiceTest` comprueba concesión/revocación de permisos en SQL,
+llamadas directas y logout, sin duplicar la autorización en un controlador.
+La matriz provisional histórica siguiente corresponde al Sprint 1.

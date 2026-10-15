@@ -13,6 +13,13 @@ public class Logro {
     private Boolean financiadoPorKinal;
     private String detalleFinanciacion;
     private Boolean activo;
+    private java.time.LocalDateTime creadoEn;
+    private java.time.LocalDateTime actualizadoEn;
+
+    public java.time.LocalDateTime getCreadoEn() { return creadoEn; }
+    public void setCreadoEn(java.time.LocalDateTime creadoEn) { this.creadoEn=creadoEn; }
+    public java.time.LocalDateTime getActualizadoEn() { return actualizadoEn; }
+    public void setActualizadoEn(java.time.LocalDateTime actualizadoEn) { this.actualizadoEn=actualizadoEn; }
 
     public Logro() {}
 

@@ -41,13 +41,7 @@ public class EmpleadoService {
     }
 
     public void retirarEmpleado(long idEmpleado) {
-        org.kinalrh.model.Usuario usuario = org.kinalrh.util.SessionManager.getInstance().getCurrentUser();
-        if (usuario == null || !usuario.isActivo() || usuario.getIdUsuario() == null || usuario.getIdUsuario() <= 0) {
-            throw new SecurityException("Acceso denegado: Se requiere una sesión activa.");
-        }
-        if (!autorizacionService.tienePermiso(usuario.getRol(), "EMPLEADO_CAMBIAR_ESTADO")) {
-            throw new SecurityException("Acceso denegado: Se requiere el permiso EMPLEADO_CAMBIAR_ESTADO.");
-        }
+        autorizacionService.exigirPermiso("EMPLEADO_CAMBIAR_ESTADO");
         try {
             if (!empleadoDAO.retirar(idEmpleado)) {
                 throw new IllegalArgumentException("El colaborador no existe.");
@@ -61,14 +55,11 @@ public class EmpleadoService {
         if (rolActual == null || rolActual.trim().isEmpty()) {
             throw new SecurityException("Acceso denegado: Sesión no válida (después de logout).");
         }
-        if (!autorizacionService.tienePermiso(rolActual, "EMPLEADO_VER")) {
-            throw new SecurityException("Acceso denegado: Su cuenta no tiene el permiso EMPLEADO_VER.");
-        }
+        autorizacionService.exigirPermiso("EMPLEADO_VER");
         try {
             return empleadoDAO.listarTodos();
         } catch (SQLException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
+            throw new IllegalStateException("No se pudo consultar empleados.");
         }
     }
     
@@ -76,29 +67,23 @@ public class EmpleadoService {
         if (rolActual == null || rolActual.trim().isEmpty()) {
             throw new SecurityException("Acceso denegado: Sesión no válida.");
         }
-        if (!autorizacionService.tienePermiso(rolActual, "EMPLEADO_VER")) {
-            throw new SecurityException("Acceso denegado: Su cuenta no tiene el permiso EMPLEADO_VER.");
-        }
+        autorizacionService.exigirPermiso("EMPLEADO_VER");
         try {
             Optional<Empleado> opt = empleadoDAO.buscarPorId(idEmpleado);
             return opt.orElse(null);
         } catch (SQLException e) {
-            e.printStackTrace();
-            return null;
+            throw new IllegalStateException("No se pudo consultar el empleado.");
         }
     }
 
     private void validarPermisoEdicion(String rolActual) {
-        if (rolActual == null || rolActual.trim().isEmpty()) {
-            throw new SecurityException("Acceso denegado: Sesión no válida.");
-        }
-        if (!autorizacionService.tienePermiso(rolActual, "EMPLEADO_EDITAR")
-                && !autorizacionService.tienePermiso(rolActual, "EMPLEADO_CREAR")
-                && !rolActual.equalsIgnoreCase("ADMIN")
-                && !rolActual.equalsIgnoreCase("ENCARGADO")
-                && !rolActual.equalsIgnoreCase("RRHH")) {
-            throw new SecurityException("Acceso denegado: Su cuenta no tiene permiso para modificar empleados.");
-        }
+        autorizacionService.exigirPermiso("EMPLEADO_EDITAR");
+    }
+
+    public List<Empleado> buscar(String nombre, String dpi, Long idArea, Long idEstado, int limite, int offset) {
+        autorizacionService.exigirPermiso("EMPLEADO_VER");
+        try { return empleadoDAO.buscar(nombre,dpi,idArea,idEstado,limite,offset); }
+        catch (SQLException ex) { throw new IllegalStateException("No se pudo buscar empleados."); }
     }
 
     public void validarJefeInmediato(Long idEmpleado, Long idJefeInmediato) {
@@ -137,7 +122,9 @@ public class EmpleadoService {
     }
 
     public void guardarEmpleado(Empleado emp, String rolActual, Long idAutor) {
-        validarPermisoEdicion(rolActual);
+        autorizacionService.exigirPermiso(emp == null || emp.getIdEmpleado() == null || emp.getIdEmpleado() <= 0
+                ? "EMPLEADO_CREAR" : "EMPLEADO_EDITAR");
+        idAutor = resolverIdAutor();
         if (emp == null) {
             throw new IllegalArgumentException("Error: Los datos del empleado no pueden ser nulos.");
         }
@@ -149,13 +136,13 @@ public class EmpleadoService {
 
         // T2.09 Validar duplicados (US-44)
         if (emp.getDpi() != null && empleadoDAO.existeDpi(emp.getDpi(), idExcluido)) {
-            throw new IllegalArgumentException("Error: Ya existe un empleado registrado con el DPI " + emp.getDpi());
+            throw new IllegalArgumentException("Ya existe un empleado registrado con ese DPI.");
         }
         if (emp.getNit() != null && !emp.getNit().trim().isEmpty() && empleadoDAO.existeNit(emp.getNit(), idExcluido)) {
-            throw new IllegalArgumentException("Error: Ya existe un empleado registrado con el NIT " + emp.getNit());
+            throw new IllegalArgumentException("Ya existe un empleado registrado con ese NIT.");
         }
         if (emp.getCorreoPersonal() != null && !emp.getCorreoPersonal().trim().isEmpty() && empleadoDAO.existeCorreoPersonal(emp.getCorreoPersonal(), idExcluido)) {
-            throw new IllegalArgumentException("Error: Ya existe un empleado con el correo personal " + emp.getCorreoPersonal());
+            throw new IllegalArgumentException("Ya existe un empleado con ese correo personal.");
         }
         
         // T2.09 / T3.06 / T3.10 Validar referencias existentes (área, puesto, estado)
@@ -194,8 +181,7 @@ public class EmpleadoService {
                 auditoriaService.registrarEvento(idAutor, "ACTUALIZAR_EMPLEADO", "empleado", emp.getIdEmpleado(), null, null, detalle);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error al guardar en base de datos: " + e.getMessage());
+            throw new IllegalStateException("No se pudo guardar el empleado. Revise sus datos y referencias.");
         }
     }
 
@@ -228,7 +214,7 @@ public class EmpleadoService {
                     anterior != null ? String.valueOf(anterior) : null,
                     idJefeInmediato != null ? String.valueOf(idJefeInmediato) : null);
         } catch (SQLException e) {
-            throw new RuntimeException("Error al asignar jefe inmediato: " + e.getMessage(), e);
+            throw new IllegalStateException("No se pudo asignar el jefe inmediato.");
         }
     }
 
@@ -248,7 +234,7 @@ public class EmpleadoService {
                     anterior != null ? String.valueOf(anterior) : null,
                     idAreaPrincipal != null ? String.valueOf(idAreaPrincipal) : null);
         } catch (SQLException e) {
-            throw new RuntimeException("Error al asignar área principal: " + e.getMessage(), e);
+            throw new IllegalStateException("No se pudo asignar el área principal.");
         }
     }
 
@@ -268,7 +254,7 @@ public class EmpleadoService {
                     anterior != null ? String.valueOf(anterior) : null,
                     idPuestoActual != null ? String.valueOf(idPuestoActual) : null);
         } catch (SQLException e) {
-            throw new RuntimeException("Error al asignar puesto actual: " + e.getMessage(), e);
+            throw new IllegalStateException("No se pudo asignar el puesto actual.");
         }
     }
 
@@ -289,7 +275,7 @@ public class EmpleadoService {
                     anterior != null ? String.valueOf(anterior) : null,
                     idNivelAcademico != null ? String.valueOf(idNivelAcademico) : null);
         } catch (SQLException e) {
-            throw new RuntimeException("Error al actualizar nivel académico: " + e.getMessage(), e);
+            throw new IllegalStateException("No se pudo asignar el nivel académico.");
         }
     }
 }

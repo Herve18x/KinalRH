@@ -1,5 +1,5 @@
 db.host=localhost
 db.port=3306
 db.name=IN4CM
-db.user=root
+db.user=kinalrh_app
 db.password=

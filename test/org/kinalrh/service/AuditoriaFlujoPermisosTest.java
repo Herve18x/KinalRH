@@ -87,6 +87,7 @@ public class AuditoriaFlujoPermisosTest {
             // -------------------------------------------------------------
             System.out.println("\n--- 4. Comprobación de permiso del flujo ante usuario no autorizado ---");
             boolean permisoFlujoDenegado = false;
+            SessionManager.getInstance().login(new org.kinalrh.dao.impl.UsuarioDAOImpl().buscarPorUsername("visor_demo"));
             try {
                 // Rol VISOR no tiene permiso EMPLEADO_EDITAR / EMPLEADO_CREAR
                 emp.setPrimerNombre("NombreModificadoIlegalmente");
@@ -101,14 +102,16 @@ public class AuditoriaFlujoPermisosTest {
             // 5. Comprobar protección de datos sensibles en auditoría
             // -------------------------------------------------------------
             System.out.println("\n--- 5. Comprobación de omisión de datos sensibles (T1.22/T3.20) ---");
+            SessionManager.getInstance().login(usuarioSesion);
             auditoriaService.registrarEvento("CAMBIO_PASSWORD", "usuario", idUsuarioSesion, "password_hash", "viejo_hash_123", "nuevo_hash_456");
             Auditoria eventoProtegido = buscarUltimoEventoAuditoria("usuario", idUsuarioSesion);
             boolean datosProtegidosOk = false;
-            if (eventoProtegido != null && "[PROTEGIDO]".equals(eventoProtegido.getValorAnterior()) && "[PROTEGIDO]".equals(eventoProtegido.getValorNuevo())) {
+            if (eventoProtegido != null && "-".equals(eventoProtegido.getCampo())
+                    && "-".equals(eventoProtegido.getValorAnterior()) && "-".equals(eventoProtegido.getValorNuevo())) {
                 datosProtegidosOk = true;
-                System.out.println("   [ÉXITO] El campo sensible 'password_hash' fue enmascarado como [PROTEGIDO] en BD.");
+                System.out.println("   [ÉXITO] Los valores sensibles se excluyeron de auditoría.");
             } else {
-                System.err.println("   [FALLO] No se enmascaró el dato sensible en auditoría.");
+                System.err.println("   [FALLO] Se conservaron valores sensibles en auditoría.");
             }
 
             // -------------------------------------------------------------
@@ -119,6 +122,7 @@ public class AuditoriaFlujoPermisosTest {
                 System.out.println("   RESULTADO T3.20: COMPROBACIÓN DE AUDITORÍA Y PERMISOS [OK]    ");
             } else {
                 System.err.println("   RESULTADO T3.20: FALLO EN COMPROBACIÓN DE AUDITORÍA Y PERMISOS");
+                throw new AssertionError("Falló auditoría o autorización del flujo.");
             }
             System.out.println("=================================================================");
 

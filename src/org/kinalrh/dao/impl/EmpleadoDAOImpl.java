@@ -35,6 +35,41 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
     }
 
     @Override
+    public List<Empleado> buscar(String nombre, String dpi, Long idArea, Long idEstado,
+            int tamanioPagina, int desplazamiento) throws SQLException {
+        if (tamanioPagina < 1 || tamanioPagina > 25 || desplazamiento < 0) {
+            throw new IllegalArgumentException("Página de 1 a 25 registros y desplazamiento no negativo.");
+        }
+        String sql = "SELECT e.*, a.nombre AS area_nombre, p.nombre AS puesto_nombre, "
+                + "ee.nombre AS estado_nombre, na.nombre AS nivel_academico_nombre, j.nombre_completo AS jefe_nombre "
+                + "FROM empleado e JOIN estado_empleado ee ON ee.id_estado_empleado=e.id_estado_empleado "
+                + "LEFT JOIN area a ON a.id_area=e.id_area_principal "
+                + "LEFT JOIN puesto p ON p.id_puesto=e.id_puesto_actual "
+                + "LEFT JOIN nivel_academico na ON na.id_nivel_academico=e.id_nivel_academico "
+                + "LEFT JOIN empleado j ON j.id_empleado=e.id_jefe_inmediato WHERE 1=1";
+        List<Object> valores = new ArrayList<>();
+        if (nombre != null && !nombre.isBlank()) {
+            sql += " AND COALESCE(e.nombre_completo, CONCAT_WS(' ', e.primer_nombre, e.primer_apellido)) LIKE ?";
+            valores.add("%" + nombre.trim().replace("!", "!!").replace("%", "!%").replace("_", "!_") + "%");
+            sql += " ESCAPE '!'";
+        }
+        if (dpi != null && !dpi.isBlank()) { sql += " AND e.dpi=?"; valores.add(dpi.trim()); }
+        if (idArea != null) { sql += " AND e.id_area_principal=?"; valores.add(idArea); }
+        if (idEstado != null) { sql += " AND e.id_estado_empleado=?"; valores.add(idEstado); }
+        sql += " ORDER BY e.id_empleado ASC LIMIT ? OFFSET ?";
+        valores.add(tamanioPagina);
+        valores.add(desplazamiento);
+        List<Empleado> resultado = new ArrayList<>();
+        try (Connection conn = conectar(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            for (int i = 0; i < valores.size(); i++) stmt.setObject(i + 1, valores.get(i));
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) resultado.add(mapear(rs));
+            }
+        }
+        return resultado;
+    }
+
+    @Override
     public List<Empleado> listarPaginado(int tamanioPagina, int desplazamiento) throws SQLException {
         return listarPagina(tamanioPagina, desplazamiento, false);
     }
@@ -171,6 +206,23 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
 
     @Override
     public long insertar(Empleado empleado) throws SQLException {
+        try (Connection conn = conectar()) {
+            boolean original = conn.getAutoCommit();
+            conn.setAutoCommit(false);
+            try {
+                long id = insertar(conn, empleado);
+                conn.commit();
+                return id;
+            } catch (SQLException | RuntimeException ex) {
+                revertir(conn, ex);
+                throw ex;
+            } finally {
+                conn.setAutoCommit(original);
+            }
+        } catch (SQLException ex) { throw controlarDuplicadoDpi(ex); }
+    }
+
+    public long insertar(Connection conn, Empleado empleado) throws SQLException {
         validarEmpleado(empleado);
         Map<String, Object> valores = valoresEmpleado(empleado, true);
         String nombreCompleto = Stream.of(empleado.getPrimerNombre(), empleado.getSegundoNombre(),
@@ -181,9 +233,7 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
         valores.put("nombre_completo", nombreCompleto);
         String sql = "INSERT INTO empleado (" + String.join(", ", valores.keySet()) + ") VALUES (" +
                 valores.keySet().stream().map(columna -> "?").collect(Collectors.joining(", ")) + ")";
-        try (Connection conn = conectar()) {
-            conn.setAutoCommit(false);
-            try {
+        try {
                 validarEstado(conn, empleado.getIdEstadoEmpleado());
                 long idGenerado;
                 try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -198,13 +248,8 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
                     }
                 }
                 sincronizarAreaPrincipal(conn, idGenerado, empleado.getIdAreaPrincipal());
-                conn.commit();
                 empleado.setNombreCompleto(nombreCompleto);
                 return idGenerado;
-            } catch (SQLException | RuntimeException e) {
-                revertir(conn, e);
-                throw e;
-            }
         } catch (SQLException e) {
             throw controlarDuplicadoDpi(e);
         }
@@ -212,6 +257,23 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
 
     @Override
     public boolean actualizar(Empleado empleado) throws SQLException {
+        try (Connection conn = conectar()) {
+            boolean original = conn.getAutoCommit();
+            conn.setAutoCommit(false);
+            try {
+                boolean actualizado = actualizar(conn, empleado);
+                conn.commit();
+                return actualizado;
+            } catch (SQLException | RuntimeException ex) {
+                revertir(conn, ex);
+                throw ex;
+            } finally {
+                conn.setAutoCommit(original);
+            }
+        } catch (SQLException ex) { throw controlarDuplicadoDpi(ex); }
+    }
+
+    public boolean actualizar(Connection conn, Empleado empleado) throws SQLException {
         validarEmpleado(empleado);
         if (empleado.getIdEmpleado() == null) {
             throw new IllegalArgumentException("El identificador del empleado es obligatorio.");
@@ -225,9 +287,7 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
                 "NULLIF(TRIM(segundo_apellido), ''), NULLIF(TRIM(apellido_casada), ''))";
         String sql = "UPDATE empleado SET " + asignaciones + ", nombre_completo = " + nombreSql +
                 " WHERE id_empleado = ?";
-        try (Connection conn = conectar()) {
-            conn.setAutoCommit(false);
-            try {
+        try {
                 validarEstado(conn, empleado.getIdEstadoEmpleado());
                 boolean existe;
                 try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -238,12 +298,7 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
                 if (existe && empleado.tieneCampoOpcional("idAreaPrincipal")) {
                     sincronizarAreaPrincipal(conn, empleado.getIdEmpleado(), empleado.getIdAreaPrincipal());
                 }
-                conn.commit();
                 return existe;
-            } catch (SQLException | RuntimeException e) {
-                revertir(conn, e);
-                throw e;
-            }
         } catch (SQLException e) {
             throw controlarDuplicadoDpi(e);
         }
@@ -255,6 +310,20 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
                 || empleado.getPrimerApellido() == null || empleado.getPrimerApellido().isBlank()
                 || empleado.getIdEstadoEmpleado() == null || empleado.getIdEstadoEmpleado() <= 0) {
             throw new IllegalArgumentException("DPI, primer nombre, primer apellido y estado laboral válido son obligatorios.");
+        }
+        if (empleado.getDpi().length() > 20 || empleado.getPrimerNombre().length() > 80
+                || empleado.getPrimerApellido().length() > 80) {
+            throw new IllegalArgumentException("DPI máximo 20 caracteres; nombres y apellidos máximo 80.");
+        }
+        if (empleado.getIdEmpleado() != null && empleado.getIdEmpleado().equals(empleado.getIdJefeInmediato())) {
+            throw new IllegalArgumentException("El empleado no puede ser su propio jefe.");
+        }
+    }
+
+    public Optional<Long> buscarIdPorDpi(Connection conn, String dpi) throws SQLException {
+        try (PreparedStatement stmt = conn.prepareStatement("SELECT id_empleado FROM empleado WHERE dpi=?")) {
+            stmt.setString(1, dpi);
+            try (ResultSet rs = stmt.executeQuery()) { return rs.next() ? Optional.of(rs.getLong(1)) : Optional.empty(); }
         }
     }
 
@@ -274,8 +343,10 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
         for (SQLException actual = error; actual != null; actual = actual.getNextException()) {
             if (actual.getErrorCode() == 1062 && actual.getMessage() != null
                     && actual.getMessage().contains("uq_empleado_dpi")) {
-                throw new IllegalArgumentException("Ya existe un empleado registrado con ese DPI.", error);
+                throw new IllegalArgumentException("Ya existe un empleado registrado con ese DPI.");
             }
+            if (actual.getErrorCode() == 1452) throw new IllegalArgumentException("Una referencia de estado, área, puesto o jefe no existe.");
+            if (actual.getErrorCode() == 1062) throw new IllegalArgumentException("Ya existe un registro con un identificador único indicado.");
         }
         return error;
     }
@@ -307,7 +378,9 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
         }
         if (idAreaPrincipal == null) return;
         String sql = "INSERT INTO empleado_area (id_empleado, id_area, es_principal, fecha_inicio) " +
-                "VALUES (?, ?, TRUE, CURRENT_DATE) ON DUPLICATE KEY UPDATE es_principal = TRUE";
+                "VALUES (?, ?, TRUE, CURRENT_DATE) ON DUPLICATE KEY UPDATE es_principal = TRUE, " +
+                "fecha_inicio = CASE WHEN fecha_fin IS NOT NULL OR fecha_inicio IS NULL OR fecha_inicio > CURRENT_DATE " +
+                "THEN CURRENT_DATE ELSE fecha_inicio END, fecha_fin = NULL";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setLong(1, idEmpleado);
             stmt.setLong(2, idAreaPrincipal);
@@ -422,9 +495,8 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
                 return rs.next();
             }
         } catch (SQLException e) {
-            System.err.println("Error al validar DPI: " + e.getMessage());
+            throw new IllegalStateException("No se pudo validar la disponibilidad del DPI.");
         }
-        return false;
     }
 
     @Override
@@ -439,9 +511,8 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
                 return rs.next();
             }
         } catch (SQLException e) {
-            System.err.println("Error al validar NIT: " + e.getMessage());
+            throw new IllegalStateException("No se pudo validar la disponibilidad del NIT.");
         }
-        return false;
     }
 
     @Override
@@ -456,16 +527,15 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
                 return rs.next();
             }
         } catch (SQLException e) {
-            System.err.println("Error al validar correo: " + e.getMessage());
+            throw new IllegalStateException("No se pudo validar la disponibilidad del correo.");
         }
-        return false;
     }
 
     @Override
     public boolean existeReferencia(String tabla, String pkColumna, Long id) {
-        // Evitamos inyección validando nombres de tabla permitidos
-        if (!tabla.equals("area") && !tabla.equals("puesto") && !tabla.equals("estado_empleado")
-                && !tabla.equals("nivel_academico") && !tabla.equals("empleado")) {
+        Map<String,String> referencias = Map.of("area","id_area","puesto","id_puesto",
+                "estado_empleado","id_estado_empleado","nivel_academico","id_nivel_academico","empleado","id_empleado");
+        if (tabla == null || !java.util.Objects.equals(referencias.get(tabla), pkColumna) || id == null) {
             return false;
         }
         String sql = "SELECT 1 FROM " + tabla + " WHERE " + pkColumna + " = ?";
@@ -476,8 +546,7 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
                 return rs.next();
             }
         } catch (SQLException e) {
-            System.err.println("Error al validar referencia " + tabla + ": " + e.getMessage());
+            throw new IllegalStateException("No se pudo validar la referencia seleccionada.");
         }
-        return false;
     }
 }
