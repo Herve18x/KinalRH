@@ -27,10 +27,34 @@ public class EmpleadoService {
     private final AuditoriaService auditoriaService;
 
     public EmpleadoService() {
+        this(new EmpleadoDAOImpl());
+    }
+
+    public EmpleadoService(EmpleadoDAO empleadoDAO) {
+        if (empleadoDAO == null) {
+            throw new IllegalArgumentException("El DAO de empleados es obligatorio.");
+        }
         this.autorizacionService = new AutorizacionService();
-        this.empleadoDAO = new EmpleadoDAOImpl();
+        this.empleadoDAO = empleadoDAO;
         this.nivelAcademicoDAO = new NivelAcademicoDAOImpl();
         this.auditoriaService = new AuditoriaService();
+    }
+
+    public void retirarEmpleado(long idEmpleado) {
+        org.kinalrh.model.Usuario usuario = org.kinalrh.util.SessionManager.getInstance().getCurrentUser();
+        if (usuario == null || !usuario.isActivo() || usuario.getIdUsuario() == null || usuario.getIdUsuario() <= 0) {
+            throw new SecurityException("Acceso denegado: Se requiere una sesión activa.");
+        }
+        if (!autorizacionService.tienePermiso(usuario.getRol(), "EMPLEADO_CAMBIAR_ESTADO")) {
+            throw new SecurityException("Acceso denegado: Se requiere el permiso EMPLEADO_CAMBIAR_ESTADO.");
+        }
+        try {
+            if (!empleadoDAO.retirar(idEmpleado)) {
+                throw new IllegalArgumentException("El colaborador no existe.");
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("No se pudo cambiar el estado laboral del colaborador.", e);
+        }
     }
 
     public List<Empleado> listarEmpleados(String rolActual) {
