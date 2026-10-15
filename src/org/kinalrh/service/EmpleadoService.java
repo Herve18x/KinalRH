@@ -5,14 +5,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.kinalrh.dao.EmpleadoDAO;
+import org.kinalrh.dao.NivelAcademicoDAO;
 import org.kinalrh.dao.impl.EmpleadoDAOImpl;
+import org.kinalrh.dao.impl.NivelAcademicoDAOImpl;
 import org.kinalrh.model.Empleado;
+import org.kinalrh.model.Usuario;
+import org.kinalrh.util.SessionManager;
 
+/**
+ * Servicio para gestión y lógica de negocio de colaboradores.
+ * T3.06 Regla que impide ser su propio jefe y validaciones jerárquicas.
+ * T3.10 Asignación de nivel académico actual.
+ * T3.12 Verificar que solo se guarda un nivel académico válido y activo.
+ * T3.18 Registrar alta y edición de empleado con autor y fecha.
+ */
 public class EmpleadoService {
 
-    private AutorizacionService autorizacionService;
-    private EmpleadoDAO empleadoDAO;
-    private AuditoriaService auditoriaService;
+    private final AutorizacionService autorizacionService;
+    private final EmpleadoDAO empleadoDAO;
+    private final NivelAcademicoDAO nivelAcademicoDAO;
+    private final AuditoriaService auditoriaService;
 
     public EmpleadoService() {
         this(new EmpleadoDAOImpl());
@@ -24,6 +36,7 @@ public class EmpleadoService {
         }
         this.autorizacionService = new AutorizacionService();
         this.empleadoDAO = empleadoDAO;
+        this.nivelAcademicoDAO = new NivelAcademicoDAOImpl();
         this.auditoriaService = new AuditoriaService();
     }
 
@@ -110,8 +123,20 @@ public class EmpleadoService {
             }
         }
     }
+
+    private Long resolverIdAutor() {
+        Usuario u = SessionManager.getInstance().getCurrentUser();
+        if (u == null) {
+            u = SesionService.getInstance().getUsuarioAutenticado();
+        }
+        return u != null ? u.getIdUsuario() : null;
+    }
     
     public void guardarEmpleado(Empleado emp, String rolActual) {
+        guardarEmpleado(emp, rolActual, resolverIdAutor());
+    }
+
+    public void guardarEmpleado(Empleado emp, String rolActual, Long idAutor) {
         validarPermisoEdicion(rolActual);
         if (emp == null) {
             throw new IllegalArgumentException("Error: Los datos del empleado no pueden ser nulos.");
@@ -133,7 +158,7 @@ public class EmpleadoService {
             throw new IllegalArgumentException("Error: Ya existe un empleado con el correo personal " + emp.getCorreoPersonal());
         }
         
-        // T2.09 / T3.06 / T3.10 Validar referencias existentes (área, puesto, estado, nivel académico)
+        // T2.09 / T3.06 / T3.10 Validar referencias existentes (área, puesto, estado)
         if (emp.getIdAreaPrincipal() != null && !empleadoDAO.existeReferencia("area", "id_area", emp.getIdAreaPrincipal())) {
             throw new IllegalArgumentException("Error: El área seleccionada no existe en la base de datos.");
         }
@@ -143,23 +168,49 @@ public class EmpleadoService {
         if (emp.getIdEstadoEmpleado() != null && !empleadoDAO.existeReferencia("estado_empleado", "id_estado_empleado", emp.getIdEstadoEmpleado())) {
             throw new IllegalArgumentException("Error: El estado laboral seleccionado no existe.");
         }
-        if (emp.getIdNivelAcademico() != null && !empleadoDAO.existeReferencia("nivel_academico", "id_nivel_academico", emp.getIdNivelAcademico())) {
-            throw new IllegalArgumentException("Error: El nivel académico seleccionado no existe en la base de datos.");
+
+        // T3.12 Verificar que solo se guarda un nivel académico válido y activo
+        if (emp.getIdNivelAcademico() != null) {
+            if (!nivelAcademicoDAO.esNivelValidoYActivo(emp.getIdNivelAcademico())) {
+                throw new IllegalArgumentException("Error: El nivel académico seleccionado no es válido o no está activo.");
+            }
         }
         
         try {
+            String detalle = (emp.getNombreCompleto() != null && !emp.getNombreCompleto().trim().isEmpty())
+                    ? emp.getNombreCompleto()
+                    : emp.getNombre();
+
             if (idExcluido == null) {
+                // T3.18 Registrar alta de empleado con autor y fecha
                 long id = empleadoDAO.insertar(emp);
                 emp.setIdEmpleado(id);
-                auditoriaService.registrarEvento("CREAR_EMPLEADO", "empleado", id, null, null, emp.getNombre());
+                auditoriaService.auditarAltaEmpleado(idAutor, id, detalle != null ? detalle : ("Empleado #" + id));
+                auditoriaService.registrarEvento(idAutor, "CREAR_EMPLEADO", "empleado", id, null, null, detalle);
             } else {
+                // T3.18 Registrar edición de empleado con autor y fecha
                 empleadoDAO.actualizar(emp);
-                auditoriaService.registrarEvento("ACTUALIZAR_EMPLEADO", "empleado", emp.getIdEmpleado(), null, null, emp.getNombre());
+                auditoriaService.auditarEdicionEmpleado(idAutor, emp.getIdEmpleado(), detalle != null ? detalle : ("Empleado #" + emp.getIdEmpleado()));
+                auditoriaService.registrarEvento(idAutor, "ACTUALIZAR_EMPLEADO", "empleado", emp.getIdEmpleado(), null, null, detalle);
             }
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException("Error al guardar en base de datos: " + e.getMessage());
         }
+    }
+
+    public void registrarAltaEmpleado(Empleado emp, String rolActual, Long idAutor) {
+        if (emp != null) {
+            emp.setIdEmpleado(null);
+        }
+        guardarEmpleado(emp, rolActual, idAutor);
+    }
+
+    public void registrarEdicionEmpleado(Empleado emp, String rolActual, Long idAutor) {
+        if (emp == null || emp.getIdEmpleado() == null || emp.getIdEmpleado() <= 0) {
+            throw new IllegalArgumentException("Error: Para editar un empleado debe proporcionar un ID válido.");
+        }
+        guardarEmpleado(emp, rolActual, idAutor);
     }
 
     // T3.06 Asignaciones organizacionales en servicio
@@ -172,7 +223,8 @@ public class EmpleadoService {
             Long anterior = emp.getIdJefeInmediato();
             emp.setIdJefeInmediato(idJefeInmediato);
             empleadoDAO.actualizar(emp);
-            auditoriaService.registrarEvento("ASIGNAR_JEFE", "empleado", idEmpleado, "id_jefe_inmediato",
+            Long idAutor = resolverIdAutor();
+            auditoriaService.registrarEvento(idAutor, "ASIGNAR_JEFE", "empleado", idEmpleado, "id_jefe_inmediato",
                     anterior != null ? String.valueOf(anterior) : null,
                     idJefeInmediato != null ? String.valueOf(idJefeInmediato) : null);
         } catch (SQLException e) {
@@ -191,7 +243,8 @@ public class EmpleadoService {
             Long anterior = emp.getIdAreaPrincipal();
             emp.setIdAreaPrincipal(idAreaPrincipal);
             empleadoDAO.actualizar(emp);
-            auditoriaService.registrarEvento("ASIGNAR_AREA", "empleado", idEmpleado, "id_area_principal",
+            Long idAutor = resolverIdAutor();
+            auditoriaService.registrarEvento(idAutor, "ASIGNAR_AREA", "empleado", idEmpleado, "id_area_principal",
                     anterior != null ? String.valueOf(anterior) : null,
                     idAreaPrincipal != null ? String.valueOf(idAreaPrincipal) : null);
         } catch (SQLException e) {
@@ -210,7 +263,8 @@ public class EmpleadoService {
             Long anterior = emp.getIdPuestoActual();
             emp.setIdPuestoActual(idPuestoActual);
             empleadoDAO.actualizar(emp);
-            auditoriaService.registrarEvento("ASIGNAR_PUESTO", "empleado", idEmpleado, "id_puesto_actual",
+            Long idAutor = resolverIdAutor();
+            auditoriaService.registrarEvento(idAutor, "ASIGNAR_PUESTO", "empleado", idEmpleado, "id_puesto_actual",
                     anterior != null ? String.valueOf(anterior) : null,
                     idPuestoActual != null ? String.valueOf(idPuestoActual) : null);
         } catch (SQLException e) {
@@ -219,17 +273,19 @@ public class EmpleadoService {
     }
 
     // T3.10 Asignación de nivel académico actual en servicio
+    // T3.12 Verificar que solo se guarda un nivel académico válido y activo
     public void asignarNivelAcademico(long idEmpleado, Long idNivelAcademico, String rolActual) {
         validarPermisoEdicion(rolActual);
-        if (idNivelAcademico != null && !empleadoDAO.existeReferencia("nivel_academico", "id_nivel_academico", idNivelAcademico)) {
-            throw new IllegalArgumentException("Error: El nivel académico seleccionado no existe en la base de datos.");
+        if (idNivelAcademico != null && !nivelAcademicoDAO.esNivelValidoYActivo(idNivelAcademico)) {
+            throw new IllegalArgumentException("Error: El nivel académico seleccionado no es válido o no está activo.");
         }
         try {
             Empleado emp = empleadoDAO.buscarPorId(idEmpleado)
                     .orElseThrow(() -> new IllegalArgumentException("Error: El colaborador no existe."));
             Long anterior = emp.getIdNivelAcademico();
             empleadoDAO.actualizarNivelAcademico(idEmpleado, idNivelAcademico);
-            auditoriaService.registrarEvento("ASIGNAR_NIVEL_ACADEMICO", "empleado", idEmpleado, "id_nivel_academico",
+            Long idAutor = resolverIdAutor();
+            auditoriaService.registrarEvento(idAutor, "ASIGNAR_NIVEL_ACADEMICO", "empleado", idEmpleado, "id_nivel_academico",
                     anterior != null ? String.valueOf(anterior) : null,
                     idNivelAcademico != null ? String.valueOf(idNivelAcademico) : null);
         } catch (SQLException e) {

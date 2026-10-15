@@ -16,7 +16,7 @@ public class UsuarioDAOImpl implements UsuarioDAO {
     @Override
     public List<Usuario> listarTodos() {
         List<Usuario> usuarios = new ArrayList<>();
-        String sql = "SELECT u.id_usuario, u.nombre_usuario, u.nombre_completo, u.correo, u.password_hash, u.activo, r.nombre AS rol " +
+        String sql = "SELECT u.id_usuario, u.nombre_usuario, u.nombre_completo, u.correo, u.password_hash, u.activo, u.id_empleado, r.nombre AS rol " +
                      "FROM usuario u " +
                      "LEFT JOIN usuario_rol ur ON u.id_usuario = ur.id_usuario " +
                      "LEFT JOIN rol r ON ur.id_rol = r.id_rol";
@@ -36,7 +36,7 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 
     @Override
     public Usuario buscarPorUsername(String username) {
-        String sql = "SELECT u.id_usuario, u.nombre_usuario, u.nombre_completo, u.correo, u.password_hash, u.activo, r.nombre AS rol " +
+        String sql = "SELECT u.id_usuario, u.nombre_usuario, u.nombre_completo, u.correo, u.password_hash, u.activo, u.id_empleado, r.nombre AS rol " +
                      "FROM usuario u " +
                      "LEFT JOIN usuario_rol ur ON u.id_usuario = ur.id_usuario " +
                      "LEFT JOIN rol r ON ur.id_rol = r.id_rol " +
@@ -59,7 +59,7 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 
     @Override
     public Optional<Usuario> buscarPorId(long id) {
-        String sql = "SELECT u.id_usuario, u.nombre_usuario, u.nombre_completo, u.correo, u.password_hash, u.activo, r.nombre AS rol " +
+        String sql = "SELECT u.id_usuario, u.nombre_usuario, u.nombre_completo, u.correo, u.password_hash, u.activo, u.id_empleado, r.nombre AS rol " +
                      "FROM usuario u " +
                      "LEFT JOIN usuario_rol ur ON u.id_usuario = ur.id_usuario " +
                      "LEFT JOIN rol r ON ur.id_rol = r.id_rol " +
@@ -82,7 +82,7 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 
     @Override
     public void guardar(Usuario usuario) {
-        String sql = "INSERT INTO usuario (nombre_usuario, password_hash, nombre_completo, correo, activo) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO usuario (nombre_usuario, password_hash, nombre_completo, correo, activo, id_empleado) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = Conexion.getInstancia().conectar();
              PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
@@ -97,6 +97,11 @@ public class UsuarioDAOImpl implements UsuarioDAO {
             stmt.setString(3, nombreCompleto);
             stmt.setString(4, usuario.getCorreo());
             stmt.setInt(5, usuario.isActivo() ? 1 : 0);
+            if (usuario.getIdEmpleado() != null && usuario.getIdEmpleado() > 0) {
+                stmt.setLong(6, usuario.getIdEmpleado());
+            } else {
+                stmt.setNull(6, java.sql.Types.BIGINT);
+            }
             
             stmt.executeUpdate();
 
@@ -116,7 +121,7 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 
     @Override
     public void actualizar(Usuario usuario) {
-        String sql = "UPDATE usuario SET nombre_completo = ?, correo = ?, password_hash = ?, activo = ? WHERE id_usuario = ?";
+        String sql = "UPDATE usuario SET nombre_completo = ?, correo = ?, password_hash = ?, activo = ?, id_empleado = ? WHERE id_usuario = ?";
         try (Connection conn = Conexion.getInstancia().conectar();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -129,7 +134,12 @@ public class UsuarioDAOImpl implements UsuarioDAO {
             stmt.setString(2, usuario.getCorreo());
             stmt.setString(3, usuario.getPasswordHash());
             stmt.setInt(4, usuario.isActivo() ? 1 : 0);
-            stmt.setLong(5, usuario.getIdUsuario());
+            if (usuario.getIdEmpleado() != null && usuario.getIdEmpleado() > 0) {
+                stmt.setLong(5, usuario.getIdEmpleado());
+            } else {
+                stmt.setNull(5, java.sql.Types.BIGINT);
+            }
+            stmt.setLong(6, usuario.getIdUsuario());
             stmt.executeUpdate();
 
             if (usuario.getRol() != null && !usuario.getRol().equals("SIN_ROL")) {
@@ -202,6 +212,11 @@ public class UsuarioDAOImpl implements UsuarioDAO {
 
         String rol = rs.getString("rol");
         u.setRol(rol != null ? rol.toUpperCase() : "SIN_ROL");
+
+        long idEmp = rs.getLong("id_empleado");
+        if (!rs.wasNull()) {
+            u.setIdEmpleado(idEmp);
+        }
 
         return u;
     }
@@ -294,5 +309,43 @@ public class UsuarioDAOImpl implements UsuarioDAO {
             System.err.println("Error al asignar rol: " + e.getMessage());
             throw new RuntimeException("Error en base de datos al asignar rol", e);
         }
+    }
+
+    @Override
+    public List<org.kinalrh.model.ColaboradorSinRol> listarColaboradoresSinRol() {
+        List<org.kinalrh.model.ColaboradorSinRol> lista = new ArrayList<>();
+        String sql = "SELECT e.id_empleado, e.dpi, e.nombre_completo, e.correo_personal, " +
+                     "u.id_usuario, u.nombre_usuario, " +
+                     "CASE " +
+                     "  WHEN u.id_usuario IS NULL THEN 'Colaborador sin cuenta ni rol asignado' " +
+                     "  WHEN ur.id_rol IS NULL THEN 'Colaborador con cuenta sin rol asignado' " +
+                     "  ELSE 'Sin rol asignado' " +
+                     "END AS estado_acceso " +
+                     "FROM empleado e " +
+                     "LEFT JOIN usuario u ON e.id_empleado = u.id_empleado " +
+                     "LEFT JOIN usuario_rol ur ON u.id_usuario = ur.id_usuario " +
+                     "WHERE u.id_usuario IS NULL OR ur.id_rol IS NULL " +
+                     "ORDER BY e.nombre_completo ASC";
+
+        try (Connection conn = Conexion.getInstancia().conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Long idEmp = rs.getLong("id_empleado");
+                String dpi = rs.getString("dpi");
+                String nombre = rs.getString("nombre_completo");
+                String correo = rs.getString("correo_personal");
+                long idUser = rs.getLong("id_usuario");
+                Long idUsuario = rs.wasNull() ? null : idUser;
+                String username = rs.getString("nombre_usuario");
+                String estado = rs.getString("estado_acceso");
+
+                lista.add(new org.kinalrh.model.ColaboradorSinRol(idEmp, dpi, nombre, correo, idUsuario, username, estado));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al listar colaboradores sin rol: " + e.getMessage());
+        }
+        return lista;
     }
 }

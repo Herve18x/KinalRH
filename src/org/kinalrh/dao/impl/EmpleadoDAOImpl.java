@@ -351,8 +351,8 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
             if (valor instanceof java.time.LocalDate fecha) {
                 valor = Date.valueOf(fecha);
             } else if (("nit".equals(columna) || "codigo_empleado".equals(columna))
-                    && valor instanceof String texto && texto.isBlank()) {
-                valor = null;
+                    && valor instanceof String texto) {
+                valor = texto.trim().isEmpty() ? null : texto.trim();
             }
             valores.put(columna, valor);
         }
