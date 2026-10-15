@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
@@ -7,20 +8,19 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="600.0" prefWidth="800.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.kinalrh.controller.LogroController">
+<BorderPane prefHeight="650.0" prefWidth="1050.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.kinalrh.controller.LogroController">
    <top>
       <VBox spacing="10.0" BorderPane.alignment="CENTER">
          <children>
             <Label styleClass="titulo-ventana" text="Gestión de Logros" />
             <HBox spacing="10.0">
                <children>
-                  <Button fx:id="btnNuevo" mnemonicParsing="false" onAction="#eventoNuevo" styleClass="btn-nuevo" text="Nuevo Logro" />
-                  <Button fx:id="btnEditar" mnemonicParsing="false" onAction="#eventoEditar" styleClass="btn-editar" text="Editar Seleccionado" />
+                  <Button fx:id="btnNuevo" mnemonicParsing="false" onAction="#eventoNuevo" styleClass="btn-nuevo" text="➕ Nuevo Logro" />
+                  <Button fx:id="btnEditar" mnemonicParsing="false" onAction="#eventoEditar" styleClass="btn-editar" text="✏️ Editar Seleccionado" />
                </children>
                <VBox.margin>
                   <Insets bottom="10.0" />
@@ -28,41 +28,83 @@
             </HBox>
          </children>
          <BorderPane.margin>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            <Insets bottom="10.0" left="20.0" right="20.0" top="20.0" />
          </BorderPane.margin>
       </VBox>
    </top>
+
+   <!-- TABLA DE LOGROS A LA IZQUIERDA / CENTRO -->
    <center>
-      <TableView fx:id="tablaLogrosDTO" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <TableView fx:id="tablaLogrosDTO" prefHeight="400.0" BorderPane.alignment="CENTER">
         <columns>
           <TableColumn fx:id="colEmpleado" prefWidth="250.0" text="Colaborador" />
-          <TableColumn fx:id="colNombre" prefWidth="200.0" text="Logro/Certificación" />
-          <TableColumn fx:id="colInstitucion" prefWidth="150.0" text="Institución" />
+          <TableColumn fx:id="colNombre" prefWidth="220.0" text="Logro/Certificación" />
+          <TableColumn fx:id="colInstitucion" prefWidth="180.0" text="Institución" />
           <TableColumn fx:id="colFecha" prefWidth="120.0" text="Fecha Obtención" />
         </columns>
          <BorderPane.margin>
-            <Insets bottom="20.0" left="20.0" right="20.0" />
+            <Insets bottom="20.0" left="20.0" right="15.0" />
          </BorderPane.margin>
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+         </columnResizePolicy>
       </TableView>
    </center>
-   <bottom>
-       <!-- Simple form area -->
-       <VBox fx:id="formPane" visible="false" managed="false" spacing="10">
-           <Label text="Asignar Nuevo Logro" styleClass="subtitulo" />
-           <HBox spacing="10" alignment="CENTER_LEFT">
-               <Label text="Colaborador:" />
-               <ComboBox fx:id="cmbEmpleado" prefWidth="200" />
-               <Label text="Logro:" />
-               <TextField fx:id="txtNombre" prefWidth="150" />
-           </HBox>
-           <HBox spacing="10" alignment="CENTER_LEFT">
-               <Label text="Institución:" />
-               <TextField fx:id="txtInstitucion" prefWidth="150" />
-               <Label text="Fecha:" />
-               <DatePicker fx:id="dpFecha" prefWidth="120" />
-               <Button text="Guardar" onAction="#eventoGuardar" styleClass="btn-guardar" />
-               <Button text="Cancelar" onAction="#eventoCancelar" />
-           </HBox>
+
+   <!-- FORMULARIO LATERAL DERECHO (SE MUEVE DE ABAJO HACIA EL LATERAL DERECHO) -->
+   <right>
+       <VBox fx:id="formPane" managed="false" prefWidth="340.0" spacing="12.0" style="-fx-background-color: #f8fafc; -fx-padding: 18px; -fx-background-radius: 8px; -fx-border-color: #cbd5e1; -fx-border-radius: 8px;" visible="false" BorderPane.alignment="TOP_CENTER">
+          <BorderPane.margin>
+             <Insets bottom="20.0" right="20.0" />
+          </BorderPane.margin>
+          <children>
+             <Label style="-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #16233F;" styleClass="subtitulo" text="Asignar Nuevo Logro" />
+             
+             <VBox spacing="4.0">
+                <children>
+                   <Label style="-fx-font-weight: bold; -fx-text-fill: #334155;" text="Colaborador:" />
+                   <ComboBox fx:id="cmbEmpleado" maxWidth="Infinity" promptText="Seleccione colaborador" />
+                </children>
+             </VBox>
+
+             <VBox spacing="4.0">
+                <children>
+                   <Label style="-fx-font-weight: bold; -fx-text-fill: #334155;" text="Logro / Certificación:" />
+                   <TextField fx:id="txtNombre" promptText="Nombre del logro o reconocimiento" />
+                </children>
+             </VBox>
+
+             <VBox spacing="4.0">
+                <children>
+                   <Label style="-fx-font-weight: bold; -fx-text-fill: #334155;" text="Tipo de Logro:" />
+                   <ComboBox fx:id="cmbTipoLogro" maxWidth="Infinity" promptText="Seleccione tipo de logro" />
+                </children>
+             </VBox>
+
+             <VBox spacing="4.0">
+                <children>
+                   <Label style="-fx-font-weight: bold; -fx-text-fill: #334155;" text="Institución Emisora:" />
+                   <TextField fx:id="txtInstitucion" promptText="Entidad que lo otorgó" />
+                </children>
+             </VBox>
+
+             <VBox spacing="4.0">
+                <children>
+                   <Label style="-fx-font-weight: bold; -fx-text-fill: #334155;" text="Fecha de Obtención:" />
+                   <DatePicker fx:id="dpFecha" maxWidth="Infinity" promptText="Seleccione fecha" />
+                </children>
+             </VBox>
+
+             <HBox alignment="CENTER_RIGHT" spacing="10.0">
+                <children>
+                   <Button mnemonicParsing="false" onAction="#eventoCancelar" style="-fx-background-color: #e2e8f0; -fx-text-fill: #334155; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 6;" text="Cancelar" />
+                   <Button mnemonicParsing="false" onAction="#eventoGuardar" style="-fx-background-color: #16233F; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 6;" text="💾 Guardar Logro" />
+                </children>
+                <VBox.margin>
+                   <Insets top="10.0" />
+                </VBox.margin>
+             </HBox>
+          </children>
        </VBox>
-   </bottom>
+   </right>
 </BorderPane>

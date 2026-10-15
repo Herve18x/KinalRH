@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableColumn;
@@ -18,6 +19,7 @@ import org.kinalrh.dao.impl.EmpleadoDAOImpl;
 import org.kinalrh.model.Empleado;
 import org.kinalrh.model.Logro;
 import org.kinalrh.model.LogroEmpleadoDTO;
+import org.kinalrh.model.TipoLogro;
 import org.kinalrh.service.LogroService;
 import org.kinalrh.service.SesionService;
 
@@ -32,6 +34,7 @@ public class LogroController implements Initializable {
     @FXML private VBox formPane;
     @FXML private ComboBox<Empleado> cmbEmpleado;
     @FXML private TextField txtNombre;
+    @FXML private ComboBox<TipoLogro> cmbTipoLogro;
     @FXML private TextField txtInstitucion;
     @FXML private DatePicker dpFecha;
 
@@ -50,6 +53,7 @@ public class LogroController implements Initializable {
         
         cargarDatos();
         cargarEmpleados();
+        cargarTiposLogro();
     }
 
     private String obtenerRolActual() {
@@ -74,21 +78,45 @@ public class LogroController implements Initializable {
         }
     }
 
+    private void cargarTiposLogro() {
+        try {
+            if (cmbTipoLogro != null) {
+                cmbTipoLogro.getItems().setAll(logroService.listarTiposLogro());
+                if (!cmbTipoLogro.getItems().isEmpty()) {
+                    cmbTipoLogro.getSelectionModel().selectFirst();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @FXML
     public void eventoNuevo(ActionEvent event) {
         cmbEmpleado.getSelectionModel().clearSelection();
         txtNombre.clear();
         txtInstitucion.clear();
         dpFecha.setValue(null);
+        if (cmbTipoLogro != null && !cmbTipoLogro.getItems().isEmpty()) {
+            cmbTipoLogro.getSelectionModel().selectFirst();
+        }
         formPane.setVisible(true);
         formPane.setManaged(true);
     }
 
     @FXML
     public void eventoEditar(ActionEvent event) {
+        LogroEmpleadoDTO sel = tablaLogrosDTO.getSelectionModel().getSelectedItem();
+        if (sel == null) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setHeaderText(null);
+            alert.setContentText("Seleccione un logro de la tabla para ver sus detalles.");
+            alert.showAndWait();
+            return;
+        }
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setHeaderText(null);
-        alert.setContentText("La edición de logros directos estará disponible en la próxima versión.");
+        alert.setContentText("Detalle de logro seleccionado: " + sel.getNombreLogro() + " (" + sel.getNombreEmpleado() + ")");
         alert.showAndWait();
     }
 
@@ -106,8 +134,14 @@ public class LogroController implements Initializable {
         nuevoLogro.setNombre(txtNombre.getText().trim());
         nuevoLogro.setInstitucion(txtInstitucion.getText().trim());
         nuevoLogro.setFechaObtencion(dpFecha.getValue());
-        nuevoLogro.setIdTipoLogro(1L); 
+        if (cmbTipoLogro != null && cmbTipoLogro.getValue() != null) {
+            nuevoLogro.setIdTipoLogro(cmbTipoLogro.getValue().getIdTipoLogro());
+        } else {
+            nuevoLogro.setIdTipoLogro(1L);
+        }
         nuevoLogro.setOrigen("OTRO");
+        nuevoLogro.setFinanciadoPorKinal(false);
+        nuevoLogro.setActivo(true);
         
         try {
             logroService.guardarLogroDeColaborador(
@@ -117,6 +151,10 @@ public class LogroController implements Initializable {
             );
             cargarDatos();
             eventoCancelar(null);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setHeaderText(null);
+            alert.setContentText("Logro guardado y asociado exitosamente al colaborador.");
+            alert.showAndWait();
         } catch (IllegalArgumentException | SecurityException e) {
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setHeaderText(null);
