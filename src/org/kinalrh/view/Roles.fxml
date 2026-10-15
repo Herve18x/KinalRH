@@ -1,13 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="15.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<VBox spacing="15.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.kinalrh.controller.RolesController">
    <padding>
       <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
    </padding>
 
-   <Label styleClass="content-title" text="Gestión de Roles y Permisos" />
-   <Label text="Aquí se configurarán los roles y sus permisos asociados." />
+   <Label styleClass="content-title" text="Gestión de Roles y Permisos Institucionales" />
+   <Label style="-fx-text-fill: #64748b; -fx-font-size: 13px;" text="Consulte los roles del sistema y la matriz de permisos asociados a cada uno." />
+
+   <SplitPane dividerPositions="0.35" VBox.vgrow="ALWAYS">
+      <!-- PANEL IZQUIERDO: ROLES -->
+      <VBox spacing="10.0">
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+         <Label style="-fx-font-weight: bold; -fx-font-size: 14px;" text="Roles del Sistema" />
+         <TableView fx:id="tablaRoles" VBox.vgrow="ALWAYS">
+            <columns>
+               <TableColumn fx:id="colRolId" prefWidth="50.0" text="ID" />
+               <TableColumn fx:id="colRolNombre" prefWidth="120.0" text="Rol" />
+               <TableColumn fx:id="colRolDescripcion" prefWidth="180.0" text="Descripción" />
+            </columns>
+            <columnResizePolicy>
+               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+         </TableView>
+      </VBox>
+
+      <!-- PANEL DERECHO: PERMISOS -->
+      <VBox spacing="10.0">
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+         <Label fx:id="lblTituloPermisos" style="-fx-font-weight: bold; -fx-font-size: 14px;" text="Permisos asignados" />
+         <TableView fx:id="tablaPermisos" VBox.vgrow="ALWAYS">
+            <columns>
+               <TableColumn fx:id="colPermisoModulo" prefWidth="120.0" text="Módulo" />
+               <TableColumn fx:id="colPermisoCodigo" prefWidth="180.0" text="Código Permiso" />
+               <TableColumn fx:id="colPermisoNombre" prefWidth="200.0" text="Nombre" />
+               <TableColumn fx:id="colPermisoDescripcion" prefWidth="250.0" text="Descripción" />
+            </columns>
+            <columnResizePolicy>
+               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+         </TableView>
+      </VBox>
+   </SplitPane>
 </VBox>

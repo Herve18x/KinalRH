@@ -15,7 +15,7 @@
       <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
    </padding>
 
-   <Label styleClass="content-title" text="Gestión de Empleados" />
+   <Label fx:id="lblTitulo" styleClass="content-title" text="Gestión de Empleados" />
 
    <VBox spacing="10.0" style="-fx-padding: 10; -fx-border-color: #ccc; -fx-border-radius: 5; -fx-background-radius: 5; -fx-background-color: #f9f9f9;">
       <HBox spacing="10.0" alignment="CENTER_LEFT">

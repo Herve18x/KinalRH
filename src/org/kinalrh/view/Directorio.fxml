@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="15.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<VBox spacing="15.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.kinalrh.controller.DirectorioController">
    <padding>
       <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
    </padding>
@@ -15,24 +15,13 @@
    <HBox alignment="CENTER_LEFT" spacing="20.0">
       <Label styleClass="content-title" text="Directorio Institucional" />
       <HBox HBox.hgrow="ALWAYS" />
-      <TextField prefWidth="300.0" promptText="Buscar colaborador..." />
+      <TextField fx:id="txtBusqueda" prefWidth="320.0" promptText="Buscar colaborador por nombre, área o puesto..." />
    </HBox>
 
    <!-- Contenedor dinámico de tarjetas de empleados -->
    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;">
       <content>
-         <TilePane hgap="20.0" vgap="20.0" prefColumns="4">
-            <!-- Ejemplo de una Tarjeta de Directorio (El backend generará estas dinámicamente) -->
-            <VBox alignment="CENTER" spacing="10.0" style="-fx-border-color: #ccc; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-background-color: #fff;">
-               <padding>
-                  <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
-               </padding>
-               <Label text="👤" style="-fx-font-size: 48px;" />
-               <Label style="-fx-font-weight: bold;" text="Nombre del Colaborador" />
-               <Label text="Puesto Actual" />
-               <Label style="-fx-text-fill: #666;" text="Área Principal" />
-               <Label style="-fx-font-size: 10px; -fx-text-fill: #1976D2;" text="Ver Logros Destacados" />
-            </VBox>
+         <TilePane fx:id="tileDirectorio" hgap="20.0" vgap="20.0" prefColumns="4" style="-fx-padding: 10;">
          </TilePane>
       </content>
    </ScrollPane>

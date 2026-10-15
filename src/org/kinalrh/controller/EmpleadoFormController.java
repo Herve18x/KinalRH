@@ -29,7 +29,7 @@ public class EmpleadoFormController implements Initializable {
     @FXML private Label lblTitulo;
     @FXML private Label lblError;
     
-    // IdentificaciÃƒÂ³n
+    // Identificación
     @FXML private TextField txtId;
     @FXML private TextField txtDpi;
     @FXML private TextField txtNit;

@@ -6,35 +6,41 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="15.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<VBox spacing="15.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.kinalrh.controller.BandejaController">
    <padding>
       <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
    </padding>
 
-   <Label styleClass="content-title" text="Bandeja de Solicitudes y Aprobaciones" />
+   <HBox alignment="CENTER_LEFT" spacing="12.0">
+      <Label styleClass="content-title" text="Bandeja de Solicitudes y Aprobaciones" />
+      <Region HBox.hgrow="ALWAYS" />
+      <Button onAction="#eventoNuevaSolicitud" styleClass="btn-action" text="➕ Nueva Solicitud (Demo)" prefWidth="190.0" />
+      <Button onAction="#cargarSolicitudes" styleClass="btn-action" text="🔄 Actualizar" prefWidth="110.0" />
+   </HBox>
 
-   <TableView VBox.vgrow="ALWAYS">
+   <TableView fx:id="tablaSolicitudes" VBox.vgrow="ALWAYS">
      <columns>
-       <TableColumn prefWidth="100.0" text="ID Solicitud" />
-       <TableColumn prefWidth="120.0" text="Fecha" />
-       <TableColumn prefWidth="200.0" text="Colaborador" />
-       <TableColumn prefWidth="150.0" text="Motivo" />
-       <TableColumn prefWidth="150.0" text="Campo Anterior" />
-       <TableColumn prefWidth="150.0" text="Campo Nuevo" />
-       <TableColumn prefWidth="100.0" text="Estado" />
+       <TableColumn fx:id="colId" prefWidth="90.0" text="ID Solicitud" />
+       <TableColumn fx:id="colFecha" prefWidth="130.0" text="Fecha" />
+       <TableColumn fx:id="colColaborador" prefWidth="180.0" text="Colaborador" />
+       <TableColumn fx:id="colMotivo" prefWidth="180.0" text="Motivo" />
+       <TableColumn fx:id="colCampoAnterior" prefWidth="150.0" text="Dato Anterior" />
+       <TableColumn fx:id="colCampoNuevo" prefWidth="150.0" text="Dato Nuevo" />
+       <TableColumn fx:id="colEstado" prefWidth="110.0" text="Estado" />
      </columns>
    </TableView>
 
    <HBox spacing="15.0">
       <VBox HBox.hgrow="ALWAYS" spacing="5.0">
          <Label text="Comentarios de la resolución:" />
-         <TextArea prefHeight="60.0" promptText="Ingrese un comentario antes de aprobar o rechazar..." />
+         <TextArea fx:id="txtComentario" prefHeight="60.0" promptText="Ingrese un comentario antes de aprobar o rechazar..." />
       </VBox>
       <VBox alignment="CENTER" spacing="10.0">
-         <Button styleClass="btn-save" text="Aprobar Solicitud" prefWidth="150.0" />
-         <Button styleClass="btn-cancel" text="Rechazar Solicitud" prefWidth="150.0" />
+         <Button fx:id="btnAprobar" onAction="#eventoAprobar" styleClass="btn-save" text="Aprobar Solicitud" prefWidth="150.0" />
+         <Button fx:id="btnRechazar" onAction="#eventoRechazar" styleClass="btn-cancel" text="Rechazar Solicitud" prefWidth="150.0" />
       </VBox>
    </HBox>
 </VBox>

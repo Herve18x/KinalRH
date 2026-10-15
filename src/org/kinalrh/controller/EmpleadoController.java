@@ -38,10 +38,11 @@ public class EmpleadoController implements Initializable {
     @FXML private TableColumn<Empleado, String> colArea;
     @FXML private TableColumn<Empleado, String> colPuesto;
 
+    @FXML private javafx.scene.control.Label lblTitulo;
     @FXML private Button btnNuevo;
     @FXML private Button btnRefrescar;
 
-        @FXML private TextField txtBusqueda;
+    @FXML private TextField txtBusqueda;
     @FXML private ComboBox<Area> cmbFiltroArea;
     @FXML private ComboBox<Puesto> cmbFiltroPuesto;
     @FXML private ComboBox<NivelAcademico> cmbFiltroNivel;
@@ -52,6 +53,9 @@ public class EmpleadoController implements Initializable {
     private FilteredList<Empleado> filteredData;
     private EmpleadoService empleadoService;
     private Long idSeleccionadoGuardado = null;
+    private boolean modoMiEquipo = false;
+    private Long idEmpleadoJefe = null;
+    private String rolUsuarioActual = "";
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -87,8 +91,44 @@ public class EmpleadoController implements Initializable {
         tablaEmpleados.setItems(sortedData);
     }
     
+    public void configurarModoMiEquipo(Long idEmpleadoJefe, String rolActual) {
+        this.modoMiEquipo = true;
+        this.idEmpleadoJefe = idEmpleadoJefe;
+        this.rolUsuarioActual = rolActual != null ? rolActual.toUpperCase() : "";
+        
+        if (lblTitulo != null) {
+            lblTitulo.setText("Mi Equipo de Trabajo (Supervisión y Colaboradores a Cargo)");
+        }
+        if (btnNuevo != null) {
+            btnNuevo.setVisible(false);
+            btnNuevo.setManaged(false);
+        }
+        
+        if (idEmpleadoJefe != null && cmbFiltroJefe != null) {
+            for (Empleado j : cmbFiltroJefe.getItems()) {
+                if (j.getIdEmpleado() != null && j.getIdEmpleado().equals(idEmpleadoJefe)) {
+                    cmbFiltroJefe.getSelectionModel().select(j);
+                    break;
+                }
+            }
+        }
+        
+        if (tablaEmpleados != null) {
+            tablaEmpleados.setPlaceholder(new javafx.scene.control.Label("No tiene colaboradores bajo su supervisión directa actualmente."));
+        }
+        
+        aplicarFiltros();
+    }
+
     private void aplicarFiltros() {
         filteredData.setPredicate(emp -> {
+            // En modo "Mi Equipo": filtrar por los subordinados del usuario actual si no es ADMIN
+            if (modoMiEquipo && idEmpleadoJefe != null && !"ADMIN".equals(rolUsuarioActual)) {
+                if (emp.getIdJefeInmediato() == null || !emp.getIdJefeInmediato().equals(idEmpleadoJefe)) {
+                    return false;
+                }
+            }
+
             // 1. Busqueda (Nombre, DPI, NIT, Codigo)
             String busqueda = txtBusqueda.getText() == null ? "" : txtBusqueda.getText().toLowerCase();
             boolean matchBusqueda = busqueda.isEmpty() 

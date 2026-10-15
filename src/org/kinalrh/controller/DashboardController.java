@@ -85,7 +85,22 @@ public class DashboardController implements Initializable, BaseDashboardControll
     @FXML public void abrirImportacion() { cargarVistaCentral("Importacion.fxml"); }
     @FXML public void abrirReportes() { cargarVistaCentral("Reportes.fxml"); } 
     @FXML public void abrirBandeja() { cargarVistaCentral("Bandeja.fxml"); }
-    @FXML public void abrirMiEquipo() { cargarVistaCentral("Empleados.fxml"); } 
+    @FXML public void abrirMiEquipo() { 
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/kinalrh/view/Empleados.fxml"));
+            Node vista = loader.load();
+            Object ctrl = loader.getController();
+            if (ctrl instanceof EmpleadoController) {
+                Long idEmp = (usuarioActual != null) ? usuarioActual.getIdEmpleado() : null;
+                String rol = (usuarioActual != null) ? usuarioActual.getRol() : "";
+                ((EmpleadoController) ctrl).configurarModoMiEquipo(idEmp, rol);
+            }
+            panelPrincipal.setCenter(vista);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Error al cargar vista Mi Equipo: " + e.getMessage());
+        }
+    }
     @FXML public void abrirDirectorio() { cargarVistaCentral("Directorio.fxml"); }
     @FXML public void abrirLogros() { cargarVistaCentral("Logros.fxml"); } 
     @FXML public void abrirUsuarios() { cargarVistaCentral("Usuarios.fxml"); } 
