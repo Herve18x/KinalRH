@@ -139,8 +139,8 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
     
     private void setParametros(PreparedStatement stmt, Empleado e) throws SQLException {
         stmt.setString(1, e.getDpi());
-        stmt.setString(2, e.getNit());
-        stmt.setString(3, e.getCodigoEmpleado());
+        if (e.getNit() != null && !e.getNit().trim().isEmpty()) stmt.setString(2, e.getNit().trim()); else stmt.setNull(2, Types.VARCHAR);
+        if (e.getCodigoEmpleado() != null && !e.getCodigoEmpleado().trim().isEmpty()) stmt.setString(3, e.getCodigoEmpleado().trim()); else stmt.setNull(3, Types.VARCHAR);
         stmt.setString(4, e.getPrimerNombre());
         stmt.setString(5, e.getSegundoNombre());
         stmt.setString(6, e.getTercerNombre());
@@ -150,6 +150,7 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
         
         String nombreCompleto = e.getPrimerNombre() + 
             (e.getSegundoNombre() != null && !e.getSegundoNombre().trim().isEmpty() ? " " + e.getSegundoNombre().trim() : "") + 
+            (e.getTercerNombre() != null && !e.getTercerNombre().trim().isEmpty() ? " " + e.getTercerNombre().trim() : "") + 
             " " + e.getPrimerApellido() + 
             (e.getSegundoApellido() != null && !e.getSegundoApellido().trim().isEmpty() ? " " + e.getSegundoApellido().trim() : "");
         stmt.setString(10, nombreCompleto.trim());

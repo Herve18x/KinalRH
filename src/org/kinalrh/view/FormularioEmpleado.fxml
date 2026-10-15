@@ -48,14 +48,12 @@
                         <TextField fx:id="txtPrimerNombre" GridPane.columnIndex="1" GridPane.rowIndex="0" />
                         <Label text="Segundo Nombre:" GridPane.rowIndex="1" />
                         <TextField fx:id="txtSegundoNombre" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <Label text="Tercer Nombre:" GridPane.rowIndex="2" />
-                        <TextField fx:id="txtTercerNombre" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Label text="Tercer Nombre (opcional):" GridPane.rowIndex="2" />
+                        <TextField fx:id="txtTercerNombre" promptText="Opcional" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                         <Label text="Primer Apellido (*):" GridPane.rowIndex="3" />
                         <TextField fx:id="txtPrimerApellido" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                         <Label text="Segundo Apellido:" GridPane.rowIndex="4" />
-                        <TextField fx:id="txtSegundoApellido" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                        <Label text="Apellido Casada:" GridPane.rowIndex="5" />
-                        <TextField fx:id="txtApellidoCasada" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                        <TextField fx:id="txtSegundoApellido" promptText="Opcional" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                      </children>
                   </GridPane>
 
@@ -112,8 +110,8 @@
                         <ComboBox fx:id="cmbArea" prefWidth="2000" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <Label text="Puesto Actual:" GridPane.rowIndex="2" />
                         <ComboBox fx:id="cmbPuesto" prefWidth="2000" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                        <Label text="Estado (*):" GridPane.rowIndex="3" />
-                        <ComboBox fx:id="cmbEstado" prefWidth="2000" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <Label text="Estado Laboral (*):" GridPane.rowIndex="3" />
+                        <ComboBox fx:id="cmbEstado" prefWidth="2000" promptText="Seleccionar estado..." GridPane.columnIndex="1" GridPane.rowIndex="3" />
                         <Label text="Jefe Inmediato:" GridPane.rowIndex="4" />
                         <ComboBox fx:id="cmbJefe" prefWidth="2000" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                      </children>
