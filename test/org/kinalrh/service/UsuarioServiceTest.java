@@ -23,6 +23,8 @@ public class UsuarioServiceTest {
         UsuarioService usuarioService = new UsuarioService();
         AutenticacionService authService = new AutenticacionService();
         UsuarioDAOImpl usuarioDAO = new UsuarioDAOImpl();
+        Usuario administrador = usuarioDAO.buscarPorUsername("encargado_demo");
+        org.kinalrh.util.SessionManager.getInstance().login(administrador);
 
         String suffix = String.valueOf(System.currentTimeMillis() % 100000);
         String testUsername = "herberth_t204_" + suffix;
@@ -112,6 +114,7 @@ public class UsuarioServiceTest {
             }
 
             long conteoTrasErrorCorreo = contarUsuariosBD();
+            org.kinalrh.PruebaBD.verificar(conteoTrasErrorCorreo == conteoTrasAlta, "Correo duplicado sin fila parcial");
             if (conteoTrasErrorCorreo == conteoTrasAlta) {
                 System.out.println("   [VERIFICACIÓN] El conteo en BD NO aumentó ante error de correo duplicado.");
             } else {
@@ -126,6 +129,7 @@ public class UsuarioServiceTest {
             usuarioService.desactivar(idCreado, "ADMIN");
 
             Usuario usuarioDesactivado = usuarioDAO.buscarPorId(idCreado).orElse(null);
+            org.kinalrh.PruebaBD.verificar(usuarioDesactivado != null && !usuarioDesactivado.isActivo(), "Desactivación persistida");
             if (usuarioDesactivado != null && !usuarioDesactivado.isActivo()) {
                 System.out.println("   [ÉXITO] Estado de cuenta actualizado a inactivo en BD.");
             } else {
@@ -150,6 +154,7 @@ public class UsuarioServiceTest {
                 System.out.println("   RESULTADO T2.04: TODAS LAS PRUEBAS PASARON EXITOSAMENTE [OK]  ");
             } else {
                 System.err.println("   RESULTADO T2.04: AL MENOS UNA PRUEBA NO CUMPLIÓ EL CRITERIO   ");
+                throw new AssertionError("Falló el alta, rechazo de duplicados o bloqueo de cuenta inactiva.");
             }
             System.out.println("=================================================================");
 

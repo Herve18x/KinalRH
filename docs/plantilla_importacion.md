@@ -11,12 +11,14 @@ encabezados exactos, en orden y sin columnas adicionales:
 | estado_codigo | Sí | ACTIVO; código de catálogo habilitado |
 | area_codigo | No | AREA_DEMO; código de área habilitada |
 | puesto_codigo | No | PUESTO_DEMO; código de puesto habilitado |
-| fecha_ingreso_kinal | No | 2026-10-01; fecha válida AAAA-MM-DD |
+| fecha_ingreso_kinal | No | 2026-10-01; fecha válida AAAA-MM-DD, año entre 1000 y 9999 |
 
 Se lee la primera hoja y se omiten filas completamente vacías. Se conserva el
 número de fila de Excel (cabecera=1). Escriba DPI como texto para preservar ceros
 iniciales y evitar redondeo de Excel. Use valores literales, sin fórmulas. Se
 recortan espacios de los extremos; no se corrigen encabezados automáticamente.
+Las celdas de DPI numéricas, booleanas, con fórmula o error se rechazan en la
+previsualización; el servicio no intenta reconstruir un identificador redondeado.
 
 DPI nuevo: alta. DPI existente: actualizar únicamente columnas mapeadas no vacías.
 Los cuatro campos obligatorios se deben informar también para una actualización.

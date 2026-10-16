@@ -110,6 +110,7 @@ public class AuditoriaService {
     }
 
     public List<String> obtenerEventosConUsuario(int limite) {
+        new AutorizacionService().exigirPermiso("AUDITORIA_VER");
         try {
             return auditoriaDAO.obtenerEventosConUsuario(limite);
         } catch (SQLException e) {
@@ -119,6 +120,7 @@ public class AuditoriaService {
     }
 
     public List<Auditoria> listarRegistrosAuditoria(int limite) {
+        new AutorizacionService().exigirPermiso("AUDITORIA_VER");
         try {
             return auditoriaDAO.listarAuditoria(limite);
         } catch (SQLException e) {
@@ -128,6 +130,7 @@ public class AuditoriaService {
     }
 
     public List<Auditoria> listarRegistrosAuditoria(String busqueda, String entidad, int limite) {
+        new AutorizacionService().exigirPermiso("AUDITORIA_VER");
         try {
             return auditoriaDAO.listarAuditoriaPorFiltro(busqueda, entidad, limite);
         } catch (SQLException e) {

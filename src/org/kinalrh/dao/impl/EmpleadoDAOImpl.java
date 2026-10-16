@@ -224,6 +224,7 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
 
     public long insertar(Connection conn, Empleado empleado) throws SQLException {
         validarEmpleado(empleado);
+        validarJerarquiaTransaccional(conn,empleado);
         Map<String, Object> valores = valoresEmpleado(empleado, true);
         String nombreCompleto = Stream.of(empleado.getPrimerNombre(), empleado.getSegundoNombre(),
                 empleado.getTercerNombre(), empleado.getPrimerApellido(), empleado.getSegundoApellido(),
@@ -279,6 +280,7 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
             throw new IllegalArgumentException("El identificador del empleado es obligatorio.");
         }
         validarId(empleado.getIdEmpleado());
+        validarJerarquiaTransaccional(conn,empleado);
         Map<String, Object> valores = valoresEmpleado(empleado, false);
         String asignaciones = valores.keySet().stream()
                 .map(columna -> columna + " = ?").collect(Collectors.joining(", "));
@@ -301,6 +303,28 @@ public class EmpleadoDAOImpl implements EmpleadoDAO {
                 return existe;
         } catch (SQLException e) {
             throw controlarDuplicadoDpi(e);
+        }
+    }
+
+    private void validarJerarquiaTransaccional(Connection conn, Empleado empleado) throws SQLException {
+        if (!empleado.tieneCampoOpcional("idJefeInmediato")) return;
+        // Una lectura bloqueante usa la jerarquía vigente, incluso bajo REPEATABLE READ.
+        // El mismo orden de bloqueo serializa los cambios de aristas entre conexiones.
+        Map<Long,Long> jefes = new java.util.HashMap<>();
+        try (PreparedStatement s=conn.prepareStatement("SELECT id_empleado,id_jefe_inmediato FROM empleado ORDER BY id_empleado FOR UPDATE");
+                ResultSet r=s.executeQuery()) {
+            while(r.next()) {
+                long id=r.getLong(1), jefe=r.getLong(2);
+                jefes.put(id,r.wasNull()?null:jefe);
+            }
+        }
+        java.util.Set<Long> visitados=new java.util.HashSet<>();
+        Long actual=empleado.getIdJefeInmediato();
+        while(actual!=null) {
+            if(actual.equals(empleado.getIdEmpleado()) || !visitados.add(actual))
+                throw new IllegalArgumentException("Error: Ciclo jerárquico detectado en la cadena de jefes.");
+            if(!jefes.containsKey(actual)) throw new IllegalArgumentException("El jefe inmediato seleccionado no existe.");
+            actual=jefes.get(actual);
         }
     }
 

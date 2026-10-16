@@ -30,20 +30,7 @@ public class CatalogoService {
     }
 
     private void validarPermisoConsulta(String rolActual) {
-        if (rolActual == null || rolActual.trim().isEmpty()) {
-            throw new SecurityException("Acceso denegado: Sesión no válida.");
-        }
-    }
-
-    private void validarPermisoGestion(String rolActual) {
-        if (rolActual == null || rolActual.trim().isEmpty()) {
-            throw new SecurityException("Acceso denegado: Sesión no válida.");
-        }
-        String r = rolActual.trim().toUpperCase();
-        if (!autorizacionService.tienePermiso(rolActual, "CATALOGO_GESTIONAR")
-                && !r.equals("ADMIN") && !r.equals("ENCARGADO") && !r.equals("RRHH")) {
-            throw new SecurityException("Acceso denegado: Su cuenta no tiene permisos para administrar catálogos.");
-        }
+        autorizacionService.exigirAlgunPermiso("EMPLEADO_VER", "NIVEL_ACADEMICO_GESTIONAR", "LOGRO_GESTIONAR");
     }
 
     // --- NIVEL ACADÉMICO ---
@@ -58,11 +45,12 @@ public class CatalogoService {
     }
 
     public List<NivelAcademico> listarNivelesAcademicosActivos() {
+        validarPermisoConsulta(null);
         return nivelAcademicoDAO.listarActivos();
     }
 
     public long guardarNivelAcademico(NivelAcademico nivel, String rolActual) {
-        validarPermisoGestion(rolActual);
+        autorizacionService.exigirPermiso("NIVEL_ACADEMICO_GESTIONAR");
         if (nivel == null) {
             throw new IllegalArgumentException("Error: Datos del nivel académico inválidos.");
         }
@@ -97,7 +85,7 @@ public class CatalogoService {
     }
 
     public void cambiarEstadoNivelAcademico(Long idNivel, boolean activo, String rolActual) {
-        validarPermisoGestion(rolActual);
+        autorizacionService.exigirPermiso("NIVEL_ACADEMICO_GESTIONAR");
         if (idNivel == null || idNivel <= 0) {
             throw new IllegalArgumentException("Error: ID de nivel académico inválido.");
         }
@@ -110,6 +98,7 @@ public class CatalogoService {
     }
 
     public boolean esNivelValidoYActivo(Long idNivel) {
+        validarPermisoConsulta(null);
         return nivelAcademicoDAO.esNivelValidoYActivo(idNivel);
     }
 
@@ -125,11 +114,12 @@ public class CatalogoService {
     }
 
     public List<TipoLogro> listarTiposLogroActivos() {
+        validarPermisoConsulta(null);
         return tipoLogroDAO.listarActivos();
     }
 
     public long guardarTipoLogro(TipoLogro tipo, String rolActual) {
-        validarPermisoGestion(rolActual);
+        autorizacionService.exigirPermiso("LOGRO_GESTIONAR");
         if (tipo == null) {
             throw new IllegalArgumentException("Error: Datos del tipo de logro inválidos.");
         }
@@ -164,7 +154,7 @@ public class CatalogoService {
     }
 
     public void cambiarEstadoTipoLogro(Long idTipo, boolean activo, String rolActual) {
-        validarPermisoGestion(rolActual);
+        autorizacionService.exigirPermiso("LOGRO_GESTIONAR");
         if (idTipo == null || idTipo <= 0) {
             throw new IllegalArgumentException("Error: ID de tipo de logro inválido.");
         }

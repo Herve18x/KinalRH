@@ -81,8 +81,8 @@ Adjuntar únicamente los resultados de asociaciones y permisos. No incluir el re
 # Operaciones Sprint 3/4
 
 Los servicios usan la sesión vigente de `SessionManager`, nunca el rol recibido
-como autorización. `ADMIN` conserva el acceso total compatible con la política
-integrada. Para otras cuentas se consultan los códigos de `permiso`, asociados
+como autorización. `ADMIN` conserva el acceso total cuando su asociación con el
+rol administrador sigue activa en SQL. Se consultan los códigos de `permiso`, asociados
 por `usuario_rol` y `rol_permiso`, con cuenta, rol y permiso activos.
 No se conceden automáticamente permisos nuevos a roles existentes.
 
@@ -96,6 +96,15 @@ No se conceden automáticamente permisos nuevos a roles existentes.
 | Consultar reporte de activos | EMPLEADO_VER | ReporteService |
 | Exportar reporte de activos | REPORTES_XLSX y EMPLEADO_VER para consultar | ReporteService |
 | Escribir XLSX mediante llamada directa | REPORTES_XLSX | ExportacionXlsxService |
+| Listar/crear/editar/activar/desactivar usuarios y asignar rol | USUARIO_GESTIONAR | UsuarioService |
+| Consultar catálogos de niveles y tipos | EMPLEADO_VER o NIVEL_ACADEMICO_GESTIONAR o LOGRO_GESTIONAR | CatalogoService |
+| Administrar niveles académicos | NIVEL_ACADEMICO_GESTIONAR | CatalogoService |
+| Administrar tipos de logro y logros de colaboradores | LOGRO_GESTIONAR | CatalogoService / LogroService |
+| Consultar logros | EMPLEADO_VER o LOGRO_GESTIONAR | LogroService |
+| Leer auditoría | AUDITORIA_VER | AuditoriaService |
+| Consultar roles | ROL_GESTIONAR | RolesController |
+| Leer bandeja | CAMBIO_CREAR o CAMBIO_APROBAR_RH o CAMBIO_APROBAR_GERENCIA | BandejaController |
+| Crear solicitud / resolver solicitud | CAMBIO_CREAR / CAMBIO_APROBAR_RH o CAMBIO_APROBAR_GERENCIA | BandejaController |
 
 Importación vuelve a verificar antes de confirmar y antes del commit, usando la
 conexión del lote en este último caso. El lote pertenece al UUID de sesión que lo

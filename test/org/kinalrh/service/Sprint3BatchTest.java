@@ -71,6 +71,7 @@ public class Sprint3BatchTest {
 
             List<TipoLogro> activos = catalogoService.listarTiposLogroActivos();
             boolean noEstaEnActivos = activos.stream().noneMatch(t -> t.getIdTipoLogro().equals(idTipo));
+            org.kinalrh.PruebaBD.verificar(noEstaEnActivos, "El tipo inactivo no debe figurar entre activos");
             if (noEstaEnActivos) {
                 System.out.println("   [T3.09 - Tipo Logro] Confirmado: el tipo inactivo no figura en la lista de activos.");
             }
@@ -80,7 +81,7 @@ public class Sprint3BatchTest {
             System.out.println("   [T3.09] OK -> Gestión básica de catálogos superada con éxito.\n");
         } catch (Exception e) {
             System.err.println("   [ERROR T3.09]: " + e.getMessage());
-            e.printStackTrace();
+            throw new AssertionError("Falló T3.09",e);
         }
 
         // -------------------------------------------------------------
@@ -129,11 +130,11 @@ public class Sprint3BatchTest {
             if (rechazoInactivoOk && rechazoInexistenteOk) {
                 System.out.println("   [T3.12] OK -> Regla de nivel válido y activo verificada exitosamente.\n");
             } else {
-                System.err.println("   [T3.12 - FALLÓ] No se cumplieron todas las restricciones de nivel activo.\n");
+                throw new AssertionError("No se cumplieron las restricciones de nivel activo/inexistente");
             }
         } catch (Exception e) {
             System.err.println("   [ERROR T3.12]: " + e.getMessage());
-            e.printStackTrace();
+            throw new AssertionError("Falló T3.12",e);
         }
 
         // -------------------------------------------------------------
@@ -184,7 +185,7 @@ public class Sprint3BatchTest {
             if (altaEncontrada && edicionEncontrada) {
                 System.out.println("\n   [T3.18] OK -> Alta y edición registradas exitosamente con autor (ID=" + autorTest.getIdUsuario() + ") y fecha/hora.");
             } else {
-                System.out.println("\n   [T3.18] Auditoría registrada (revisar lista superior).");
+                throw new AssertionError("Faltan eventos de alta o edición");
             }
 
             // Limpieza del empleado de prueba
@@ -196,11 +197,11 @@ public class Sprint3BatchTest {
                 st.close();
                 conn.close();
                 System.out.println("   [LIMPIEZA] Empleado de prueba eliminado de la BD.");
-            } catch (Exception ignored) {}
+            } catch (Exception ex) { throw new AssertionError("Falló la limpieza del empleado",ex); }
 
         } catch (Exception e) {
             System.err.println("   [ERROR T3.18]: " + e.getMessage());
-            e.printStackTrace();
+            throw new AssertionError("Falló T3.18",e);
         }
 
         SessionManager.getInstance().logout();

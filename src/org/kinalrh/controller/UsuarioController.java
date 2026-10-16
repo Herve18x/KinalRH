@@ -295,6 +295,7 @@ public class UsuarioController implements Initializable {
     // LOGICA DEL FORMULARIO (FormularioUsuario.fxml)
     // ==========================================================
     private void configurarFormulario() {
+        new org.kinalrh.service.AutorizacionService().exigirPermiso("USUARIO_GESTIONAR");
         lblError.setVisible(false);
 
         // Cargar opciones de roles disponibles en el sistema

@@ -94,18 +94,19 @@ public class EmpleadoService {
         if (idEmpleado != null && idEmpleado > 0 && idEmpleado.equals(idJefeInmediato)) {
             throw new IllegalArgumentException("Error: Un colaborador no puede ser asignado como su propio jefe inmediato.");
         }
-        if (!empleadoDAO.existeReferencia("empleado", "id_empleado", idJefeInmediato)) {
-            throw new IllegalArgumentException("Error: El jefe inmediato seleccionado no existe en la base de datos.");
-        }
-        // Evitar ciclo jerárquico directo (A jefe de B y B jefe de A)
-        if (idEmpleado != null && idEmpleado > 0) {
-            try {
-                Optional<Empleado> optJefe = empleadoDAO.buscarPorId(idJefeInmediato);
-                if (optJefe.isPresent() && idEmpleado.equals(optJefe.get().getIdJefeInmediato())) {
-                    throw new IllegalArgumentException("Error: Ciclo jerárquico detectado. El jefe seleccionado es subordinado directo de este colaborador.");
+        java.util.Set<Long> visitados = new java.util.HashSet<>();
+        Long actual = idJefeInmediato;
+        try {
+            while (actual != null) {
+                if (actual.equals(idEmpleado) || !visitados.add(actual)) {
+                    throw new IllegalArgumentException("Error: Ciclo jerárquico detectado en la cadena de jefes.");
                 }
-            } catch (SQLException ignored) {
+                Empleado jefe = empleadoDAO.buscarPorId(actual).orElseThrow(
+                        () -> new IllegalArgumentException("Error: El jefe inmediato seleccionado no existe en la base de datos."));
+                actual = jefe.getIdJefeInmediato();
             }
+        } catch (SQLException ex) {
+            throw new IllegalStateException("No se pudo validar la jerarquía. No se guardaron cambios.");
         }
     }
 
@@ -176,7 +177,7 @@ public class EmpleadoService {
                 auditoriaService.registrarEvento(idAutor, "CREAR_EMPLEADO", "empleado", id, null, null, detalle);
             } else {
                 // T3.18 Registrar edición de empleado con autor y fecha
-                empleadoDAO.actualizar(emp);
+                if (!empleadoDAO.actualizar(emp)) throw new IllegalArgumentException("El empleado a actualizar no existe.");
                 auditoriaService.auditarEdicionEmpleado(idAutor, emp.getIdEmpleado(), detalle != null ? detalle : ("Empleado #" + emp.getIdEmpleado()));
                 auditoriaService.registrarEvento(idAutor, "ACTUALIZAR_EMPLEADO", "empleado", emp.getIdEmpleado(), null, null, detalle);
             }

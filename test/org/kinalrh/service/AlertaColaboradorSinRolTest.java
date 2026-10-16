@@ -21,6 +21,8 @@ public class AlertaColaboradorSinRolTest {
         UsuarioDAO usuarioDAO = new UsuarioDAOImpl();
         EmpleadoDAO empleadoDAO = new EmpleadoDAOImpl();
         AuditoriaService auditoriaService = new AuditoriaService();
+        Usuario administrador = usuarioDAO.buscarPorUsername("encargado_demo");
+        org.kinalrh.util.SessionManager.getInstance().login(administrador);
 
         try {
             // 1. Estado inicial
@@ -68,6 +70,7 @@ public class AlertaColaboradorSinRolTest {
             // 5. Verificar que el colaborador ya NO aparece como pendiente
             List<ColaboradorSinRol> pendientesDespues = usuarioService.listarColaboradoresSinRol("ADMIN");
             boolean siguePendiente = pendientesDespues.stream().anyMatch(c -> c.getIdEmpleado().equals(idEmp));
+            org.kinalrh.PruebaBD.verificar(detectado && !siguePendiente, "La alerta debe aparecer y desaparecer al asignar cuenta/rol");
             if (!siguePendiente) {
                 System.out.println("5. [ÉXITO] El colaborador ya fue provisto de rol y la alerta se actualiza/oculta.");
             } else {
@@ -96,7 +99,7 @@ public class AlertaColaboradorSinRolTest {
             System.out.println("=================================================================");
 
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new AssertionError("Falló el flujo de alerta y auditoría", e);
         }
     }
 }

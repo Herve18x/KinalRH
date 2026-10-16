@@ -60,6 +60,7 @@ public class RolesController implements Initializable {
     }
 
     private void cargarRoles() {
+        new org.kinalrh.service.AutorizacionService().exigirPermiso("ROL_GESTIONAR");
         listaRoles.clear();
         String sql = "SELECT id_rol, nombre, descripcion FROM rol ORDER BY id_rol";
         try (Connection conn = Conexion.getInstancia().conectar();
@@ -83,6 +84,7 @@ public class RolesController implements Initializable {
     }
 
     private void cargarPermisosDeRol(Rol rol) {
+        new org.kinalrh.service.AutorizacionService().exigirPermiso("ROL_GESTIONAR");
         listaPermisos.clear();
         if (lblTituloPermisos != null) {
             lblTituloPermisos.setText("Permisos asignados al rol: " + rol.getNombre().toUpperCase());

@@ -71,6 +71,7 @@ public class LogroController implements Initializable {
     }
     
     private void cargarEmpleados() {
+        new org.kinalrh.service.AutorizacionService().exigirAlgunPermiso("EMPLEADO_VER", "LOGRO_GESTIONAR");
         try {
             cmbEmpleado.getItems().setAll(empleadoDAO.listarTodos());
         } catch (SQLException e) {
