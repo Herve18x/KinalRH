@@ -1,7 +1,8 @@
 # Java
 *.class
-*.jar
 *.war
+*.jar
+!lib/*.jar
 
 # NetBeans
 /build/
