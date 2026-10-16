@@ -214,6 +214,8 @@ public class EmpleadoDAOImplTest {
         esperar(SecurityException.class, () -> servicio.retirarEmpleado(id));
         comprobar(antesRetiro.equals(fila(datos, id)), "Intentos sin sesión o permiso no cambian al empleado");
         cuenta.setActivo(true);
+        sql(datos, "INSERT INTO usuario_rol SELECT 1,id_rol FROM rol WHERE nombre='visor'");
+        sql(datos, "INSERT INTO rol_permiso SELECT r.id_rol,p.id_permiso FROM rol r JOIN permiso p ON p.codigo='EMPLEADO_CAMBIAR_ESTADO' WHERE r.nombre='visor'");
         servicio.retirarEmpleado(id);
         Empleado retiradoLeido = dao.buscarPorId(id).orElseThrow();
         comprobar(retiradoLeido.getIdEstadoEmpleado() == retirado, "Retiro localiza el estado por código");

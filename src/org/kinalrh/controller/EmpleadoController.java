@@ -67,6 +67,7 @@ public class EmpleadoController implements Initializable {
     }
     
     private void cargarCatalogosFiltros() {
+        new org.kinalrh.service.AutorizacionService().exigirPermiso("EMPLEADO_VER");
         try {
             cmbFiltroArea.getItems().setAll(new AreaDAOImpl().listarActivas());
             cmbFiltroPuesto.getItems().setAll(new PuestoDAOImpl().listarActivos());

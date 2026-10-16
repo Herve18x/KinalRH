@@ -15,7 +15,7 @@ fallida si no fue registrada.
 | INC-06 | Revisar arranque sin config local: había una contraseña incorporada en el fallback de conexión | Alta | Configuración T4.18 | Keneth | 2026-10-14 | Eliminada; cuenta limitada por defecto y contraseña solo local, sin reproducir el valor anterior |
 | INC-07 | Ejecutar Maven con JAVA_HOME heredado inválido | Baja | Arranque T4.18 | Keneth | 2026-10-14 | Corregido en entorno de ejecución; README indica JDK 21 y raíz del JDK |
 | INC-08 | Resolver dependencias Maven en entorno restringido; caché .m2 no escribible | Baja | Entorno de compilación | Keneth | 2026-10-14 | Descarga autorizada; compilación y pruebas posteriores pasan |
-| INC-09 | UsuarioServiceTest: intentar correo de usuario duplicado; mensaje/log conserva texto SQL de la constraint | Media | Usuarios, fuera de estas tarjetas | Por asignar | Pendiente | Defecto existente observado en esquema descartable; no corregido para respetar el alcance; no se publican valores del log |
+| INC-09 | UsuarioServiceTest: intentar correo de usuario duplicado; mensaje/log conserva texto SQL de la constraint | Media | Usuarios | Revisión autónoma ft/prueba-fuego | 2026-10-15 | Corregido en la prueba de fuego; UsuarioIntegridadSeguridadTest verifica que mensajes, causas y stderr excluyen el correo y el detalle SQL |
 | INC-10 | Pruebas históricas de lista/auditoría dependían del parámetro de rol y del enmascaramiento anterior; al exigir sesión vigente fallaban | Baja | Pruebas T3.19/T4.14 | Herberth y Alexis | 2026-10-14 | Adaptadas a sesiones reales y exclusión de valores; listas, auditoría y agregados vuelven a pasar |
 
 Dependencias observadas, sin implementar tarjetas ajenas: falta la vista detallada

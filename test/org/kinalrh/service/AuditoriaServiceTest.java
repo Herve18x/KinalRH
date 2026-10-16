@@ -44,6 +44,7 @@ public class AuditoriaServiceTest {
         System.out.println("\n-> Iniciando sesión con " + cuenta2.getUsername() + " (ID=" + cuenta2.getIdUsuario() + ")");
         sessionManager.login(cuenta2);
         String uuid2 = sessionManager.getSessionUUID();
+        org.kinalrh.PruebaBD.verificar(uuid1 != null && uuid2 != null && !uuid1.equals(uuid2), "Sesiones con UUID distintos");
         System.out.println("   UUID Asignado: " + uuid2);
 
         if (uuid1 != null && !uuid1.equals(uuid2)) {
@@ -57,7 +58,13 @@ public class AuditoriaServiceTest {
         sessionManager.logout();
 
         // 4. Verificar correspondencia en BD (JOIN auditoria.id_usuario = usuario.id_usuario)
+        sessionManager.login(cuenta1);
         List<String> eventosRegistrados = auditoriaService.obtenerEventosConUsuario(6);
+        org.kinalrh.PruebaBD.verificar(eventosRegistrados.size() >= 4, "Los cuatro eventos deben persistir");
+        org.kinalrh.PruebaBD.verificar(eventosRegistrados.stream().filter(e->e.contains("ID_Usuario="+cuenta1.getIdUsuario()+" ") && e.contains(uuid1)).count()==2,
+                "Dos eventos asociados a la primera cuenta y sesión");
+        org.kinalrh.PruebaBD.verificar(eventosRegistrados.stream().filter(e->e.contains("ID_Usuario="+cuenta2.getIdUsuario()+" ") && e.contains(uuid2)).count()==2,
+                "Dos eventos asociados a la segunda cuenta y sesión");
         if (!eventosRegistrados.isEmpty()) {
             System.out.println("\n-> Verificación de correspondencia en BD (auditoria JOIN usuario):");
             for (String ev : eventosRegistrados) {

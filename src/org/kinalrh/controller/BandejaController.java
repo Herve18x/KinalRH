@@ -128,6 +128,7 @@ public class BandejaController implements Initializable {
     }
 
     public void cargarSolicitudes() {
+        new org.kinalrh.service.AutorizacionService().exigirAlgunPermiso("CAMBIO_CREAR", "CAMBIO_APROBAR_RH", "CAMBIO_APROBAR_GERENCIA");
         listaSolicitudes.clear();
         String sql = "SELECT s.id_solicitud_cambio, s.fecha_solicitud, " +
                      "COALESCE(e.nombre_completo, CONCAT(COALESCE(e.primer_nombre, ''), ' ', COALESCE(e.primer_apellido, ''))) AS nombre_empleado, " +
@@ -166,6 +167,7 @@ public class BandejaController implements Initializable {
 
     @FXML
     public void eventoNuevaSolicitud() {
+        new org.kinalrh.service.AutorizacionService().exigirPermiso("CAMBIO_CREAR");
         List<EmpleadoComboItem> empleados = obtenerEmpleadosActivos();
         if (empleados.isEmpty()) {
             mostrarAlerta(Alert.AlertType.WARNING, "Sin colaboradores", "No se encontraron colaboradores registrados en la base de datos.");
@@ -244,6 +246,7 @@ public class BandejaController implements Initializable {
     }
 
     private List<EmpleadoComboItem> obtenerEmpleadosActivos() {
+        new org.kinalrh.service.AutorizacionService().exigirPermiso("CAMBIO_CREAR");
         List<EmpleadoComboItem> lista = new ArrayList<>();
         String sql = "SELECT id_empleado, COALESCE(nombre_completo, CONCAT(COALESCE(primer_nombre, ''), ' ', COALESCE(primer_apellido, ''))) AS nombre " +
                      "FROM empleado ORDER BY nombre ASC";
@@ -260,9 +263,7 @@ public class BandejaController implements Initializable {
     }
 
     private void guardarNuevaSolicitud(Long idEmpleado, String tipo, String campo, String ant, String nue, String motivo) {
-        Long idUser = SesionService.getInstance().getUsuarioAutenticado() != null
-                ? SesionService.getInstance().getUsuarioAutenticado().getIdUsuario()
-                : 1L;
+        Long idUser = new org.kinalrh.service.AutorizacionService().exigirPermiso("CAMBIO_CREAR").getIdUsuario();
 
         String sqlSolicitud = "INSERT INTO solicitud_cambio (id_empleado, tipo_cambio, motivo, estado, solicitado_por, fecha_solicitud) " +
                               "VALUES (?, ?, ?, 'PENDIENTE', ?, NOW())";
@@ -323,6 +324,7 @@ public class BandejaController implements Initializable {
     }
 
     private void procesarResolucion(String nuevoEstado) {
+        new org.kinalrh.service.AutorizacionService().exigirAlgunPermiso("CAMBIO_APROBAR_RH", "CAMBIO_APROBAR_GERENCIA");
         SolicitudCambio seleccionada = tablaSolicitudes.getSelectionModel().getSelectedItem();
         if (seleccionada == null) {
             mostrarAlerta(Alert.AlertType.WARNING, "Selección requerida", "Seleccione una solicitud de la lista.");

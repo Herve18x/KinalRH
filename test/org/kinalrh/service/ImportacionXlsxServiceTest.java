@@ -96,6 +96,7 @@ public class ImportacionXlsxServiceTest {
         bd.sql("INSERT INTO area (codigo,nombre) VALUES ('AREA_A','Área A'),('AREA_B','Área B')");
         bd.sql("INSERT INTO puesto (codigo,nombre) VALUES ('PUESTO_A','Puesto A'),('PUESTO_B','Puesto B')");
         bd.sql("INSERT INTO usuario(nombre_usuario,password_hash,nombre_completo) VALUES ('revision_admin','sin acceso','Administrador ficticio'),('revision_visor','sin acceso','Visor ficticio')");
+        bd.sql("INSERT INTO usuario_rol SELECT 1,id_rol FROM rol WHERE nombre='admin'");
         Empleado e=new Empleado(); e.setDpi("FICTICIO-001"); e.setPrimerNombre("Elena"); e.setPrimerApellido("Original"); e.setIdEstadoEmpleado(1L);
         e.setSegundoNombre("Conservado"); e.setCorreoPersonal("prueba@example.test"); e.setIdAreaPrincipal(1L); e.setIdPuestoActual(1L); e.setFechaIngresoKinal(LocalDate.of(2020,1,1));
         new EmpleadoDAOImpl(bd.datos).insertar(e);

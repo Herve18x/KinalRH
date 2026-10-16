@@ -115,6 +115,8 @@ Para ejecutar un caso histórico de forma aislada, use por ejemplo
 `java -cp "classes;../../lib/*" org.kinalrh.service.PruebaLegadaAislada $raizPrueba org.kinalrh.service.EmpleadoGestionTest`.
 Resultados: [docs/casos_prueba.md](docs/casos_prueba.md) y
 [docs/prueba_integrada.md](docs/prueba_integrada.md).
+Prueba autónoma del 15 de octubre: [docs/prueba_fuego.md](docs/prueba_fuego.md),
+con regresiones de autorización, usuarios, importación, jerarquía y vistas.
 
 ### Errores comunes
 

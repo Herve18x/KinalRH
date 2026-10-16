@@ -31,8 +31,9 @@ public class ValidadorImportacion {
             if (!fila.valor(6).isEmpty()) {
                 try {
                     if (!fila.valor(6).matches("[0-9]{4}-[0-9]{2}-[0-9]{2}")) throw new DateTimeParseException("Formato", "", 0);
-                    LocalDate.parse(fila.valor(6));
-                } catch (DateTimeParseException ex) { errores.add(new Error(n,"fecha_ingreso_kinal","Fecha ISO inválida; use AAAA-MM-DD.")); }
+                    LocalDate fecha = LocalDate.parse(fila.valor(6));
+                    if (fecha.getYear()<1000) throw new DateTimeParseException("Rango", "", 0);
+                } catch (DateTimeParseException ex) { errores.add(new Error(n,"fecha_ingreso_kinal","Fecha ISO inválida; use AAAA-MM-DD entre 1000 y 9999.")); }
             }
             Long estado = referencia(fila,3,estados,errores);
             Long area = referencia(fila,4,areas,errores);

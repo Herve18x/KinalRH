@@ -43,7 +43,7 @@ public class ImportacionXlsxService {
 
     public Lectura leer(Path archivo) {
         autorizacion.exigirPermiso("IMPORTACION_EJECUTAR");
-        if (archivo==null || !archivo.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".xlsx") || !Files.isRegularFile(archivo))
+        if (archivo==null || archivo.getFileName()==null || !archivo.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".xlsx") || !Files.isRegularFile(archivo))
             throw new IllegalArgumentException("Seleccione un archivo .xlsx existente.");
         try (InputStream in=Files.newInputStream(archivo); Workbook libro=WorkbookFactory.create(in)) {
             if (!(libro instanceof XSSFWorkbook) || libro.getNumberOfSheets()==0) throw new IOException("Formato");
@@ -62,6 +62,8 @@ public class ImportacionXlsxService {
                 for(int i=0;i<columnas;i++) {
                     Cell celda=fila.getCell(i);
                     valores.add(texto(celda,formato));
+                    if(i==0 && celda!=null && celda.getCellType()!=CellType.STRING && celda.getCellType()!=CellType.BLANK)
+                        errores.add(new FilaImportacion.Error(n+1,"dpi","Escriba el DPI como texto para conservar su valor exacto."));
                     if(celda!=null && (celda.getCellType()==CellType.FORMULA || celda.getCellType()==CellType.ERROR))
                         errores.add(new FilaImportacion.Error(n+1,i<7?ValidadorImportacion.ENCABEZADOS.get(i):"columna "+(i+1),"Use un valor literal sin fórmulas ni errores."));
                     if(i>=7 && !valores.get(i).isEmpty()) errores.add(new FilaImportacion.Error(n+1,"columna "+(i+1),"Columna fuera de la plantilla."));

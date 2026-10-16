@@ -12,7 +12,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
-import org.kinalrh.dao.impl.EmpleadoDAOImpl;
 import org.kinalrh.model.Empleado;
 
 public class DirectorioController implements Initializable {
@@ -29,8 +28,10 @@ public class DirectorioController implements Initializable {
     }
 
     private void cargarEmpleados() {
+        new org.kinalrh.service.AutorizacionService().exigirPermiso("EMPLEADO_VER");
         try {
-            todosEmpleados = new EmpleadoDAOImpl().listarTodos();
+            todosEmpleados = new org.kinalrh.service.EmpleadoService().listarEmpleados(
+                    org.kinalrh.util.SessionManager.getInstance().getCurrentUser().getRol());
             renderizarTarjetas(todosEmpleados);
         } catch (Exception e) {
             System.err.println("Error al cargar colaboradores para el directorio: " + e.getMessage());

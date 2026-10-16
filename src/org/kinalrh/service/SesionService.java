@@ -54,6 +54,6 @@ public class SesionService {
     public boolean tienePermiso(String permiso) {
         Usuario actual = getUsuarioAutenticado();
         if (actual == null || !actual.isActivo() || actual != usuarioAutenticado || permisosVigentes == null) return false;
-        return permisosVigentes.contains(permiso.toUpperCase());
+        return permiso != null && new AutorizacionService().tienePermiso(null, permiso.toUpperCase(java.util.Locale.ROOT));
     }
 }

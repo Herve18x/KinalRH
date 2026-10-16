@@ -80,6 +80,7 @@ public class EmpleadoFormController implements Initializable {
     }
     
     private void cargarCatalogos() {
+        new org.kinalrh.service.AutorizacionService().exigirAlgunPermiso("EMPLEADO_VER", "EMPLEADO_CREAR", "EMPLEADO_EDITAR");
         cmbArea.getItems().setAll(areaDAO.listarActivas());
         cmbPuesto.getItems().setAll(puestoDAO.listarActivos());
         cmbEstado.getItems().setAll(estadoDAO.listarTodos());

@@ -95,6 +95,7 @@ public class SprintHerberthBatchTest {
             System.out.println("   ESTADO GENERAL: TODAS LAS TAREAS DE HERBERTH CUMPLIDAS [100% OK]");
         } else {
             System.err.println("   ESTADO GENERAL: REVISAR PRUEBAS FALLIDAS");
+            throw new AssertionError("Fallaron " + fallidas + " pruebas del lote.");
         }
         System.out.println("#################################################################");
     }

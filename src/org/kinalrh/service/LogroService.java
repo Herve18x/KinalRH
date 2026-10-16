@@ -34,30 +34,15 @@ public class LogroService {
     }
 
     private void validarPermisoConsulta(String rolActual) {
-        if (rolActual == null || rolActual.trim().isEmpty()) {
-            throw new SecurityException("Acceso denegado: Sesión no válida.");
-        }
-        String r = rolActual.trim().toUpperCase();
-        if (!autorizacionService.tienePermiso(rolActual, "EMPLEADO_VER")
-                && !autorizacionService.tienePermiso(rolActual, "LOGRO_GESTIONAR")
-                && !r.equals("VISOR") && !r.equals("ADMIN") && !r.equals("ENCARGADO") && !r.equals("RRHH")) {
-            throw new SecurityException("Acceso denegado: No tiene permisos para consultar logros.");
-        }
+        autorizacionService.exigirAlgunPermiso("EMPLEADO_VER", "LOGRO_GESTIONAR");
     }
 
     private void validarPermisoGestion(String rolActual) {
-        if (rolActual == null || rolActual.trim().isEmpty()) {
-            throw new SecurityException("Acceso denegado: Sesión no válida.");
-        }
-        String r = rolActual.trim().toUpperCase();
-        if (!autorizacionService.tienePermiso(rolActual, "LOGRO_GESTIONAR")
-                && !autorizacionService.tienePermiso(rolActual, "EMPLEADO_EDITAR")
-                && !r.equals("ADMIN") && !r.equals("ENCARGADO") && !r.equals("RRHH")) {
-            throw new SecurityException("Acceso denegado: Su cuenta no tiene permiso para registrar o modificar logros.");
-        }
+        autorizacionService.exigirPermiso("LOGRO_GESTIONAR");
     }
 
     public List<TipoLogro> listarTiposLogro() {
+        validarPermisoConsulta(null);
         return tipoLogroDAO.listarActivos();
     }
 
